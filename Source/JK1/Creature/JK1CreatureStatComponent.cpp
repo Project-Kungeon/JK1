@@ -2,7 +2,10 @@
 
 
 #include "JK1CreatureStatComponent.h"
+#include "JK1CreatureBase.h"
 #include "../JK1GameInstance.h"
+#include "../Controller/Player/JK1PlayerController.h"
+
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -20,18 +23,16 @@ void UJK1CreatureStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	SetStat();
 }
 
 void UJK1CreatureStatComponent::InitializeComponent()
 {
 	// initialize stat
-	
-
 	BasicStatData = nullptr;
 	IsPlayer = true;
 	CurrentHP = 0;
+	CurrentExp = 0;
 	CurrentStat[0] = 0;
 	CurrentStat[1] = 0;
 }
@@ -42,19 +43,30 @@ void UJK1CreatureStatComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UJK1CreatureStatComponent::HitDamage(float NewDamage, AController* instigator)
+void UJK1CreatureStatComponent::SetStat()
 {
-	check(BasicStatData != nullptr);
-	//
-	//if (AJK1PlayerController* DamageActorController = Cast<AJK1PlayerController>(instigator))
-	//	DamageInstigator.AddUnique(DamageActorController);
+	UJK1GameInstance* JK1GameInstance = Cast<UJK1GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	check(JK1GameInstance != nullptr);
 
-	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage / CurrentStat[1], 0.f, BasicStatData->MaxHP));
+	if (IsPlayer)
+		BasicStatData = JK1GameInstance->GetJK1PlayerData(Name);
+	else
+		BasicStatData = JK1GameInstance->GetJK1MonsterData(Name);
+
+	if (BasicStatData != nullptr)
+	{
+		SetHP(BasicStatData->MaxHP);
+		UE_LOG(LogSystem, Log, TEXT("Set (%s)'s Default Stat"), *Name.ToString());
+	}
+	else
+		UE_LOG(LogSystem, Error, TEXT("(%s) data doesn't exist"), *Name.ToString());
 }
 
 void UJK1CreatureStatComponent::SetHP(float NewHP)
 {
+	
 	CurrentHP = NewHP;
+	UE_LOG(LogSystem, Log, TEXT("Remain HP : %f"), CurrentHP);
 	//OnHPChanged.Broadcast();
 
 	if (CurrentHP <= KINDA_SMALL_NUMBER)
@@ -74,4 +86,25 @@ void UJK1CreatureStatComponent::SetHP(float NewHP)
 		//	}
 		//}
 	}
+}
+
+void UJK1CreatureStatComponent::PlusExp(float Exp)
+{
+	CurrentExp += Exp;
+
+	// TODO
+	// Exp 초과 시 레벨 올리고 broadcast
+
+}
+
+void UJK1CreatureStatComponent::HitDamage(float NewDamage)
+{
+	check(BasicStatData != nullptr);
+	
+	// 서버와 의논
+	//if (AJK1PlayerController* DamageActorController = Cast<AJK1PlayerController>(instigator))
+		//DamageInstigator.AddUnique(DamageActorController);
+
+	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage, 0.f, BasicStatData->MaxHP));
+	UE_LOG(LogSystem, Log, TEXT("Hit Damage: %f"), NewDamage);
 }

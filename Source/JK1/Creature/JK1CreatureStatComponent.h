@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "JK1CreatureStatComponent.generated.h"
 
+class AJK1PlayerController;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class JK1_API UJK1CreatureStatComponent : public UActorComponent
@@ -26,22 +27,39 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	/*
+	*  Member Function
+	*/
 public:
-	void HitDamage(float NewDamage, AController* instigator);
+	void SetOwner(bool OwnerType, FName ClassName) { IsPlayer = OwnerType; Name = ClassName; }
+	void SetStat();
 	void SetHP(float NewHP);
+	void PlusExp(float Exp);
 
+	void HitDamage(float NewDamage);
+
+	/*
+	*  Member Variable
+	*/
 private:
 	bool IsPlayer;
+	struct FJK1CreatureData* BasicStatData;
 
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	FName Name;
 
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	int Level;
+
+	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
 
-	struct FJK1CreatureData* BasicStatData;
+	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	float CurrentExp;
+
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float CurrentStat[2];
 
+	// 데미지 입힌 대상
 	//TArray<AJK1PlayerController*> DamageInstigator;
 };

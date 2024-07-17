@@ -2,12 +2,14 @@
 
 
 #include "JK1PlayerCharacter.h"
+#include "JK1/Physics/JK1Collision.h"
+#include "JK1/Controller/Player/JK1PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Animation/AnimMontage.h"
-
 
 AJK1PlayerCharacter::AJK1PlayerCharacter()
 {
@@ -19,7 +21,7 @@ AJK1PlayerCharacter::AJK1PlayerCharacter()
 	bUseControllerRotationYaw = false;
 
 	//Capsule (프로파일 설정)
-	//GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_JK1CAPSULE);
+	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_JK1CAPSULE);
 
 	//Movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -58,6 +60,10 @@ AJK1PlayerCharacter::AJK1PlayerCharacter()
 void AJK1PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PlayerController = Cast<AJK1PlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+	//if (PlayerController)
+		//PlayerController->GetPlayerWidget()->SetWidgetsStat(CharacterStat, nullptr);
 }
 
 void AJK1PlayerCharacter::Tick(float DeltaTime)

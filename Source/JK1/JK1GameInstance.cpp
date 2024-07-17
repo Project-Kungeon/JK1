@@ -6,6 +6,7 @@
 UJK1GameInstance::UJK1GameInstance()
 {
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_JK1Player(TEXT("/Script/Engine.DataTable'/Game/Data/DT_PlayerStatData.DT_PlayerStatData'"));
+	
 	check(DT_JK1Player.Succeeded());
 	JK1PlayerTable = DT_JK1Player.Object;
 	check(JK1PlayerTable->GetRowMap().Num() > 0);
@@ -20,8 +21,8 @@ void UJK1GameInstance::Init()
 {
 	Super::Init();
 
-	UE_LOG(LogTemp, Warning, TEXT("ExpForNextLevel 2 J1Player : %d"), GetJK1PlayerData(FName(TEXT("Warrior")))->Exp);
-	UE_LOG(LogTemp, Warning, TEXT("DropExp 2 J1Monster : %d"), GetJK1MonsterData(FName(TEXT("GoblinSpear")))->Exp);
+	UE_LOG(LogTemp, Log, TEXT("ExpForNextLevel 2 JK1Player : %f"), GetJK1PlayerData(FName(TEXT("Warrior")))->Exp);
+	UE_LOG(LogTemp, Log, TEXT("DropExp 2 JK1Monster : %f"), GetJK1MonsterData(FName(TEXT("MonsterBase")))->Exp);
 }
 
 FJK1CreatureData* UJK1GameInstance::GetJK1PlayerData(FName ClassName)

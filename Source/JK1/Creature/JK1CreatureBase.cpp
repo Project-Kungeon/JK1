@@ -40,8 +40,11 @@ void AJK1CreatureBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 float AJK1CreatureBase::TakeDamage(float damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCursor)
 {
-	//TODO
-	return 0.0f;
+	const float ActualDamage = Super::TakeDamage(damage, DamageEvent, EventInstigator, DamageCursor);
+
+	//CreatureStat->HitDamage(ActualDamage, EventInstigator);
+
+	return ActualDamage;
 }
 
 void AJK1CreatureBase::PossessedBy(AController* NewController)

@@ -65,6 +65,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	TObjectPtr<class UCameraComponent> FollowCamera;
 
+	class AJK1PlayerController* PlayerController;
+
 public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bWeaponActive;

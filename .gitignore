@@ -44,7 +44,9 @@
 # Precompiled Assets
 SourceArt/**/*.png
 SourceArt/**/*.tga
-Content/Assets
+Content/ParagonGreyStone
+Content/ParagonSparrow
+Content/ParagonKallari
 
 # Binary Files
 Binaries/*
