@@ -36,8 +36,8 @@ public:
 	*/
 public:
 	//Move and Look 
-	void Move(const FInputActionValue& Value);
-	void Look(const FInputActionValue& Value);
+	virtual void Move(const FInputActionValue& Value);
+	virtual void Look(const FInputActionValue& Value);
 
 	//Attack 
 	virtual void Attack();
@@ -81,5 +81,5 @@ public:
 	uint8 IsAttacking : 1;
 	uint8 SaveAttacking : 1;
 	int32 MaxCombo;
-	
+
 };

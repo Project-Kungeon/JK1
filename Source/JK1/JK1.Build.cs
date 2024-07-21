@@ -6,7 +6,9 @@ public class JK1 : ModuleRules
 {
 	public JK1(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        bEnableExceptions = true;
+
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
 
@@ -14,10 +16,10 @@ public class JK1 : ModuleRules
 
 		PrivateIncludePaths.AddRange(new string[]
         {
-            "JK2/",
-            "JK2/Network/",
-            "JK2/Network/PacketHandler",
-            "JK2/System/"
+            "JK1/",
+            "JK1/Network/",
+            "JK1/Network/PacketHandler",
+            "JK1/System/"
         });
 
 		// Uncomment if you are using Slate UI
