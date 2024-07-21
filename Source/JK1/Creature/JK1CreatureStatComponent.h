@@ -32,8 +32,9 @@ public:
 	*/
 public:
 	void SetOwner(bool OwnerType, FName ClassName) { IsPlayer = OwnerType; Name = ClassName; }
-	void SetStat();
+	void LoadData();
 	void SetHP(float NewHP);
+	void SetStat(int index, float value);
 	void PlusExp(float Exp);
 
 	void HitDamage(float NewDamage);

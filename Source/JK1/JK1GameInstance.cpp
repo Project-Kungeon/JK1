@@ -6,7 +6,6 @@
 UJK1GameInstance::UJK1GameInstance()
 {
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_JK1Player(TEXT("/Script/Engine.DataTable'/Game/Data/DT_PlayerStatData.DT_PlayerStatData'"));
-	
 	check(DT_JK1Player.Succeeded());
 	JK1PlayerTable = DT_JK1Player.Object;
 	check(JK1PlayerTable->GetRowMap().Num() > 0);
