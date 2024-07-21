@@ -23,7 +23,7 @@ void UJK1CreatureStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetStat();
+	LoadData();
 }
 
 void UJK1CreatureStatComponent::InitializeComponent()
@@ -43,7 +43,7 @@ void UJK1CreatureStatComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UJK1CreatureStatComponent::SetStat()
+void UJK1CreatureStatComponent::LoadData()
 {
 	UJK1GameInstance* JK1GameInstance = Cast<UJK1GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	check(JK1GameInstance != nullptr);
@@ -56,6 +56,8 @@ void UJK1CreatureStatComponent::SetStat()
 	if (BasicStatData != nullptr)
 	{
 		SetHP(BasicStatData->MaxHP);
+		SetStat(0, BasicStatData->ATK);
+		SetStat(1, BasicStatData->DEF);
 		UE_LOG(LogSystem, Log, TEXT("Set (%s)'s Default Stat"), *Name.ToString());
 	}
 	else
@@ -88,6 +90,25 @@ void UJK1CreatureStatComponent::SetHP(float NewHP)
 	}
 }
 
+void UJK1CreatureStatComponent::SetStat(int index, float value)
+{
+	CurrentStat[index] = value;
+
+	// For Debugging
+	FString statname;
+	switch (index)
+	{
+	case 0:
+		statname = "ATK";
+		break;
+	case 1:
+		statname = "DEF";
+		break;
+	}
+
+	UE_LOG(LogSystem, Log, TEXT("Current %s : %f"), *statname, CurrentStat[index]);
+}
+
 void UJK1CreatureStatComponent::PlusExp(float Exp)
 {
 	CurrentExp += Exp;
@@ -105,6 +126,6 @@ void UJK1CreatureStatComponent::HitDamage(float NewDamage)
 	//if (AJK1PlayerController* DamageActorController = Cast<AJK1PlayerController>(instigator))
 		//DamageInstigator.AddUnique(DamageActorController);
 
-	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage, 0.f, BasicStatData->MaxHP));
+	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage/CurrentStat[1], 0.f, BasicStatData->MaxHP));
 	UE_LOG(LogSystem, Log, TEXT("Hit Damage: %f"), NewDamage);
 }

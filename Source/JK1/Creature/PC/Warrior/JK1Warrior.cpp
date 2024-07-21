@@ -3,7 +3,6 @@
 
 #include "JK1Warrior.h"
 #include "../../JK1CreatureStatComponent.h"
-#include "../../JK1CreatureBase.h"
 #include "JK1/Physics/JK1Collision.h"
 
 #include "Animation/AnimMontage.h"
