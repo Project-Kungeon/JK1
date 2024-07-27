@@ -2,7 +2,8 @@
 
 
 #include "System/NetworkJK1GameInstance.h"
-#include "Creature/Network/NJK1PlayerCharacter.h"
+#include "Creature/PC/JK1PlayerCharacter.h"
+#include "Creature/JK1CreatureStatComponent.h"
 
 void UNetworkJK1GameInstance::Init()
 {
@@ -67,17 +68,22 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::ObjectInfo& info, bool 
 		AsyncTask(ENamedThreads::GameThread, [isMyPlayer, this, info, World, SpawnLocation]()
 			{
 				auto* PC = UGameplayStatics::GetPlayerController(this, 0);
-				auto* Player = Cast<ANJK1PlayerCharacter>(PC->GetPawn());
+				auto* Player = Cast<AJK1PlayerCharacter>(PC->GetPawn());
 				Player->isMyPlayer = true;
 				if (Player == nullptr)
 					return;
+				// TODO : 나중에 초기 정보 던져주도록 설정해야 함.
+				message::CreatureInfo CreatureInfo;
+				CreatureInfo.set_object_id(info.object_id());
+				CreatureInfo.set_creature_type(message::CREATURE_TYPE_NONE);
+				Player->CreatureStat->SetCreatureInfo(CreatureInfo);
 
 				Player->SetPlayerInfo(info.pos_info());
 
 				MyPlayer = Player;
 				Players.Add(info.object_id(), Player);
 
-				Cast<ANJK1PlayerCharacter>(Player)->isConnected = true;
+				Cast<AJK1PlayerCharacter>(Player)->isConnected = true;
 			});
 
 	}
@@ -87,7 +93,7 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::ObjectInfo& info, bool 
 			{
 				auto* a = World->SpawnActor(OtherPlayerClass, &SpawnLocation);
 
-				auto* Player = Cast<ANJK1PlayerCharacter>(a);
+				auto* Player = Cast<AJK1PlayerCharacter>(a);
 				Player->SetPlayerInfo(info.pos_info());
 				Players.Add(info.object_id(), Player);
 			});
@@ -122,11 +128,11 @@ void UNetworkJK1GameInstance::HandleMove(const message::S_Move& movePkt)
 		return;
 
 	const uint64 objectId = movePkt.posinfo().object_id();
-	ANJK1PlayerCharacter** FindActor = Players.Find(objectId);
+	AJK1PlayerCharacter** FindActor = Players.Find(objectId);
 	if (FindActor == nullptr)
 		return;
 
-	ANJK1PlayerCharacter* Player = (*FindActor);
+	AJK1PlayerCharacter* Player = (*FindActor);
 	if (Player->isMyPlayer)
 		return;
 

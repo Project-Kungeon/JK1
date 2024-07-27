@@ -1700,10 +1700,32 @@ class C_Attack final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kVictimObjectIdsFieldNumber = 2,
     kAttackObjectIdFieldNumber = 1,
-    kVictimObjectIdFieldNumber = 2,
     kDamageFieldNumber = 3,
   };
+  // repeated uint64 victim_object_ids = 2;
+  int victim_object_ids_size() const;
+  private:
+  int _internal_victim_object_ids_size() const;
+  public:
+  void clear_victim_object_ids();
+  private:
+  uint64_t _internal_victim_object_ids(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >&
+      _internal_victim_object_ids() const;
+  void _internal_add_victim_object_ids(uint64_t value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >*
+      _internal_mutable_victim_object_ids();
+  public:
+  uint64_t victim_object_ids(int index) const;
+  void set_victim_object_ids(int index, uint64_t value);
+  void add_victim_object_ids(uint64_t value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >&
+      victim_object_ids() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >*
+      mutable_victim_object_ids();
+
   // uint64 attack_object_id = 1;
   void clear_attack_object_id();
   uint64_t attack_object_id() const;
@@ -1713,22 +1735,13 @@ class C_Attack final :
   void _internal_set_attack_object_id(uint64_t value);
   public:
 
-  // uint64 victim_object_id = 2;
-  void clear_victim_object_id();
-  uint64_t victim_object_id() const;
-  void set_victim_object_id(uint64_t value);
-  private:
-  uint64_t _internal_victim_object_id() const;
-  void _internal_set_victim_object_id(uint64_t value);
-  public:
-
-  // uint32 damage = 3;
+  // float damage = 3;
   void clear_damage();
-  uint32_t damage() const;
-  void set_damage(uint32_t value);
+  float damage() const;
+  void set_damage(float value);
   private:
-  uint32_t _internal_damage() const;
-  void _internal_set_damage(uint32_t value);
+  float _internal_damage() const;
+  void _internal_set_damage(float value);
   public:
 
   // @@protoc_insertion_point(class_scope:message.C_Attack)
@@ -1738,9 +1751,10 @@ class C_Attack final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t > victim_object_ids_;
+  mutable std::atomic<int> _victim_object_ids_cached_byte_size_;
   uint64_t attack_object_id_;
-  uint64_t victim_object_id_;
-  uint32_t damage_;
+  float damage_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Message_2eproto;
 };
@@ -1900,13 +1914,13 @@ class S_Attack final :
   void _internal_set_object_id(uint64_t value);
   public:
 
-  // uint32 damage = 3;
+  // float damage = 3;
   void clear_damage();
-  uint32_t damage() const;
-  void set_damage(uint32_t value);
+  float damage() const;
+  void set_damage(float value);
   private:
-  uint32_t _internal_damage() const;
-  void _internal_set_damage(uint32_t value);
+  float _internal_damage() const;
+  void _internal_set_damage(float value);
   public:
 
   // @@protoc_insertion_point(class_scope:message.S_Attack)
@@ -1919,7 +1933,7 @@ class S_Attack final :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t > victims_object_ids_;
   mutable std::atomic<int> _victims_object_ids_cached_byte_size_;
   uint64_t object_id_;
-  uint32_t damage_;
+  float damage_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Message_2eproto;
 };
@@ -2758,42 +2772,69 @@ inline void C_Attack::set_attack_object_id(uint64_t value) {
   // @@protoc_insertion_point(field_set:message.C_Attack.attack_object_id)
 }
 
-// uint64 victim_object_id = 2;
-inline void C_Attack::clear_victim_object_id() {
-  victim_object_id_ = uint64_t{0u};
+// repeated uint64 victim_object_ids = 2;
+inline int C_Attack::_internal_victim_object_ids_size() const {
+  return victim_object_ids_.size();
 }
-inline uint64_t C_Attack::_internal_victim_object_id() const {
-  return victim_object_id_;
+inline int C_Attack::victim_object_ids_size() const {
+  return _internal_victim_object_ids_size();
 }
-inline uint64_t C_Attack::victim_object_id() const {
-  // @@protoc_insertion_point(field_get:message.C_Attack.victim_object_id)
-  return _internal_victim_object_id();
+inline void C_Attack::clear_victim_object_ids() {
+  victim_object_ids_.Clear();
 }
-inline void C_Attack::_internal_set_victim_object_id(uint64_t value) {
-  
-  victim_object_id_ = value;
+inline uint64_t C_Attack::_internal_victim_object_ids(int index) const {
+  return victim_object_ids_.Get(index);
 }
-inline void C_Attack::set_victim_object_id(uint64_t value) {
-  _internal_set_victim_object_id(value);
-  // @@protoc_insertion_point(field_set:message.C_Attack.victim_object_id)
+inline uint64_t C_Attack::victim_object_ids(int index) const {
+  // @@protoc_insertion_point(field_get:message.C_Attack.victim_object_ids)
+  return _internal_victim_object_ids(index);
+}
+inline void C_Attack::set_victim_object_ids(int index, uint64_t value) {
+  victim_object_ids_.Set(index, value);
+  // @@protoc_insertion_point(field_set:message.C_Attack.victim_object_ids)
+}
+inline void C_Attack::_internal_add_victim_object_ids(uint64_t value) {
+  victim_object_ids_.Add(value);
+}
+inline void C_Attack::add_victim_object_ids(uint64_t value) {
+  _internal_add_victim_object_ids(value);
+  // @@protoc_insertion_point(field_add:message.C_Attack.victim_object_ids)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >&
+C_Attack::_internal_victim_object_ids() const {
+  return victim_object_ids_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >&
+C_Attack::victim_object_ids() const {
+  // @@protoc_insertion_point(field_list:message.C_Attack.victim_object_ids)
+  return _internal_victim_object_ids();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >*
+C_Attack::_internal_mutable_victim_object_ids() {
+  return &victim_object_ids_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< uint64_t >*
+C_Attack::mutable_victim_object_ids() {
+  // @@protoc_insertion_point(field_mutable_list:message.C_Attack.victim_object_ids)
+  return _internal_mutable_victim_object_ids();
 }
 
-// uint32 damage = 3;
+// float damage = 3;
 inline void C_Attack::clear_damage() {
-  damage_ = 0u;
+  damage_ = 0;
 }
-inline uint32_t C_Attack::_internal_damage() const {
+inline float C_Attack::_internal_damage() const {
   return damage_;
 }
-inline uint32_t C_Attack::damage() const {
+inline float C_Attack::damage() const {
   // @@protoc_insertion_point(field_get:message.C_Attack.damage)
   return _internal_damage();
 }
-inline void C_Attack::_internal_set_damage(uint32_t value) {
+inline void C_Attack::_internal_set_damage(float value) {
   
   damage_ = value;
 }
-inline void C_Attack::set_damage(uint32_t value) {
+inline void C_Attack::set_damage(float value) {
   _internal_set_damage(value);
   // @@protoc_insertion_point(field_set:message.C_Attack.damage)
 }
@@ -2869,22 +2910,22 @@ S_Attack::mutable_victims_object_ids() {
   return _internal_mutable_victims_object_ids();
 }
 
-// uint32 damage = 3;
+// float damage = 3;
 inline void S_Attack::clear_damage() {
-  damage_ = 0u;
+  damage_ = 0;
 }
-inline uint32_t S_Attack::_internal_damage() const {
+inline float S_Attack::_internal_damage() const {
   return damage_;
 }
-inline uint32_t S_Attack::damage() const {
+inline float S_Attack::damage() const {
   // @@protoc_insertion_point(field_get:message.S_Attack.damage)
   return _internal_damage();
 }
-inline void S_Attack::_internal_set_damage(uint32_t value) {
+inline void S_Attack::_internal_set_damage(float value) {
   
   damage_ = value;
 }
-inline void S_Attack::set_damage(uint32_t value) {
+inline void S_Attack::set_damage(float value) {
   _internal_set_damage(value);
   // @@protoc_insertion_point(field_set:message.S_Attack.damage)
 }

@@ -8,7 +8,7 @@
 #include "JK1GameInstance.h"
 #include "NetworkJK1GameInstance.generated.h"
 
-class ANJK1PlayerCharacter;
+class AJK1PlayerCharacter;
 /**
  * 
  */
@@ -44,8 +44,8 @@ private:
 
 public:
 	UPROPERTY(EditAnywhere);
-	TSubclassOf<ANJK1PlayerCharacter> OtherPlayerClass;
+	TSubclassOf<AJK1PlayerCharacter> OtherPlayerClass;
 
-	TMap<uint64, ANJK1PlayerCharacter*> Players;
-	ANJK1PlayerCharacter* MyPlayer;
+	TMap<uint64, AJK1PlayerCharacter*> Players;
+	AJK1PlayerCharacter* MyPlayer;
 };

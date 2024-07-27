@@ -1,6 +1,7 @@
 // Copyright 2024 All Rights Reserved by J&K
 
 #include "NJK1PlayerCharacter.h"
+#include "Creature/JK1CreatureStatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ANJK1PlayerCharacter::ANJK1PlayerCharacter()
@@ -8,6 +9,8 @@ ANJK1PlayerCharacter::ANJK1PlayerCharacter()
 {
 	PlayerInfo = new message::PosInfo();
 	DestInfo = new message::PosInfo();
+
+	CreatureStat->SetOwner(true, FName("Warrior"));
 }
 
 ANJK1PlayerCharacter::~ANJK1PlayerCharacter()

@@ -49,7 +49,7 @@ public:
 
 	//refactoring
 	UFUNCTION()
-	void CheckWeaponTrace();
+	TArray<FHitResult> CheckWeaponTrace();
 	void PlayParticleSystem();
 	void CheckSkillRTrace();
 	void StopParticleSystem();

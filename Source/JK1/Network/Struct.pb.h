@@ -592,8 +592,6 @@ class CreatureInfo final :
   enum : int {
     kObjectIdFieldNumber = 1,
     kCreatureTypeFieldNumber = 2,
-    kHealthFieldNumber = 3,
-    kAttackDamageFieldNumber = 4,
   };
   // uint64 object_id = 1;
   void clear_object_id();
@@ -613,24 +611,6 @@ class CreatureInfo final :
   void _internal_set_creature_type(::message::CreatureType value);
   public:
 
-  // uint32 health = 3;
-  void clear_health();
-  uint32_t health() const;
-  void set_health(uint32_t value);
-  private:
-  uint32_t _internal_health() const;
-  void _internal_set_health(uint32_t value);
-  public:
-
-  // uint32 attack_damage = 4;
-  void clear_attack_damage();
-  uint32_t attack_damage() const;
-  void set_attack_damage(uint32_t value);
-  private:
-  uint32_t _internal_attack_damage() const;
-  void _internal_set_attack_damage(uint32_t value);
-  public:
-
   // @@protoc_insertion_point(class_scope:message.CreatureInfo)
  private:
   class _Internal;
@@ -640,8 +620,6 @@ class CreatureInfo final :
   typedef void DestructorSkippable_;
   uint64_t object_id_;
   int creature_type_;
-  uint32_t health_;
-  uint32_t attack_damage_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Struct_2eproto;
 };
@@ -1480,46 +1458,6 @@ inline void CreatureInfo::_internal_set_creature_type(::message::CreatureType va
 inline void CreatureInfo::set_creature_type(::message::CreatureType value) {
   _internal_set_creature_type(value);
   // @@protoc_insertion_point(field_set:message.CreatureInfo.creature_type)
-}
-
-// uint32 health = 3;
-inline void CreatureInfo::clear_health() {
-  health_ = 0u;
-}
-inline uint32_t CreatureInfo::_internal_health() const {
-  return health_;
-}
-inline uint32_t CreatureInfo::health() const {
-  // @@protoc_insertion_point(field_get:message.CreatureInfo.health)
-  return _internal_health();
-}
-inline void CreatureInfo::_internal_set_health(uint32_t value) {
-  
-  health_ = value;
-}
-inline void CreatureInfo::set_health(uint32_t value) {
-  _internal_set_health(value);
-  // @@protoc_insertion_point(field_set:message.CreatureInfo.health)
-}
-
-// uint32 attack_damage = 4;
-inline void CreatureInfo::clear_attack_damage() {
-  attack_damage_ = 0u;
-}
-inline uint32_t CreatureInfo::_internal_attack_damage() const {
-  return attack_damage_;
-}
-inline uint32_t CreatureInfo::attack_damage() const {
-  // @@protoc_insertion_point(field_get:message.CreatureInfo.attack_damage)
-  return _internal_attack_damage();
-}
-inline void CreatureInfo::_internal_set_attack_damage(uint32_t value) {
-  
-  attack_damage_ = value;
-}
-inline void CreatureInfo::set_attack_damage(uint32_t value) {
-  _internal_set_attack_damage(value);
-  // @@protoc_insertion_point(field_set:message.CreatureInfo.attack_damage)
 }
 
 // -------------------------------------------------------------------

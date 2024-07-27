@@ -14,7 +14,6 @@ AJK1CreatureBase::AJK1CreatureBase()
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("CharacterBase"));
 	CreatureStat = CreateDefaultSubobject<UJK1CreatureStatComponent>(TEXT("CreatureStat"));
-
 }
 
 // Called when the game starts or when spawned

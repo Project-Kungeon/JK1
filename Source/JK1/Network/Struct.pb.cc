@@ -60,9 +60,7 @@ PROTOBUF_CONSTEXPR CreatureInfo::CreatureInfo(
     ::_pbi::ConstantInitialized)
   : object_id_(uint64_t{0u})
   , creature_type_(0)
-
-  , health_(0u)
-  , attack_damage_(0u){}
+{}
 struct CreatureInfoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR CreatureInfoDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -151,8 +149,6 @@ const uint32_t TableStruct_Struct_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(p
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::message::CreatureInfo, object_id_),
   PROTOBUF_FIELD_OFFSET(::message::CreatureInfo, creature_type_),
-  PROTOBUF_FIELD_OFFSET(::message::CreatureInfo, health_),
-  PROTOBUF_FIELD_OFFSET(::message::CreatureInfo, attack_damage_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::message::PlayerInfo, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -183,9 +179,9 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 0, -1, -1, sizeof(::message::PosInfo)},
   { 14, -1, -1, sizeof(::message::ObjectInfo)},
   { 23, -1, -1, sizeof(::message::CreatureInfo)},
-  { 33, -1, -1, sizeof(::message::PlayerInfo)},
-  { 41, -1, -1, sizeof(::message::ItemInfo)},
-  { 50, -1, -1, sizeof(::message::Timestamp)},
+  { 31, -1, -1, sizeof(::message::PlayerInfo)},
+  { 39, -1, -1, sizeof(::message::ItemInfo)},
+  { 48, -1, -1, sizeof(::message::Timestamp)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -205,22 +201,21 @@ const char descriptor_table_protodef_Struct_2eproto[] PROTOBUF_SECTION_VARIABLE(
   "essage.MoveState\"m\n\nObjectInfo\022\021\n\tobject"
   "_id\030\001 \001(\004\022(\n\013object_type\030\002 \001(\0162\023.message"
   ".ObjectType\022\"\n\010pos_info\030\003 \001(\0132\020.message."
-  "PosInfo\"v\n\014CreatureInfo\022\021\n\tobject_id\030\001 \001"
+  "PosInfo\"O\n\014CreatureInfo\022\021\n\tobject_id\030\001 \001"
   "(\004\022,\n\rcreature_type\030\002 \001(\0162\025.message.Crea"
-  "tureType\022\016\n\006health\030\003 \001(\r\022\025\n\rattack_damag"
-  "e\030\004 \001(\r\"I\n\nPlayerInfo\022\021\n\tobject_id\030\001 \001(\004"
-  "\022(\n\013player_type\030\002 \001(\0162\023.message.PlayerTy"
-  "pe\"V\n\010ItemInfo\022\017\n\007item_id\030\001 \001(\004\022$\n\titem_"
-  "type\030\002 \001(\0162\021.message.ItemType\022\023\n\013descrip"
-  "tion\030\003 \003(\t\"+\n\tTimestamp\022\017\n\007seconds\030\001 \001(\003"
-  "\022\r\n\005nanos\030\002 \001(\005b\006proto3"
+  "tureType\"I\n\nPlayerInfo\022\021\n\tobject_id\030\001 \001("
+  "\004\022(\n\013player_type\030\002 \001(\0162\023.message.PlayerT"
+  "ype\"V\n\010ItemInfo\022\017\n\007item_id\030\001 \001(\004\022$\n\titem"
+  "_type\030\002 \001(\0162\021.message.ItemType\022\023\n\013descri"
+  "ption\030\003 \003(\t\"+\n\tTimestamp\022\017\n\007seconds\030\001 \001("
+  "\003\022\r\n\005nanos\030\002 \001(\005b\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_Struct_2eproto_deps[1] = {
   &::descriptor_table_Enum_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_Struct_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Struct_2eproto = {
-    false, false, 623, descriptor_table_protodef_Struct_2eproto,
+    false, false, 584, descriptor_table_protodef_Struct_2eproto,
     "Struct.proto",
     &descriptor_table_Struct_2eproto_once, descriptor_table_Struct_2eproto_deps, 1, 6,
     schemas, file_default_instances, TableStruct_Struct_2eproto::offsets,
@@ -911,16 +906,16 @@ CreatureInfo::CreatureInfo(const CreatureInfo& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&object_id_, &from.object_id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&attack_damage_) -
-    reinterpret_cast<char*>(&object_id_)) + sizeof(attack_damage_));
+    static_cast<size_t>(reinterpret_cast<char*>(&creature_type_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(creature_type_));
   // @@protoc_insertion_point(copy_constructor:message.CreatureInfo)
 }
 
 inline void CreatureInfo::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&object_id_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&attack_damage_) -
-    reinterpret_cast<char*>(&object_id_)) + sizeof(attack_damage_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&creature_type_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(creature_type_));
 }
 
 CreatureInfo::~CreatureInfo() {
@@ -947,8 +942,8 @@ void CreatureInfo::Clear() {
   (void) cached_has_bits;
 
   ::memset(&object_id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&attack_damage_) -
-      reinterpret_cast<char*>(&object_id_)) + sizeof(attack_damage_));
+      reinterpret_cast<char*>(&creature_type_) -
+      reinterpret_cast<char*>(&object_id_)) + sizeof(creature_type_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -972,22 +967,6 @@ const char* CreatureInfo::_InternalParse(const char* ptr, ::_pbi::ParseContext* 
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
           _internal_set_creature_type(static_cast<::message::CreatureType>(val));
-        } else
-          goto handle_unusual;
-        continue;
-      // uint32 health = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
-          health_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // uint32 attack_damage = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
-          attack_damage_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
@@ -1033,18 +1012,6 @@ uint8_t* CreatureInfo::_InternalSerialize(
       2, this->_internal_creature_type(), target);
   }
 
-  // uint32 health = 3;
-  if (this->_internal_health() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(3, this->_internal_health(), target);
-  }
-
-  // uint32 attack_damage = 4;
-  if (this->_internal_attack_damage() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(4, this->_internal_attack_damage(), target);
-  }
-
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1070,16 +1037,6 @@ size_t CreatureInfo::ByteSizeLong() const {
   if (this->_internal_creature_type() != 0) {
     total_size += 1 +
       ::_pbi::WireFormatLite::EnumSize(this->_internal_creature_type());
-  }
-
-  // uint32 health = 3;
-  if (this->_internal_health() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_health());
-  }
-
-  // uint32 attack_damage = 4;
-  if (this->_internal_attack_damage() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_attack_damage());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
@@ -1110,12 +1067,6 @@ void CreatureInfo::MergeFrom(const CreatureInfo& from) {
   if (from._internal_creature_type() != 0) {
     _internal_set_creature_type(from._internal_creature_type());
   }
-  if (from._internal_health() != 0) {
-    _internal_set_health(from._internal_health());
-  }
-  if (from._internal_attack_damage() != 0) {
-    _internal_set_attack_damage(from._internal_attack_damage());
-  }
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -1134,8 +1085,8 @@ void CreatureInfo::InternalSwap(CreatureInfo* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(CreatureInfo, attack_damage_)
-      + sizeof(CreatureInfo::attack_damage_)
+      PROTOBUF_FIELD_OFFSET(CreatureInfo, creature_type_)
+      + sizeof(CreatureInfo::creature_type_)
       - PROTOBUF_FIELD_OFFSET(CreatureInfo, object_id_)>(
           reinterpret_cast<char*>(&object_id_),
           reinterpret_cast<char*>(&other->object_id_));

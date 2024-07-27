@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "JK1.h"
 #include "JK1CreatureStatComponent.generated.h"
 
 class AJK1PlayerController;
@@ -40,11 +41,26 @@ public:
 	void HitDamage(float NewDamage);
 
 	/*
+	 * Network Function 
+	 */
+public:
+	void SetObjectInfo(message::ObjectInfo Info);
+	void SetCreatureInfo(message::CreatureInfo Info);
+	message::ObjectInfo* GetObjectInfo() { return this->ObjectInfo; }
+	message::CreatureInfo* GetCreatureInfo() { return this->CreatureInfo; }
+
+public:
+	float GetHP() { return this->CurrentHP; }
+
+	/*
 	*  Member Variable
 	*/
 private:
 	bool IsPlayer;
 	struct FJK1CreatureData* BasicStatData;
+
+	message::ObjectInfo* ObjectInfo;
+	message::CreatureInfo* CreatureInfo;
 
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	FName Name;

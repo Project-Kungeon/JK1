@@ -56,7 +56,6 @@ public:
 public:
 
 	// Only My Player
-	bool isMyPlayer = false;
 	bool isConnected = false;
 	// ======================
 

@@ -143,9 +143,10 @@ struct S_MoveDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 S_MoveDefaultTypeInternal _S_Move_default_instance_;
 PROTOBUF_CONSTEXPR C_Attack::C_Attack(
     ::_pbi::ConstantInitialized)
-  : attack_object_id_(uint64_t{0u})
-  , victim_object_id_(uint64_t{0u})
-  , damage_(0u){}
+  : victim_object_ids_()
+  , _victim_object_ids_cached_byte_size_(0)
+  , attack_object_id_(uint64_t{0u})
+  , damage_(0){}
 struct C_AttackDefaultTypeInternal {
   PROTOBUF_CONSTEXPR C_AttackDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -160,7 +161,7 @@ PROTOBUF_CONSTEXPR S_Attack::S_Attack(
   : victims_object_ids_()
   , _victims_object_ids_cached_byte_size_(0)
   , object_id_(uint64_t{0u})
-  , damage_(0u){}
+  , damage_(0){}
 struct S_AttackDefaultTypeInternal {
   PROTOBUF_CONSTEXPR S_AttackDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -279,7 +280,7 @@ const uint32_t TableStruct_Message_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::message::C_Attack, attack_object_id_),
-  PROTOBUF_FIELD_OFFSET(::message::C_Attack, victim_object_id_),
+  PROTOBUF_FIELD_OFFSET(::message::C_Attack, victim_object_ids_),
   PROTOBUF_FIELD_OFFSET(::message::C_Attack, damage_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::message::S_Attack, _internal_metadata_),
@@ -353,30 +354,31 @@ const char descriptor_table_protodef_Message_2eproto[] PROTOBUF_SECTION_VARIABLE
   ".message.ObjectInfo\"\037\n\tS_Despawn\022\022\n\nobje"
   "ct_ids\030\001 \003(\004\"+\n\006C_Move\022!\n\007PosInfo\030\001 \001(\0132"
   "\020.message.PosInfo\"+\n\006S_Move\022!\n\007PosInfo\030\001"
-  " \001(\0132\020.message.PosInfo\"N\n\010C_Attack\022\030\n\020at"
-  "tack_object_id\030\001 \001(\004\022\030\n\020victim_object_id"
-  "\030\002 \001(\004\022\016\n\006damage\030\003 \001(\r\"I\n\010S_Attack\022\021\n\tob"
-  "ject_id\030\001 \001(\004\022\032\n\022victims_object_ids\030\002 \003("
-  "\004\022\016\n\006damage\030\003 \001(\r\"]\n\010C_PickUp\022\021\n\tobject_"
-  "id\030\001 \001(\004\022\030\n\020picked_object_id\030\002 \001(\004\022$\n\tit"
-  "em_info\030\003 \001(\0132\021.message.ItemInfo\"7\n\010S_Pi"
-  "ckUp\022\021\n\tobject_id\030\001 \001(\004\022\030\n\020picked_object"
-  "_id\030\002 \001(\004*\324\002\n\006HEADER\022\010\n\004NONE\020\000\022\r\n\tLOGIN_"
-  "REQ\020\001\022\r\n\tLOGIN_RES\020\002\022\022\n\016ENTER_ROOM_REQ\020\003"
-  "\022\022\n\016ENTER_ROOM_RES\020\004\022\022\n\016LEAVE_ROOM_REQ\020\005"
-  "\022\022\n\016LEAVE_ROOM_RES\020\006\022\022\n\016LEAVE_GAME_REQ\020\007"
-  "\022\022\n\016LEAVE_GAME_RES\020\010\022\024\n\020PLAYER_SPAWN_RES"
-  "\020\t\022\026\n\022PLAYER_DESPAWN_RES\020\n\022\023\n\017PLAYER_CHA"
-  "T_REQ\020\013\022\017\n\013PLAYERT_RES\020\014\022\023\n\017PLAYER_MOVE_"
-  "REQ\020\r\022\023\n\017PLAYER_MOVE_RES\020\016\022\025\n\021PLAYER_ATT"
-  "ACK_REQ\020\017\022\025\n\021PLAYER_ATTACK_RES\020\020b\006proto3"
+  " \001(\0132\020.message.PosInfo\"O\n\010C_Attack\022\030\n\020at"
+  "tack_object_id\030\001 \001(\004\022\031\n\021victim_object_id"
+  "s\030\002 \003(\004\022\016\n\006damage\030\003 \001(\002\"I\n\010S_Attack\022\021\n\to"
+  "bject_id\030\001 \001(\004\022\032\n\022victims_object_ids\030\002 \003"
+  "(\004\022\016\n\006damage\030\003 \001(\002\"]\n\010C_PickUp\022\021\n\tobject"
+  "_id\030\001 \001(\004\022\030\n\020picked_object_id\030\002 \001(\004\022$\n\ti"
+  "tem_info\030\003 \001(\0132\021.message.ItemInfo\"7\n\010S_P"
+  "ickUp\022\021\n\tobject_id\030\001 \001(\004\022\030\n\020picked_objec"
+  "t_id\030\002 \001(\004*\324\002\n\006HEADER\022\010\n\004NONE\020\000\022\r\n\tLOGIN"
+  "_REQ\020\001\022\r\n\tLOGIN_RES\020\002\022\022\n\016ENTER_ROOM_REQ\020"
+  "\003\022\022\n\016ENTER_ROOM_RES\020\004\022\022\n\016LEAVE_ROOM_REQ\020"
+  "\005\022\022\n\016LEAVE_ROOM_RES\020\006\022\022\n\016LEAVE_GAME_REQ\020"
+  "\007\022\022\n\016LEAVE_GAME_RES\020\010\022\024\n\020PLAYER_SPAWN_RE"
+  "S\020\t\022\026\n\022PLAYER_DESPAWN_RES\020\n\022\023\n\017PLAYER_CH"
+  "AT_REQ\020\013\022\017\n\013PLAYERT_RES\020\014\022\023\n\017PLAYER_MOVE"
+  "_REQ\020\r\022\023\n\017PLAYER_MOVE_RES\020\016\022\025\n\021PLAYER_AT"
+  "TACK_REQ\020\017\022\025\n\021PLAYER_ATTACK_RES\020\020b\006proto"
+  "3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_Message_2eproto_deps[1] = {
   &::descriptor_table_Struct_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_Message_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Message_2eproto = {
-    false, false, 1080, descriptor_table_protodef_Message_2eproto,
+    false, false, 1081, descriptor_table_protodef_Message_2eproto,
     "Message.proto",
     &descriptor_table_Message_2eproto_once, descriptor_table_Message_2eproto_deps, 1, 14,
     schemas, file_default_instances, TableStruct_Message_2eproto::offsets,
@@ -1899,12 +1901,14 @@ class C_Attack::_Internal {
 
 C_Attack::C_Attack(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned),
+  victim_object_ids_(arena) {
   SharedCtor();
   // @@protoc_insertion_point(arena_constructor:message.C_Attack)
 }
 C_Attack::C_Attack(const C_Attack& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      victim_object_ids_(from.victim_object_ids_) {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&attack_object_id_, &from.attack_object_id_,
     static_cast<size_t>(reinterpret_cast<char*>(&damage_) -
@@ -1942,6 +1946,7 @@ void C_Attack::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  victim_object_ids_.Clear();
   ::memset(&attack_object_id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&damage_) -
       reinterpret_cast<char*>(&attack_object_id_)) + sizeof(damage_));
@@ -1962,19 +1967,22 @@ const char* C_Attack::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx)
         } else
           goto handle_unusual;
         continue;
-      // uint64 victim_object_id = 2;
+      // repeated uint64 victim_object_ids = 2;
       case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
-          victim_object_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedUInt64Parser(_internal_mutable_victim_object_ids(), ptr, ctx);
+          CHK_(ptr);
+        } else if (static_cast<uint8_t>(tag) == 16) {
+          _internal_add_victim_object_ids(::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr));
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // uint32 damage = 3;
+      // float damage = 3;
       case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
-          damage_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          damage_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
@@ -2013,16 +2021,23 @@ uint8_t* C_Attack::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteUInt64ToArray(1, this->_internal_attack_object_id(), target);
   }
 
-  // uint64 victim_object_id = 2;
-  if (this->_internal_victim_object_id() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(2, this->_internal_victim_object_id(), target);
+  // repeated uint64 victim_object_ids = 2;
+  {
+    int byte_size = _victim_object_ids_cached_byte_size_.load(std::memory_order_relaxed);
+    if (byte_size > 0) {
+      target = stream->WriteUInt64Packed(
+          2, _internal_victim_object_ids(), byte_size, target);
+    }
   }
 
-  // uint32 damage = 3;
-  if (this->_internal_damage() != 0) {
+  // float damage = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_damage = this->_internal_damage();
+  uint32_t raw_damage;
+  memcpy(&raw_damage, &tmp_damage, sizeof(tmp_damage));
+  if (raw_damage != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(3, this->_internal_damage(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_damage(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2041,19 +2056,32 @@ size_t C_Attack::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  // repeated uint64 victim_object_ids = 2;
+  {
+    size_t data_size = ::_pbi::WireFormatLite::
+      UInt64Size(this->victim_object_ids_);
+    if (data_size > 0) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
+    }
+    int cached_size = ::_pbi::ToCachedSize(data_size);
+    _victim_object_ids_cached_byte_size_.store(cached_size,
+                                    std::memory_order_relaxed);
+    total_size += data_size;
+  }
+
   // uint64 attack_object_id = 1;
   if (this->_internal_attack_object_id() != 0) {
     total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_attack_object_id());
   }
 
-  // uint64 victim_object_id = 2;
-  if (this->_internal_victim_object_id() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_victim_object_id());
-  }
-
-  // uint32 damage = 3;
-  if (this->_internal_damage() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_damage());
+  // float damage = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_damage = this->_internal_damage();
+  uint32_t raw_damage;
+  memcpy(&raw_damage, &tmp_damage, sizeof(tmp_damage));
+  if (raw_damage != 0) {
+    total_size += 1 + 4;
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
@@ -2078,13 +2106,15 @@ void C_Attack::MergeFrom(const C_Attack& from) {
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
+  victim_object_ids_.MergeFrom(from.victim_object_ids_);
   if (from._internal_attack_object_id() != 0) {
     _internal_set_attack_object_id(from._internal_attack_object_id());
   }
-  if (from._internal_victim_object_id() != 0) {
-    _internal_set_victim_object_id(from._internal_victim_object_id());
-  }
-  if (from._internal_damage() != 0) {
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_damage = from._internal_damage();
+  uint32_t raw_damage;
+  memcpy(&raw_damage, &tmp_damage, sizeof(tmp_damage));
+  if (raw_damage != 0) {
     _internal_set_damage(from._internal_damage());
   }
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -2104,6 +2134,7 @@ bool C_Attack::IsInitialized() const {
 void C_Attack::InternalSwap(C_Attack* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  victim_object_ids_.InternalSwap(&other->victim_object_ids_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
       PROTOBUF_FIELD_OFFSET(C_Attack, damage_)
       + sizeof(C_Attack::damage_)
@@ -2203,11 +2234,11 @@ const char* S_Attack::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx)
         } else
           goto handle_unusual;
         continue;
-      // uint32 damage = 3;
+      // float damage = 3;
       case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
-          damage_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
-          CHK_(ptr);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          damage_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
         } else
           goto handle_unusual;
         continue;
@@ -2255,10 +2286,14 @@ uint8_t* S_Attack::_InternalSerialize(
     }
   }
 
-  // uint32 damage = 3;
-  if (this->_internal_damage() != 0) {
+  // float damage = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_damage = this->_internal_damage();
+  uint32_t raw_damage;
+  memcpy(&raw_damage, &tmp_damage, sizeof(tmp_damage));
+  if (raw_damage != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(3, this->_internal_damage(), target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_damage(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2296,9 +2331,13 @@ size_t S_Attack::ByteSizeLong() const {
     total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_object_id());
   }
 
-  // uint32 damage = 3;
-  if (this->_internal_damage() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_damage());
+  // float damage = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_damage = this->_internal_damage();
+  uint32_t raw_damage;
+  memcpy(&raw_damage, &tmp_damage, sizeof(tmp_damage));
+  if (raw_damage != 0) {
+    total_size += 1 + 4;
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
@@ -2327,7 +2366,11 @@ void S_Attack::MergeFrom(const S_Attack& from) {
   if (from._internal_object_id() != 0) {
     _internal_set_object_id(from._internal_object_id());
   }
-  if (from._internal_damage() != 0) {
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_damage = from._internal_damage();
+  uint32_t raw_damage;
+  memcpy(&raw_damage, &tmp_damage, sizeof(tmp_damage));
+  if (raw_damage != 0) {
     _internal_set_damage(from._internal_damage());
   }
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);

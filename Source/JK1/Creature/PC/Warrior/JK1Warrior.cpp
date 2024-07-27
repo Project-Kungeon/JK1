@@ -13,6 +13,7 @@
 #include "Particles/ParticleSystemComponent.h"
 
 AJK1Warrior::AJK1Warrior()
+	: Super()
 {
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> DefaultMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonGreystone/Characters/Heroes/Greystone/Meshes/Greystone.Greystone'"));
 	if (nullptr != DefaultMesh.Object)
@@ -100,17 +101,18 @@ void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 	Super::SkillLShift(value);
 }
 
-void AJK1Warrior::CheckWeaponTrace()
+TArray<FHitResult> AJK1Warrior::CheckWeaponTrace()
 {
+	TArray<FHitResult> HitResults;
 	if (!bWeaponActive)
-		return;
+		return HitResults;
 
 	FVector Start = GetMesh()->GetSocketLocation(FName(TEXT("FX_Sword_Bottom")));
 	FVector End = GetMesh()->GetSocketLocation(FName(TEXT("FX_Sword_Top")));
 	FVector Extend = End - Start;
 	const float AttackRadius = 20.f;
 
-	TArray<FHitResult> HitResults;
+	
 	//FHitResult HitResult;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
@@ -172,6 +174,7 @@ void AJK1Warrior::CheckWeaponTrace()
 	);
 
 #endif
+	return HitResults;
 }
 
 void AJK1Warrior::PlayParticleSystem()
