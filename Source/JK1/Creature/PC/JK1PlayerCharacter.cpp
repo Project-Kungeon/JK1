@@ -171,16 +171,18 @@ void AJK1PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 {
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	if(bCanMove)
+	{
+		FVector2D MovementVector = Value.Get<FVector2D>();
 
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator CameraRotation = FollowCamera->GetComponentRotation();
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator CameraRotation = FollowCamera->GetComponentRotation();
 
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-	const FRotator CameraYawRotation(0, CameraRotation.Yaw, 0);
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		const FRotator CameraYawRotation(0, CameraRotation.Yaw, 0);
 
-	const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 	AddMovementInput(ForwardDirection, MovementVector.X);
 	AddMovementInput(RightDirection, MovementVector.Y);
@@ -224,6 +226,8 @@ void AJK1PlayerCharacter::Attack()
 
 void AJK1PlayerCharacter::ComboActionBegin()
 {
+	UE_LOG(LogTemp, Log, TEXT("Save Attack : %d, CurrentCombo: %d"), SaveAttacking, CurrentCombo);
+
 	if (SaveAttacking && CurrentCombo)
 	{
 		SaveAttacking = false;

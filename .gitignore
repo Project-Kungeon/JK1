@@ -47,6 +47,7 @@ SourceArt/**/*.tga
 Content/ParagonGreyStone
 Content/ParagonSparrow
 Content/ParagonKallari
+Content/ParagonTerra
 
 # Binary Files
 Binaries/*

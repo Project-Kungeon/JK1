@@ -10,6 +10,9 @@
 #include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
+/*-------------------------
+* 현재 화살이 폰 캡슐의 밑부분에 닿으면 폰이 날라가는 버그가 있음.
+-------------------------*/
 AJK1Arrow::AJK1Arrow()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -47,7 +50,7 @@ AJK1Arrow::AJK1Arrow()
 
 	Box->OnComponentBeginOverlap.AddDynamic(this, &AJK1Arrow::OnComponentOverlapBegin);
 
-	this->InitialLifeSpan = 1.f;
+	this->InitialLifeSpan = 3.f;
 }
 
 // Called when the game starts or when spawned
@@ -61,13 +64,15 @@ void AJK1Arrow::OnComponentOverlapBegin(UPrimitiveComponent* OverlappedComponent
 {
 	if (OtherActor != this)
 	{
+		Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 		UE_LOG(LogTemp, Log, TEXT("other actor name is % s"), *OtherActor->GetActorNameOrLabel());
+
 		ProjectileMovement->StopMovementImmediately();
 		ProjectileMovement->ProjectileGravityScale = 0.f;
 
 		FAttachmentTransformRules AttachmentRules(EAttachmentRule::KeepWorld, true);
 		this->AttachToActor(OtherActor, AttachmentRules);
-		Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, Box->GetComponentLocation());
 
 		//Hit Action In here

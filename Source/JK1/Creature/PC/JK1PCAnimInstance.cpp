@@ -51,6 +51,6 @@ void UJK1PCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	// Set is Acceleraing
 	IsAccelerating = MovementComponent->GetCurrentAcceleration().Length() > 0;
 
-	// Set IsFullBody
-	FullBody = GetCurveValue("FUllBody") > 0;
+	// Set IsFullBody 
+	FullBody = GetCurveValue("FullBody") > 0;
 }

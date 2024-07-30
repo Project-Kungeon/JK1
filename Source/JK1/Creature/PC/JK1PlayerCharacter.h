@@ -73,6 +73,10 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bWeaponActive;
 
+	/* Ÿ�ֿ̹� �°� �Է��ϴ� �и����� ���� */
+	UPROPERTY(BlueprintReadWrite)
+	bool bParryActive = false;
+
 	UPROPERTY()
 	TSet<AActor*> WeaponAttackTargets;
 	FName path;
@@ -83,6 +87,10 @@ public:
 	uint8 IsAttacking : 1;
 	uint8 SaveAttacking : 1;
 	int32 MaxCombo;
+
+	// boolean type bCanMove
+	/* Enhanced Input 키 막는거 알아보기 */
+	bool bCanMove = true;
 
 public:
 	bool isMyPlayer = false;
@@ -124,4 +132,5 @@ protected:
 	// Dirty Flag Test (이동 상태 검사)
 	FVector2D LastDesiredInput;
 	// ======================
+
 };

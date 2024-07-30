@@ -5,6 +5,8 @@
 #include "JK1/Physics/JK1Collision.h"
 #include "../../JK1CreatureStatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Animation/AnimMontage.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -28,6 +30,10 @@ AJK1Archor::AJK1Archor()
 	//이렇게 해야 애니메이션이 두번 동작 안함
 	GetCharacterMovement()->JumpZVelocity = 400.f;
 	GetCharacterMovement()->AirControl = 1.f;
+
+	//Camera Offset 처리
+	CameraBoom->SocketOffset = FVector(0.f, 120.f, 75.f);
+	
 
 	CreatureStat->SetOwner(true, FName("Archor"));
 }
@@ -117,12 +123,12 @@ void AJK1Archor::Shoot()
 		/*ArrowSpawnLocation = ShootPoint;
 		ArrowSpawnRotation = (ImpactPoint - ArrowSpawnLocation).Rotation();*/
 		ArrowSpawnRotation = (ImpactPoint - CrosshairWorldLocation).Rotation();
+		GetWorld()->SpawnActor<AActor>(ObjectToSpawn->GeneratedClass, CrosshairWorldLocation, ArrowSpawnRotation, SpawnParams);
 	}
 
 	//화살 생성
 	UE_LOG(LogArchor, Log, TEXT("%d %d %d"), )
 	//GetWorld()->SpawnActor<AActor>(ObjectToSpawn->GeneratedClass, ArrowSpawnLocation, ArrowSpawnRotation, SpawnParams);
-	GetWorld()->SpawnActor<AActor>(ObjectToSpawn->GeneratedClass, CrosshairWorldLocation, ArrowSpawnRotation, SpawnParams);
 
 #if ENABLE_DRAW_DEBUG
 	FVector Direction = ImpactPoint - CrosshairWorldLocation;
