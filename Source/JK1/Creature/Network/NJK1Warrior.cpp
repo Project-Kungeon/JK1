@@ -40,7 +40,7 @@ void ANJK1Warrior::BeginPlay()
 
 void ANJK1Warrior::Tick(float DeltaTime)
 {
-	// Super::Tick(DeltaTime);
+	AJK1PlayerCharacter::Tick(DeltaTime);
 	TArray<FHitResult> hits;
 	if (bWeaponActive)
 		hits = CheckWeaponTrace();

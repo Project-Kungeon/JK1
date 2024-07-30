@@ -103,7 +103,8 @@ void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 
 TArray<FHitResult> AJK1Warrior::CheckWeaponTrace()
 {
-	TArray<FHitResult> HitResults;
+	TArray<FHitResult> HitResults;		// 트레이싱 중인 피격자 리스트
+	TArray<FHitResult> ValidHitResults;	// 중복 처리된 피격자 리스트(would be returned)
 	if (!bWeaponActive)
 		return HitResults;
 
@@ -128,7 +129,7 @@ TArray<FHitResult> AJK1Warrior::CheckWeaponTrace()
 		Params
 	);
 
-	if (bSuccess)
+	if (bSuccess && isMyPlayer)
 	{
 		FDamageEvent DamageEvent;
 
@@ -145,7 +146,8 @@ TArray<FHitResult> AJK1Warrior::CheckWeaponTrace()
 				if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(Actor))
 				{
 					// Server Code need
-					HitPawn->CreatureStat->HitDamage(1.0f);
+					// HitPawn->CreatureStat->HitDamage(1.0f);
+					ValidHitResults.Add(HitResult);
 					UE_LOG(LogWarrior, Log, TEXT("Hit target: %s"), *Actor->GetName());
 				}
 
@@ -174,7 +176,7 @@ TArray<FHitResult> AJK1Warrior::CheckWeaponTrace()
 	);
 
 #endif
-	return HitResults;
+	return ValidHitResults;
 }
 
 void AJK1Warrior::PlayParticleSystem()

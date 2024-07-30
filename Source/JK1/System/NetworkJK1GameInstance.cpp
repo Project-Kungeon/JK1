@@ -92,8 +92,12 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::ObjectInfo& info, bool 
 		AsyncTask(ENamedThreads::GameThread, [isMyPlayer, this, info, World, SpawnLocation]()
 			{
 				auto* a = World->SpawnActor(OtherPlayerClass, &SpawnLocation);
+				message::CreatureInfo CreatureInfo;
+				CreatureInfo.set_object_id(info.object_id());
+				CreatureInfo.set_creature_type(message::CREATURE_TYPE_NONE);
 
 				auto* Player = Cast<AJK1PlayerCharacter>(a);
+				Player->CreatureStat->SetCreatureInfo(CreatureInfo);
 				Player->SetPlayerInfo(info.pos_info());
 				Players.Add(info.object_id(), Player);
 			});
@@ -143,5 +147,13 @@ void UNetworkJK1GameInstance::HandleMove(const message::S_Move& movePkt)
 
 void UNetworkJK1GameInstance::HandleAttack(const message::S_Attack& attackPkt)
 {
-
+	const uint64 objectId = attackPkt.object_id();
+	const float damage = attackPkt.damage(
+	for (auto& victimId : attackPkt.victims_object_ids())
+	{
+		auto** FindActor = Players.Find(victimId);
+		auto* Victim = (*FindActor);
+		Victim->CreatureStat->HitDamage(damage);
+		UE_LOG(LogTemp, Log, TEXT("%lld attacked by %lld Damage: %f", victimId, objectId, damage));
+	}
 }
