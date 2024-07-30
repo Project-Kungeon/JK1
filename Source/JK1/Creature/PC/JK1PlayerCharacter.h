@@ -71,6 +71,10 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bWeaponActive;
 
+	/* 타이밍에 맞게 입력하는 패링으로 수정 */
+	UPROPERTY(BlueprintReadWrite)
+	bool bParryActive = false;
+
 	UPROPERTY()
 	TSet<AActor*> WeaponAttackTargets;
 	FName path;
@@ -81,5 +85,9 @@ public:
 	uint8 IsAttacking : 1;
 	uint8 SaveAttacking : 1;
 	int32 MaxCombo;
+
+	// boolean type bCanMove
+	/* Enhanced Input 키 막는거 알아보기 */
+	bool bCanMove = true;
 	
 };

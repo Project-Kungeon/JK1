@@ -13,6 +13,8 @@ void UJK1PCAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimS
 	if (AJK1PlayerCharacter* PlayerCharacter = Cast<AJK1PlayerCharacter>(MeshComp->GetOwner()))
 	{
 		PlayerCharacter->bWeaponActive = true;
+		/* 작업 이후 해당 부분 삭제*/
+		UE_LOG(LogTemp, Log, TEXT("bWeaponActive true"));
 	}
 }
 
