@@ -1,7 +1,8 @@
 // Copyright 2024 All Rights Reserved by J&K
 
-
 #include "JK1PlayerCharacter.h"
+#include "InputActionValue.h"
+#include "CoreMinimal.h"
 #include "JK1/Physics/JK1Collision.h"
 #include "Creature/JK1CreatureStatComponent.h"
 #include "JK1/Controller/Player/JK1PlayerController.h"
@@ -171,7 +172,7 @@ void AJK1PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 {
-	if(bCanMove)
+	if (isMyPlayer && bCanMove)
 	{
 		FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -183,12 +184,9 @@ void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 
 		const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		AddMovementInput(ForwardDirection, MovementVector.X);
+		AddMovementInput(RightDirection, MovementVector.Y);
 
-	AddMovementInput(ForwardDirection, MovementVector.X);
-	AddMovementInput(RightDirection, MovementVector.Y);
-
-	if (isMyPlayer)
-	{
 		DesiredInput = MovementVector;
 
 		DesiredMoveDirection = FVector::ZeroVector;

@@ -9,6 +9,8 @@
 #include "NetworkJK1GameInstance.generated.h"
 
 class AJK1PlayerCharacter;
+class AJK1Warrior;
+class AJK1Archor;
 /**
  * 
  */
@@ -28,7 +30,9 @@ public:
 	void SendPacket(asio::mutable_buffer& buffer);
 
 	// 플레이어 소환(내 플레이어일 경우, Controller 부착)
-	void HandleSpawn(const message::ObjectInfo& info, bool isMyPlayer);
+	void HandleSpawn(const message::ObjectInfo& info);
+	void HandleSpawn(const message::CreatureInfo& info);
+	void HandleSpawn(const message::PlayerInfo& info, bool isMyPlayer);
 	// 서버로부터 스폰 요청이 들어올 경우
 	void HandleSpawn(message::S_Spawn& SpawnPkt);
 	// 게임 접속 후, 내 플레이어 스폰
@@ -39,12 +43,22 @@ public:
 
 	void HandleAttack(const message::S_Attack& attackPkt);
 
+	void HandleWarriorAttack(const skill::S_Warrior_Attack& pkt);
+	void HandleWarriorE(const skill::S_Warrior_E& skillPkt);
+	void HandleWarriorR(const skill::S_Warrior_R& skillPkt);
+
 private:
 	PacketSessionRef GameSession;
 
 public:
 	UPROPERTY(EditAnywhere);
 	TSubclassOf<AJK1PlayerCharacter> OtherPlayerClass;
+
+	UPROPERTY(EditAnywhere);
+	TSubclassOf<AJK1Warrior> WarriorClass;
+
+	UPROPERTY(EditAnywhere);
+	TSubclassOf<AJK1Archor> ArchorClass;
 
 	TMap<uint64, AJK1PlayerCharacter*> Players;
 	AJK1PlayerCharacter* MyPlayer;

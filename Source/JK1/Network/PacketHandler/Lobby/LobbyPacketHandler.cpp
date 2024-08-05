@@ -11,7 +11,11 @@ bool LobbyPacketHandler::Handle_S_Login(PacketSessionRef& session, message::S_Lo
 
     // 방 입장 요청
     message::C_EnterRoom EnterRoomPkt;
-    EnterRoomPkt.set_playerindex(0);
+
+    // TODO : 임시용으로 워리어만
+    // 로비 맵 만들어지면 이곳을 동적으로!
+    
+    EnterRoomPkt.set_player_type(message::PLAYER_TYPE_WARRIOR);
 
  /*   const size_t requiredSize = PacketUtil::RequiredSize(pkt);									
     char* rawBuffer = new char[requiredSize];													

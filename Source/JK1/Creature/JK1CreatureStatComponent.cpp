@@ -16,7 +16,6 @@ UJK1CreatureStatComponent::UJK1CreatureStatComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
 
-	ObjectInfo = new message::ObjectInfo();
 	CreatureInfo = new message::CreatureInfo();
 }
 
@@ -133,16 +132,9 @@ void UJK1CreatureStatComponent::HitDamage(float NewDamage)
 	UE_LOG(LogSystem, Log, TEXT("Hit Damage: %f"), NewDamage);
 }
 
-void UJK1CreatureStatComponent::SetObjectInfo(message::ObjectInfo Info)
-{
-	if (ObjectInfo->object_id() != 0)
-		return;
-	ObjectInfo->CopyFrom(Info);
-}
-
 void UJK1CreatureStatComponent::SetCreatureInfo(message::CreatureInfo Info)
 {
-	if (CreatureInfo->object_id() != 0)
+	if (CreatureInfo->object_info().object_id() != 0)
 		return;
 	CreatureInfo->CopyFrom(Info);
 }

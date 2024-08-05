@@ -37,5 +37,20 @@ void ClientPacketHandler::Init()
         UE_LOG(LogTemp, Log, TEXT("S_Attack Handle"));
         return HandlePacket<message::S_Attack>(BattlePacketHandler::Handle_S_Attack, session, buffer, header, offset);
     };
+    GPacketHandler[message::HEADER::WARRIOR_ATTACK_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_WarriorAttack Handle"));
+        return HandlePacket<skill::S_Warrior_Attack>(BattlePacketHandler::Handle_S_WarriorAttack, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::WARRIOR_E_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_WarriorE Handle"));
+        return HandlePacket<skill::S_Warrior_E>(BattlePacketHandler::Handle_S_WarriorE, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::WARRIOR_R_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_WarriorR Handle"));
+        return HandlePacket<skill::S_Warrior_R>(BattlePacketHandler::Handle_S_WarriorR, session, buffer, header, offset);
+    };
 
 }

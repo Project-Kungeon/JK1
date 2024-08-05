@@ -47,6 +47,13 @@ public:
 	virtual void SkillR(const FInputActionValue& value) override;
 	virtual void SkillLShift(const FInputActionValue& value) override;
 
+	// Warrior
+	void WarriorQ();
+	void WarriorE();
+	void WarriorR();
+	void WarriorLShift();
+
+
 	//refactoring
 	UFUNCTION()
 	TArray<FHitResult> CheckWeaponTrace();

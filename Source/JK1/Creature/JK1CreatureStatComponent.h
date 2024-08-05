@@ -44,9 +44,7 @@ public:
 	 * Network Function 
 	 */
 public:
-	void SetObjectInfo(message::ObjectInfo Info);
 	void SetCreatureInfo(message::CreatureInfo Info);
-	message::ObjectInfo* GetObjectInfo() { return this->ObjectInfo; }
 	message::CreatureInfo* GetCreatureInfo() { return this->CreatureInfo; }
 
 public:
@@ -59,7 +57,6 @@ private:
 	bool IsPlayer;
 	struct FJK1CreatureData* BasicStatData;
 
-	message::ObjectInfo* ObjectInfo;
 	message::CreatureInfo* CreatureInfo;
 
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))

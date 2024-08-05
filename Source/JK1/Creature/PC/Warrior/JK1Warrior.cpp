@@ -110,13 +110,34 @@ void AJK1Warrior::ComboActionEnd()
 void AJK1Warrior::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
+	WarriorQ();
 	UE_LOG(LogWarrior, Log, TEXT("This is %s"), *this->GetName());
 }
 
 void AJK1Warrior::SkillE(const FInputActionValue& value)
 {
 	Super::SkillE(value);
+	WarriorE();
+}
 
+void AJK1Warrior::SkillR(const FInputActionValue& value)
+{
+	Super::SkillR(value);
+	WarriorR();
+}
+
+void AJK1Warrior::SkillLShift(const FInputActionValue& value)
+{
+	Super::SkillLShift(value);
+	WarriorLShift();
+}
+
+void AJK1Warrior::WarriorQ()
+{
+}
+
+void AJK1Warrior::WarriorE()
+{
 	if (bCanUseSkill && !bWeaponActive && !AnimInstance->Montage_IsPlaying(CurrentMontage))
 	{
 		bCanUseSkill = false;
@@ -136,18 +157,17 @@ void AJK1Warrior::SkillE(const FInputActionValue& value)
 	}
 }
 
-void AJK1Warrior::SkillR(const FInputActionValue& value)
+void AJK1Warrior::WarriorR()
 {
-	Super::SkillR(value);
 	if (AnimInstance && AnimInstance->Montage_IsPlaying(CurrentMontage))
 	{
 		return;
 	}
-	else 
+	else
 	{
 		/*--------------------
 		SetTimer 델리게이트 사용해서 연속해서 사용되는 문제 해결
-	    --------------------*/
+		--------------------*/
 		if (bCanUseSkill && !bWeaponActive)
 		{
 			IsAttacking = false;
@@ -161,12 +181,10 @@ void AJK1Warrior::SkillR(const FInputActionValue& value)
 			StartROverTime();
 		}
 	}
-	
 }
 
-void AJK1Warrior::SkillLShift(const FInputActionValue& value)
+void AJK1Warrior::WarriorLShift()
 {
-	Super::SkillLShift(value);
 	if (AnimInstance && AnimInstance->Montage_IsPlaying(CurrentMontage))
 		return;
 	else
@@ -178,11 +196,11 @@ void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 
 		CurrentMontage = SkillLShiftMontage;
 		PlayAnimMontage(SkillLShiftMontage);
-		
+
 		// CurrentMontage->GetPlayLength() : 1.8777777
 		FTimerHandle TimerHandle;
 		GetWorldTimerManager().SetTimer(TimerHandle, this, &AJK1Warrior::ResetSkillLShift, DashDuration, false);
-	} 
+	}
 }
 
 TArray<FHitResult> AJK1Warrior::CheckWeaponTrace()
@@ -360,31 +378,35 @@ void AJK1Warrior::PlayParticleSystem()
 	FTimerHandle TimerHandle;
 	//timer
 	const float Duration = 5.f;
+	AsyncTask(ENamedThreads::GameThread, [this]()
+		{
+			ParticleSystemComponent = UGameplayStatics::SpawnEmitterAttached(
+				SkillREffect,
+				GetMesh(),
+				TEXT("NONE"),
+				FVector::ZeroVector,
+				FRotator::ZeroRotator,
+				EAttachLocation::KeepRelativeOffset,
+				false
+			);
+			if (ParticleSystemComponent)
+			{
+				// 파티클 시스템 재생
+				ParticleSystemComponent->Activate(true);
 
-	ParticleSystemComponent = UGameplayStatics::SpawnEmitterAttached(
-		SkillREffect,
-		GetMesh(),
-		TEXT("NONE"),
-		FVector::ZeroVector,
-		FRotator::ZeroRotator,
-		EAttachLocation::KeepRelativeOffset,
+				// 일정 시간 후에 파티클 시스템 제거를 위한 타이머 설정
+				
+			}
+		}
+	);
+	GetWorldTimerManager().SetTimer(
+		TimerHandle,
+		this,
+		&AJK1Warrior::StopParticleSystem,
+		Duration,
 		false
 	);
-
-	if (ParticleSystemComponent)
-	{
-		// 파티클 시스템 재생
-		ParticleSystemComponent->Activate(true);
-
-		// 일정 시간 후에 파티클 시스템 제거를 위한 타이머 설정
-		GetWorldTimerManager().SetTimer(
-			TimerHandle,
-			this,
-			&AJK1Warrior::StopParticleSystem,
-			Duration,
-			false
-		);
-	}
+	
 }
 
 void AJK1Warrior::DealDamageOverTime()

@@ -52,16 +52,26 @@ void ANJK1Warrior::Tick(float DeltaTime)
 			AActor* actor = hit.GetActor();
 			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
 			{
-				uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_id();
-				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_id();
+				uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
 
 				message::C_Attack pkt;
-				pkt.set_attack_object_id(my_id);
-				pkt.add_victim_object_ids(target_id);
+				pkt.set_object_id(my_id);
+				pkt.add_target_ids(target_id);
 				pkt.set_damage(1.f);
 
 				SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
 			}
+		}
+	}
+
+	if (isMyPlayer)
+	{
+		/*----- 다른 방안 알아보기 -----*/
+		if (!DashVelocity.IsZero())
+		{
+			FVector NewLocation = GetActorLocation() + (DashVelocity * DeltaTime);
+			SetActorLocation(NewLocation);
 		}
 	}
 }
@@ -94,6 +104,14 @@ void ANJK1Warrior::Look(const FInputActionValue& Value)
 void ANJK1Warrior::Attack()
 {
 	Super::Attack();
+	if (isMyPlayer)
+	{
+		skill::C_Warrior_Attack attcakPkt;
+		attcakPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
+
+		SEND_PACKET(message::HEADER::WARRIOR_ATTACK_REQ, attcakPkt);
+	}
+	
 }
 
 void ANJK1Warrior::ComboActionBegin()
@@ -119,11 +137,25 @@ void ANJK1Warrior::SkillQ(const FInputActionValue& Value)
 void ANJK1Warrior::SkillE(const FInputActionValue& Value)
 {
 	Super::SkillE(Value);
+	if (isMyPlayer)
+	{
+		skill::C_Warrior_E skillPkt;
+		skillPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
+
+		SEND_PACKET(message::HEADER::WARRIOR_E_REQ, skillPkt);
+	}
 }
 
 void ANJK1Warrior::SkillR(const FInputActionValue& Value)
 {
 	Super::SkillR(Value);
+	if (isMyPlayer)
+	{
+		skill::C_Warrior_R skillPkt;
+		skillPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
+
+		SEND_PACKET(message::HEADER::WARRIOR_R_REQ, skillPkt);
+	}
 }
 
 void ANJK1Warrior::SkillLShift(const FInputActionValue& Value)

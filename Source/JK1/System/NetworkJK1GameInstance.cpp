@@ -3,6 +3,8 @@
 
 #include "System/NetworkJK1GameInstance.h"
 #include "Creature/PC/JK1PlayerCharacter.h"
+#include "Creature/PC/Warrior/JK1Warrior.h"
+#include "Creature/PC/Archor/JK1Archor.h"
 #include "Creature/JK1CreatureStatComponent.h"
 
 void UNetworkJK1GameInstance::Init()
@@ -42,7 +44,17 @@ void UNetworkJK1GameInstance::SendPacket(asio::mutable_buffer& buffer)
 	GameSession->SendPacket(buffer);
 }
 
-void UNetworkJK1GameInstance::HandleSpawn(const message::ObjectInfo& info, bool isMyPlayer)
+void UNetworkJK1GameInstance::HandleSpawn(const message::ObjectInfo& info)
+{
+	// Empty
+}
+
+void UNetworkJK1GameInstance::HandleSpawn(const message::CreatureInfo& info)
+{
+	// Empty
+}
+
+void UNetworkJK1GameInstance::HandleSpawn(const message::PlayerInfo& info, bool isMyPlayer)
 {
 	// 세션이 죽은 상태라면 패스
 	if (GameSession == nullptr)
@@ -53,14 +65,17 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::ObjectInfo& info, bool 
 	if (World == nullptr)
 		return;
 
-	const uint64 ObjectId = info.object_id();
+	const uint64 ObjectId = info.creature_info().object_info().object_id();
 
 	// 스폰시키려는 플레이어가 이미 존재하면 패스
 	if (Players.Find(ObjectId) != nullptr)
 		return;
 
 	// 스폰위치 설정(위치는 서버가 정해준다)
-	FVector SpawnLocation(info.pos_info().x(), info.pos_info().y(), info.pos_info().z());
+	FVector SpawnLocation(
+		info.creature_info().object_info().pos_info().x(), 
+		info.creature_info().object_info().pos_info().y(), 
+		info.creature_info().object_info().pos_info().z());
 
 	// 만약 내 플레이어라면, 필요한 컴포넌트를 달아준다.
 	if (isMyPlayer)
@@ -68,20 +83,30 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::ObjectInfo& info, bool 
 		AsyncTask(ENamedThreads::GameThread, [isMyPlayer, this, info, World, SpawnLocation]()
 			{
 				auto* PC = UGameplayStatics::GetPlayerController(this, 0);
-				auto* Player = Cast<AJK1PlayerCharacter>(PC->GetPawn());
-				Player->isMyPlayer = true;
+				AJK1PlayerCharacter* Player;
+				switch (info.player_type())
+				{
+				case message::PLAYER_TYPE_WARRIOR:
+					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(WarriorClass, &SpawnLocation));
+					break;
+				default:
+					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(OtherPlayerClass, &SpawnLocation));
+					break;
+
+				}
 				if (Player == nullptr)
 					return;
-				// TODO : 나중에 초기 정보 던져주도록 설정해야 함.
-				message::CreatureInfo CreatureInfo;
-				CreatureInfo.set_object_id(info.object_id());
-				CreatureInfo.set_creature_type(message::CREATURE_TYPE_NONE);
-				Player->CreatureStat->SetCreatureInfo(CreatureInfo);
+				//auto* Player = Cast<AJK1PlayerCharacter>(PC->GetPawn());
 
-				Player->SetPlayerInfo(info.pos_info());
+				PC->Possess(Player);
+				Player->isMyPlayer = true;
+				
+				// TODO : 나중에 초기 정보 던져주도록 설정해야 함.
+				Player->CreatureStat->SetCreatureInfo(info.creature_info());
+				Player->SetPlayerInfo(info.creature_info().object_info().pos_info());
 
 				MyPlayer = Player;
-				Players.Add(info.object_id(), Player);
+				Players.Add(info.creature_info().object_info().object_id(), Player);
 
 				Cast<AJK1PlayerCharacter>(Player)->isConnected = true;
 			});
@@ -91,21 +116,23 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::ObjectInfo& info, bool 
 	{
 		AsyncTask(ENamedThreads::GameThread, [isMyPlayer, this, info, World, SpawnLocation]()
 			{
-				auto* a = World->SpawnActor(OtherPlayerClass, &SpawnLocation);
-				message::CreatureInfo CreatureInfo;
-				CreatureInfo.set_object_id(info.object_id());
-				CreatureInfo.set_creature_type(message::CREATURE_TYPE_NONE);
+				AJK1PlayerCharacter* Player;
+				switch (info.player_type())
+				{
+				case message::PLAYER_TYPE_WARRIOR:
+					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(WarriorClass, &SpawnLocation));
+					break;
+				default:
+					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(OtherPlayerClass, &SpawnLocation));
+					break;
 
-				auto* Player = Cast<AJK1PlayerCharacter>(a);
-				Player->CreatureStat->SetCreatureInfo(CreatureInfo);
-				Player->SetPlayerInfo(info.pos_info());
-				Players.Add(info.object_id(), Player);
+				}
+				Player->CreatureStat->SetCreatureInfo(info.creature_info());
+				Player->SetPlayerInfo(info.creature_info().object_info().pos_info());
+
+				Players.Add(info.creature_info().object_info().object_id(), Player);
 			});
 	}
-
-
-	
-	
 }
 
 // 내가 아닌 다른 개체가 스폰되었을 때 동기화해주는 함수
@@ -119,7 +146,7 @@ void UNetworkJK1GameInstance::HandleSpawn(message::S_Spawn& SpawnPkt)
 
 void UNetworkJK1GameInstance::HandleSpawn(message::S_EnterRoom& EnterRoomPkt)
 {
-	HandleSpawn(EnterRoomPkt.player(), true);
+	HandleSpawn(EnterRoomPkt.player_info(), true);
 }
 
 void UNetworkJK1GameInstance::HandleMove(const message::S_Move& movePkt)
@@ -148,12 +175,50 @@ void UNetworkJK1GameInstance::HandleMove(const message::S_Move& movePkt)
 void UNetworkJK1GameInstance::HandleAttack(const message::S_Attack& attackPkt)
 {
 	const uint64 objectId = attackPkt.object_id();
-	const float damage = attackPkt.damage(
-	for (auto& victimId : attackPkt.victims_object_ids())
+	const float damage = attackPkt.damage();
+	
+	if (auto** FindAttacker = Players.Find(objectId))
 	{
-		auto** FindActor = Players.Find(victimId);
-		auto* Victim = (*FindActor);
-		Victim->CreatureStat->HitDamage(damage);
-		UE_LOG(LogTemp, Log, TEXT("%lld attacked by %lld Damage: %f", victimId, objectId, damage));
+		for (auto& victimId : attackPkt.target_ids())
+		{
+			auto** FindActor = Players.Find(victimId);
+			auto* Victim = (*FindActor);
+			Victim->CreatureStat->HitDamage(damage);
+
+			UE_LOG(LogTemp, Log, TEXT("%lld attacked by %lld Damage: %f", victimId, objectId, damage));
+		}
+	}
+}
+
+void UNetworkJK1GameInstance::HandleWarriorAttack(const skill::S_Warrior_Attack& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		Attacker->Attack();
+	}
+	
+}
+
+void UNetworkJK1GameInstance::HandleWarriorE(const skill::S_Warrior_E& skillPkt)
+{
+	const uint64 objectId = skillPkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Warrior = Cast<AJK1Warrior>(Attacker);
+		Warrior->WarriorE();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleWarriorR(const skill::S_Warrior_R& skillPkt)
+{
+	const uint64 objectId = skillPkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Warrior = Cast<AJK1Warrior>(Attacker);
+		Warrior->WarriorR();
 	}
 }
