@@ -143,7 +143,7 @@ void AJK1Warrior::CheckWeaponTrace()
 				if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(Actor))
 				{
 					// Server Code need
-					HitPawn->CreatureStat->HitDamage(1.0f);
+					HitPawn->CreatureStat->HitDamage(1.0f, Controller);
 					UE_LOG(LogWarrior, Log, TEXT("Hit target: %s"), *Actor->GetName());
 				}
 

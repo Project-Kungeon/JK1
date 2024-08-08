@@ -6,6 +6,11 @@
 #include "Components/ActorComponent.h"
 #include "JK1CreatureStatComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHPChangedDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExpChangedDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelUpDelegate);
+
 class AJK1PlayerController;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -17,7 +22,6 @@ public:
 	// Sets default values for this component's properties
 	UJK1CreatureStatComponent();
 	
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -31,17 +35,48 @@ public:
 	*  Member Function
 	*/
 public:
+	// LoadData
 	void SetOwner(bool OwnerType, FName ClassName) { IsPlayer = OwnerType; Name = ClassName; }
 	void LoadData();
-	void SetHP(float NewHP);
+
+	// Battle System
+	void SetCurrentHP(float NewHP);
 	void SetStat(int index, float value);
 	void PlusExp(float Exp);
+	void LevelUP(int level);
+	void HitDamage(float NewDamage, AController* instigator);
 
-	void HitDamage(float NewDamage);
+	// For Widget
+	UFUNCTION(BlueprintCallable)
+	FName GetCharacterName();
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentHP();
+	UFUNCTION(BlueprintCallable)
+	float GetMaxHp();
+	UFUNCTION(BlueprintCallable)
+	int32 GetCurrentLevel();
+	UFUNCTION(BlueprintCallable)
+	float GetHPRatio();
+	UFUNCTION(BlueprintCallable)
+	float GetExpRatio();
+	
 
 	/*
 	*  Member Variable
 	*/
+public:
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnHPIsZeroDelegate OnHPIsZero;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnHPChangedDelegate OnHPChanged;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnExpChangedDelegate OnExpChanged;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnLevelUpDelegate OnLevelUp;
+
 private:
 	bool IsPlayer;
 	struct FJK1CreatureData* BasicStatData;
@@ -50,17 +85,17 @@ private:
 	FName Name;
 
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
-	int Level;
-
-	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
 
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float CurrentExp;
 
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	int32 CurrentLevel;
+
+	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float CurrentStat[2];
 
 	// 데미지 입힌 대상
-	//TArray<AJK1PlayerController*> DamageInstigator;
+	TArray<AController*> DamageInstigator;
 };
