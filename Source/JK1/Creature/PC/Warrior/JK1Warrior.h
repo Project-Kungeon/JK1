@@ -58,8 +58,8 @@ public:
 	void CheckSkillRTrace();
 	void StopParticleSystem();
 	void ResetSkillCooldown();
-	void ResetSkillLShift();
-	void bCanUseSkillActive() { bCanUseSkill = true; };
+	//void ResetSkillLShift();
+	//void bCanUseSkillActive() { bCanUseSkill = true; };
 	//삭제해야하는 테스트용 함수.
 	void SetParryActiveTrue() { bParryActive = true; };
 	void SetParryActiveFalse() { bParryActive = false; };
@@ -116,9 +116,7 @@ protected:
 	FVector DashVelocity;
 	
 	float SkillCooldown;
-	bool bCanUseSkill;
 	FTimerHandle SkillCooldownTimerHandle;
-	uint8 bUseController;
 	uint32 ParryCount = 0;
 	UAnimInstance* AnimInstance = nullptr;
 	// 데미지 처리 주기
