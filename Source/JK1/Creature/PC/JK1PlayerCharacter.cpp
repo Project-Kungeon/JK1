@@ -21,7 +21,7 @@ AJK1PlayerCharacter::AJK1PlayerCharacter()
 	//Pawn
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 
 	//Capsule (프로파일 설정)
 	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_JK1CAPSULE);
@@ -88,10 +88,11 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 
 	{
 		FVector Location = GetActorLocation();
+		FRotator ActorRotation = GetActorRotation();
 		PlayerInfo->set_x(Location.X);
 		PlayerInfo->set_y(Location.Y);
 		PlayerInfo->set_z(Location.Z);
-		PlayerInfo->set_yaw(GetControlRotation().Yaw);
+		PlayerInfo->set_yaw(ActorRotation.Yaw);
 	}
 
 	if (isMyPlayer)
