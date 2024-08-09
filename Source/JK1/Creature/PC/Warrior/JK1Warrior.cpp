@@ -25,7 +25,6 @@ AJK1Warrior::AJK1Warrior()
 	CreatureStat->SetOwner(true, FName("Warrior"));
 
 	SkillCooldown = 5.0f;
-	bCanUseSkill = true;
 }
 
 void AJK1Warrior::BeginPlay()
@@ -40,17 +39,17 @@ void AJK1Warrior::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (bWeaponActive && !bParryActive)
 		CheckWeaponTrace();
-	if (!bCanUseSkill && bParryActive && AnimInstance->Montage_IsPlaying(SkillEMontage_Intro))
+	if (bParryActive && AnimInstance->Montage_IsPlaying(SkillEMontage_Intro))
 		CheckParry();
 	if (bWeaponActive && bParryActive)
 		CheckParryHit();
 
 	/*----- 다른 방안 알아보기 -----*/
-	if (!DashVelocity.IsZero())
+	/*if (!DashVelocity.IsZero())
 	{
 		FVector NewLocation = GetActorLocation() + (DashVelocity * DeltaTime);
 		SetActorLocation(NewLocation);
-	}
+	}*/
 }
 
 void AJK1Warrior::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -140,7 +139,7 @@ void AJK1Warrior::WarriorE()
 {
 	if (bCanUseSkill && !bWeaponActive && !AnimInstance->Montage_IsPlaying(CurrentMontage))
 	{
-		bCanUseSkill = false;
+		
 		CurrentMontage = SkillEMontage_Intro;
 		AnimInstance->Montage_Play(SkillEMontage_Intro);
 		{
@@ -148,12 +147,11 @@ void AJK1Warrior::WarriorE()
 			SaveAttacking = false;
 			CurrentCombo = 0;
 		}
-		/*-----------임시 작성부분 삭제해야함-----------*/
+		/*----멀티플레이 환경에서 패링이 테스트 가능해질 때 까지 코드 남겨둘 것 ----*/
 		FTimerHandle TimerHandle;
 		FTimerHandle TimerHandle2;
 		GetWorldTimerManager().SetTimer(TimerHandle, this, &AJK1Warrior::SetParryActiveTrue, 1.f, false);
 		GetWorldTimerManager().SetTimer(TimerHandle2, this, &AJK1Warrior::SetParryActiveFalse, 1.5f, false);
-		/*-----------임시 작성부분 삭제해야함-----------*/
 	}
 }
 
@@ -167,8 +165,8 @@ void AJK1Warrior::WarriorR()
 	{
 		/*--------------------
 		SetTimer 델리게이트 사용해서 연속해서 사용되는 문제 해결
-		--------------------*/
-		if (bCanUseSkill && !bWeaponActive)
+	    --------------------*/
+		if (!bWeaponActive)
 		{
 			IsAttacking = false;
 			SaveAttacking = false;
@@ -177,7 +175,6 @@ void AJK1Warrior::WarriorR()
 			CurrentMontage = SkillRMontage;
 			PlayAnimMontage(SkillRMontage);
 			PlayParticleSystem();
-			bCanUseSkill = false;
 			StartROverTime();
 		}
 	}
@@ -189,18 +186,19 @@ void AJK1Warrior::WarriorLShift()
 		return;
 	else
 	{
-		bCanMove = false;
+		//bCanMove = false;
 		//1000.f 1.f
-		FVector ForwardDash = GetActorForwardVector() * (DashDistance / DashDuration);
-		DashVelocity = ForwardDash;
+		//FVector ForwardDash = GetActorForwardVector() * (DashDistance / DashDuration);
+		//DashVelocity = ForwardDash;
 
 		CurrentMontage = SkillLShiftMontage;
 		PlayAnimMontage(SkillLShiftMontage);
 
+		//DashVelocity = FVector::ZeroVector;
 		// CurrentMontage->GetPlayLength() : 1.8777777
-		FTimerHandle TimerHandle;
-		GetWorldTimerManager().SetTimer(TimerHandle, this, &AJK1Warrior::ResetSkillLShift, DashDuration, false);
-	}
+		/*FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &AJK1Warrior::ResetSkillLShift, DashDuration, false);*/
+	} 
 }
 
 TArray<FHitResult> AJK1Warrior::CheckWeaponTrace()
@@ -293,8 +291,8 @@ void AJK1Warrior::CheckParry()
 	CurrentMontage = SkillEMontage_HitReact;
 	AnimInstance->StopAllMontages(0.2f);
 	AnimInstance->Montage_Play(SkillEMontage_HitReact);
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AJK1Warrior::bCanUseSkillActive, SkillEMontage_HitReact->SequenceLength, false);
+	/*FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AJK1Warrior::bCanUseSkillActive, SkillEMontage_HitReact->SequenceLength, false);*/
 
 
 }
@@ -342,7 +340,7 @@ void AJK1Warrior::CheckParryHit()
 				if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(Actor))
 				{
 					// Server Code need
-					HitPawn->CreatureStat->HitDamage(1.0f);
+					//HitPawn->CreatureStat->HitDamage(1.0f);
 					UE_LOG(LogWarrior, Log, TEXT("Hit target: %s"), *Actor->GetName());
 				}
 
@@ -393,20 +391,19 @@ void AJK1Warrior::PlayParticleSystem()
 			{
 				// 파티클 시스템 재생
 				ParticleSystemComponent->Activate(true);
-
-				// 일정 시간 후에 파티클 시스템 제거를 위한 타이머 설정
-				
 			}
 		}
 	);
-	GetWorldTimerManager().SetTimer(
-		TimerHandle,
-		this,
-		&AJK1Warrior::StopParticleSystem,
-		Duration,
-		false
-	);
-	
+		// 일정 시간 후에 파티클 시스템 제거를 위한 타이머 설정
+		//이건 파티클 제거를 위한 목적이니 남겨둠.
+		GetWorldTimerManager().SetTimer(
+			TimerHandle,
+			this,
+			&AJK1Warrior::StopParticleSystem,
+			Duration,
+			false
+		);
+	}
 }
 
 void AJK1Warrior::DealDamageOverTime()
@@ -493,7 +490,6 @@ void AJK1Warrior::StopParticleSystem()
 
 void AJK1Warrior::ResetSkillCooldown()
 {
-	bCanUseSkill = true;
 	{
 		//이걸 안해주면 콤보 제어 변수가 이상하게 변경됨.
 		IsAttacking = false;
@@ -501,15 +497,15 @@ void AJK1Warrior::ResetSkillCooldown()
 		CurrentCombo = 0;
 	}
 }
-
-void AJK1Warrior::ResetSkillLShift()
-{
-	bCanMove = true;
-	// Reset the dash velocity
-	DashVelocity = FVector::ZeroVector;
-
-	// Clear the timer
-	GetWorldTimerManager().ClearTimer(DashTimerHandle);
-}
+//
+//void AJK1Warrior::ResetSkillLShift()
+//{
+//	bCanMove = true;
+//	// Reset the dash velocity
+//	DashVelocity = FVector::ZeroVector;
+//
+//	// Clear the timer
+//	GetWorldTimerManager().ClearTimer(DashTimerHandle);
+//}
 
 

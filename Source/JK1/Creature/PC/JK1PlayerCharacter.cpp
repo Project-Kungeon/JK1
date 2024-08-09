@@ -173,7 +173,7 @@ void AJK1PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 {
-	if (isMyPlayer && bCanMove)
+	if (isMyPlayer)
 	{
 		FVector2D MovementVector = Value.Get<FVector2D>();
 

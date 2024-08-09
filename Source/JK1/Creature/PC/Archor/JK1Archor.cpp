@@ -70,11 +70,9 @@ void AJK1Archor::Shoot()
 
 	1. UI(조준선)가 잇는 월드 위치->카메라의 중심
 	*/
-	FVector ArrowSpawnLocation;
 	FRotator ArrowSpawnRotation;
 	UBlueprint* ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *path.ToString()));
 	FActorSpawnParameters SpawnParams;
-	FRotator rotator = GetControlRotation();
 	//Skeletal mesh의 idle 상태에서 화살 촉이 있는 부분
 	FVector ShootPoint = GetMesh()->GetSocketLocation(FName(TEXT("BowEmitterSocket")));
 	FHitResult HitResult;

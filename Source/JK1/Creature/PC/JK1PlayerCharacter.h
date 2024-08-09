@@ -88,9 +88,7 @@ public:
 	uint8 SaveAttacking : 1;
 	int32 MaxCombo;
 
-	// boolean type bCanMove
-	/* Enhanced Input 키 막는거 알아보기 */
-	bool bCanMove = true;
+
 
 public:
 	bool isMyPlayer = false;
