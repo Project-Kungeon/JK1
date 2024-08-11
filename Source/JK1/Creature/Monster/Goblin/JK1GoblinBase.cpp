@@ -1,4 +1,4 @@
-// Copyright 2023. Jerry. All rights reserved.
+// Copyright 2024 All Rights Reserved by J&K
 
 
 #include "JK1GoblinBase.h"
@@ -17,7 +17,7 @@ AJK1GoblinBase::AJK1GoblinBase()
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// Default Settings
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> DefaultMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonRampage/Characters/Heroes/Rampage/Skins/Tier2/Elemental/Meshes/Rampage_Elemental.Rampage_Elemental'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> DefaultMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonRampage/Characters/Heroes/Rampage/Skins/Tier2/Tough/Mesh/Tough_LP_Master_ForVariants_Test.Tough_LP_Master_ForVariants_Test'"));
 	if (DefaultMesh.Succeeded())
 		Super::GetMesh()->SetSkeletalMesh(DefaultMesh.Object);
 
