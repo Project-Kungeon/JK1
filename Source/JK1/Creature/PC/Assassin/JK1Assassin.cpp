@@ -66,6 +66,7 @@ void AJK1Assassin::BeginPlay()
 {
 	Super::BeginPlay();
 	DynamicMaterial = UMaterialInstanceDynamic::Create(CloakMaterial, this);
+
 	if (FloatCurve)
 	{
 		FOnTimelineFloat ProgressFunction{};
@@ -231,10 +232,13 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 		UE_LOG(LogAssassin, Log, TEXT("InCloakingProcess"));
 		return;
 	}
+	
 	if(!IsCloaking)
 	{
+		//은신 진입
 		IsCloakingProcess = true;
 		USkeletalMeshComponent* MeshComponent = GetMesh();
+
 		if (MeshComponent)
 		{
 			int32 MaterialCount = MeshComponent->GetNumMaterials();
@@ -250,6 +254,7 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 	}
 	else
 	{
+		//은신 해제
 		IsCloakingProcess = true;
 		MyTimeline->Reverse();
 		USkeletalMeshComponent* MeshComponent = GetMesh();
@@ -392,7 +397,7 @@ void AJK1Assassin::GetAndStoreMaterials()
 void AJK1Assassin::TimelineProgress(float Value)
 {
 	TimelineValue = Value; // TimelineValue 변수 업데이트
-	UE_LOG(LogTemp, Warning, TEXT("Timeline Value: %f"), TimelineValue);
+	UE_LOG(LogAssassin, Log, TEXT("Timeline Value: %f"), TimelineValue);
 	if (DynamicMaterial)
 	{
 		DynamicMaterial->SetScalarParameterValue(FName(TEXT("Opacity")), TimelineValue);
