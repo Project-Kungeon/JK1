@@ -139,17 +139,19 @@ void AJK1Assassin::SkillQ(const FInputActionValue& value)
 	Super::SkillQ(value);
 	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
 
-	SpawnDagger();
+	FVector SpawnPoint = GetActorLocation() + SpawnLocation;
+	FRotator SpawnRotation = GetActorRotation();
+
+	SpawnDagger(SpawnPoint, SpawnRotation);
 	PlayAnimMontage(SkillQMontage, 1.5f);
 	SkillQTrace();	
 }
 
-void AJK1Assassin::SpawnDagger()
+void AJK1Assassin::SpawnDagger(FVector SpawnPoint, FRotator SpawnRotation)
 {
 	if (DaggerActor)
 	{
-		FVector SpawnPoint = GetActorLocation() + SpawnLocation;
-		FRotator SpawnRotation = GetActorRotation();
+		
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = GetInstigator();

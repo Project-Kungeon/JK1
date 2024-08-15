@@ -126,7 +126,7 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 			{
 				message::PosInfo* info = MovePkt.mutable_posinfo();
 				info->CopyFrom(*PlayerInfo);
-				info->set_yaw(DesiredYaw);
+				//info->set_yaw(DesiredYaw);
 				info->set_state(GetMoveState());
 			}
 			// TODO : Send Packet should be needed
@@ -142,10 +142,19 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 		if (State == message::MOVE_STATE_RUN)	// 뛰는 중이라면
 		{
 			SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
-			AddMovementInput(GetActorForwardVector());
 
-			FVector vec(DestInfo->x(), DestInfo->y(), DestInfo->z());
-			SetActorLocation(vec);
+			// 현재 좌표와 서버로부터 받아오는 좌표를 받아와서, 방향 벡터 계산
+			FVector CurrentLocation = GetActorLocation();
+			FVector TargetLocation(DestInfo->x(), DestInfo->y(), DestInfo->z());
+			FVector DirectionVector = TargetLocation - CurrentLocation;
+
+			// 정규화
+			DirectionVector.Normalize();
+
+			AddMovementInput(DirectionVector);
+
+			//FVector vec(DestInfo->x(), DestInfo->y(), DestInfo->z());
+			//SetActorLocation(vec);
 
 		}
 		else if (State == message::MOVE_STATE_IDLE)
@@ -173,21 +182,21 @@ void AJK1PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 {
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator CameraRotation = FollowCamera->GetComponentRotation();
+
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
+	const FRotator CameraYawRotation(0, CameraRotation.Yaw, 0);
+
+	const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	AddMovementInput(ForwardDirection, MovementVector.X);
+	AddMovementInput(RightDirection, MovementVector.Y);
+
 	if (isMyPlayer)
 	{
-		FVector2D MovementVector = Value.Get<FVector2D>();
-
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator CameraRotation = FollowCamera->GetComponentRotation();
-
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-		const FRotator CameraYawRotation(0, CameraRotation.Yaw, 0);
-
-		const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		AddMovementInput(ForwardDirection, MovementVector.X);
-		AddMovementInput(RightDirection, MovementVector.Y);
-
 		DesiredInput = MovementVector;
 
 		DesiredMoveDirection = FVector::ZeroVector;
@@ -200,6 +209,12 @@ void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 		FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
 		DesiredYaw = Rotator.Yaw;
 	}
+	else
+	{
+		AddMovementInput(ForwardDirection, MovementVector.X);
+		AddMovementInput(RightDirection, MovementVector.Y);
+	}
+
 }
 
 void AJK1PlayerCharacter::Look(const FInputActionValue& Value)
