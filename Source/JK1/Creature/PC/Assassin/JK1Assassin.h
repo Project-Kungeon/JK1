@@ -81,18 +81,24 @@ protected:
 	
 	//Cloaking
 	UPROPERTY(BlueprintReadWrite, Category = "Cloaking")
-	bool IsCloaking; // Blueprint 노출 변수, 지울 예정
+	bool IsCloaking;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material")
 	TObjectPtr<class UMaterialInterface> CloakMaterial;
+
 	UPROPERTY()
 	TObjectPtr<class UMaterialInstanceDynamic> DynamicMaterial;
+
 	TArray<UMaterialInterface*> StoredMaterials;
+
 	bool IsCloakingProcess = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timeline")
 	float TimelineValue;
+
 	TObjectPtr<class UCurveFloat> FloatCurve;
-	UTimelineComponent* MyTimeline;
+	UPROPERTY()
+	TObjectPtr<class UTimelineComponent> MyTimeline;
 	
 
 	//Dagger Spawning
