@@ -41,13 +41,18 @@ void ANJK1Warrior::BeginPlay()
 void ANJK1Warrior::Tick(float DeltaTime)
 {
 	AJK1PlayerCharacter::Tick(DeltaTime);
-	TArray<FHitResult> hits;
+	TArray<FHitResult> attackHits;
+	TArray<FHitResult> parryHits;
 	if (bWeaponActive)
-		hits = CheckWeaponTrace();
+		attackHits = CheckWeaponTrace();
+	if (bParryActive && AnimInstance->Montage_IsPlaying(SkillEMontage_Intro))
+		CheckParry();
+	if (bWeaponActive && bParryActive)
+		parryHits = CheckParryHit();
 
-	if (!hits.IsEmpty())
+	if (!attackHits.IsEmpty())
 	{
-		for (FHitResult& hit : hits)
+		for (FHitResult& hit : attackHits)
 		{
 			AActor* actor = hit.GetActor();
 			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
@@ -58,7 +63,26 @@ void ANJK1Warrior::Tick(float DeltaTime)
 				message::C_Attack pkt;
 				pkt.set_object_id(my_id);
 				pkt.add_target_ids(target_id);
-				pkt.set_damage(1.f);
+				pkt.set_damage(10.f);
+
+				SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+			}
+		}
+	}
+	if (!parryHits.IsEmpty())
+	{
+		for (FHitResult& hit : parryHits)
+		{
+			AActor* actor = hit.GetActor();
+			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
+			{
+				uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
+
+				message::C_Attack pkt;
+				pkt.set_object_id(my_id);
+				pkt.add_target_ids(target_id);
+				pkt.set_damage(20.f);
 
 				SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
 			}
@@ -108,7 +132,7 @@ void ANJK1Warrior::Attack()
 	{
 		skill::C_Warrior_Attack attcakPkt;
 		attcakPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
-
+		
 		SEND_PACKET(message::HEADER::WARRIOR_ATTACK_REQ, attcakPkt);
 	}
 	
@@ -161,4 +185,78 @@ void ANJK1Warrior::SkillR(const FInputActionValue& Value)
 void ANJK1Warrior::SkillLShift(const FInputActionValue& Value)
 {
 	Super::SkillLShift(Value);
+}
+
+void ANJK1Warrior::WarriorQ()
+{
+	if (isMyPlayer)
+	{
+		Super::WarriorQ();
+	}
+}
+
+void ANJK1Warrior::WarriorE()
+{
+	if (isMyPlayer)
+	{
+		Super::WarriorE();
+	}
+}
+
+void ANJK1Warrior::WarriorR()
+{
+	Super::WarriorR();
+}
+
+void ANJK1Warrior::WarriorLShift()
+{
+	if (isMyPlayer)
+	{
+		Super::WarriorLShift();
+	}
+}
+
+void ANJK1Warrior::DealDamageOverTime()
+{
+	// 남은 시간이 있다면 데미지를 적용
+	if (RemainingDamageTime > 0)
+	{
+		TArray<FOverlapResult> rHits;
+		rHits = CheckSkillRTrace();
+		if (!rHits.IsEmpty())
+		{
+			message::C_Attack pkt;
+			uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+			pkt.set_object_id(my_id);
+			pkt.set_damage(2.f);
+			for (FOverlapResult& hit : rHits)
+			{
+				AActor* actor = hit.GetActor();
+				if (auto* Actor = Cast<AJK1CreatureBase>(actor))
+				{
+					uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
+					pkt.add_target_ids(target_id);
+				}
+			}
+			SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+		}
+
+		RemainingDamageTime -= DamageInterval;
+
+		// 남은 시간이 0 이하가 되면 타이머 중지
+		if (RemainingDamageTime <= 0)
+		{
+			GetWorldTimerManager().ClearTimer(DamageTimerHandle);
+			ResetSkillCooldown();
+		}
+	}
+}
+
+void ANJK1Warrior::StartROverTime()
+{
+	TArray<FOverlapResult> rHits;
+	// 총 데미지 지속 시간 초기화
+	RemainingDamageTime = DamageDuration;
+
+	GetWorldTimerManager().SetTimer(DamageTimerHandle, this, &AJK1Warrior::DealDamageOverTime, DamageInterval, true);
 }

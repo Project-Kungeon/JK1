@@ -25,8 +25,26 @@ void UNetworkJK1GameInstance::ConnectToGameServer()
 	GameSession->Connect(std::string("127.0.0.1"), 4242);
 	GameSession->Run();
 
-	message::C_Login Pkt;
-	SEND_PACKET(message::HEADER::LOGIN_REQ, Pkt);
+	//message::C_Login Pkt;
+	///SEND_PACKET(message::HEADER::LOGIN_REQ, Pkt);
+
+	message::C_EnterRoom EnterRoomPkt;
+
+	if (MyCharacterClass == "Warrior")
+	{
+		EnterRoomPkt.set_player_type(message::PLAYER_TYPE_WARRIOR);
+	}
+	else if (MyCharacterClass == "Archor")
+	{
+		EnterRoomPkt.set_player_type(message::PLAYER_TYPE_ARCHER);
+	}
+	else if (MyCharacterClass == "Assassin")
+	{
+		EnterRoomPkt.set_player_type(message::PLAYER_TYPE_ASSASSIN);
+	}
+
+	
+	SEND_PACKET(message::HEADER::ENTER_ROOM_REQ, EnterRoomPkt);
 
 	//GameSession->Run(io_contextRef);
 }

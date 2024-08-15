@@ -11,6 +11,7 @@
 class AJK1PlayerCharacter;
 class AJK1Warrior;
 class AJK1Archor;
+class AJK1Assassin;
 /**
  * 
  */
@@ -51,6 +52,8 @@ private:
 	PacketSessionRef GameSession;
 
 public:
+	FString MyCharacterClass;
+
 	UPROPERTY(EditAnywhere);
 	TSubclassOf<AJK1PlayerCharacter> OtherPlayerClass;
 
@@ -60,6 +63,9 @@ public:
 	UPROPERTY(EditAnywhere);
 	TSubclassOf<AJK1Archor> ArchorClass;
 
+	UPROPERTY(EditAnywhere);
+	TSubclassOf<AJK1Assassin> AssassinClass;
+	
 	TMap<uint64, AJK1PlayerCharacter*> Players;
 	AJK1PlayerCharacter* MyPlayer;
 };

@@ -109,26 +109,26 @@ void AJK1Warrior::ComboActionEnd()
 void AJK1Warrior::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
-	WarriorQ();
+	//WarriorQ();
 	UE_LOG(LogWarrior, Log, TEXT("This is %s"), *this->GetName());
 }
 
 void AJK1Warrior::SkillE(const FInputActionValue& value)
 {
 	Super::SkillE(value);
-	WarriorE();
+	//WarriorE();
 }
 
 void AJK1Warrior::SkillR(const FInputActionValue& value)
 {
 	Super::SkillR(value);
-	WarriorR();
+	//WarriorR();
 }
 
 void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 {
 	Super::SkillLShift(value);
-	WarriorLShift();
+	//WarriorLShift();
 }
 
 void AJK1Warrior::WarriorQ()
@@ -137,7 +137,7 @@ void AJK1Warrior::WarriorQ()
 
 void AJK1Warrior::WarriorE()
 {
-	if (bCanUseSkill && !bWeaponActive && !AnimInstance->Montage_IsPlaying(CurrentMontage))
+	if (!bWeaponActive && !AnimInstance->Montage_IsPlaying(CurrentMontage))
 	{
 		
 		CurrentMontage = SkillEMontage_Intro;
@@ -173,9 +173,13 @@ void AJK1Warrior::WarriorR()
 			CurrentCombo = 0;
 
 			CurrentMontage = SkillRMontage;
-			PlayAnimMontage(SkillRMontage);
-			PlayParticleSystem();
-			StartROverTime();
+			
+			AsyncTask(ENamedThreads::GameThread, [this]() {
+				this->PlayAnimMontage(SkillRMontage);
+				this->PlayParticleSystem();
+				this->StartROverTime();
+				}
+			);
 		}
 	}
 }
@@ -297,10 +301,11 @@ void AJK1Warrior::CheckParry()
 
 }
 
-void AJK1Warrior::CheckParryHit()
+TArray<FHitResult> AJK1Warrior::CheckParryHit()
 {
+	TArray<FHitResult> ValidHitResults;	// 중복 처리된 피격자 리스트(would be returned)
 	if (!bParryActive)
-		return;
+		return ValidHitResults;
 	UE_LOG(LogTemp, Log, TEXT("This is Check WeaponTrace"));
 	FVector Start = GetMesh()->GetSocketLocation(FName(TEXT("FX_Trail_L_01")));
 	FVector End = GetMesh()->GetSocketLocation(FName(TEXT("FX_Trail_L_02")));
@@ -308,6 +313,7 @@ void AJK1Warrior::CheckParryHit()
 	const float AttackRadius = 20.f;
 
 	TArray<FHitResult> HitResults;
+	
 	//FHitResult HitResult;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
@@ -341,6 +347,7 @@ void AJK1Warrior::CheckParryHit()
 				{
 					// Server Code need
 					//HitPawn->CreatureStat->HitDamage(1.0f);
+					ValidHitResults.Add(HitResult);
 					UE_LOG(LogWarrior, Log, TEXT("Hit target: %s"), *Actor->GetName());
 				}
 
@@ -369,6 +376,7 @@ void AJK1Warrior::CheckParryHit()
 	);
 
 #endif
+	return ValidHitResults;
 }
 
 void AJK1Warrior::PlayParticleSystem()
@@ -376,7 +384,9 @@ void AJK1Warrior::PlayParticleSystem()
 	FTimerHandle TimerHandle;
 	//timer
 	const float Duration = 5.f;
-	AsyncTask(ENamedThreads::GameThread, [this]()
+
+	UGameInstance* instance = GetGameInstance();
+	AsyncTask(ENamedThreads::GameThread, [this, TimerHandle, Duration, instance]()
 		{
 			ParticleSystemComponent = UGameplayStatics::SpawnEmitterAttached(
 				SkillREffect,
@@ -393,17 +403,17 @@ void AJK1Warrior::PlayParticleSystem()
 				ParticleSystemComponent->Activate(true);
 			}
 		}
+		
 	);
-		// 일정 시간 후에 파티클 시스템 제거를 위한 타이머 설정
-		//이건 파티클 제거를 위한 목적이니 남겨둠.
-		GetWorldTimerManager().SetTimer(
-			TimerHandle,
-			this,
-			&AJK1Warrior::StopParticleSystem,
-			Duration,
-			false
-		);
-	}
+	// 일정 시간 후에 파티클 시스템 제거를 위한 타이머 설정
+	//이건 파티클 제거를 위한 목적이니 남겨둠.
+	GetWorldTimerManager().SetTimer(
+		TimerHandle,
+		this,
+		&AJK1Warrior::StopParticleSystem,
+		Duration,
+		false
+	);
 }
 
 void AJK1Warrior::DealDamageOverTime()
@@ -434,11 +444,12 @@ void AJK1Warrior::StartROverTime()
 }
 
 //return type Tarray변경
-void AJK1Warrior::CheckSkillRTrace()
+TArray<FOverlapResult> AJK1Warrior::CheckSkillRTrace()
 {
 	UE_LOG(LogTemp, Log, TEXT("CheckSkillRTrace Active"));
 	FVector Location = GetActorLocation();
 	TArray<FOverlapResult> HitResults;
+	TArray<FOverlapResult> ValidHitResults;	// 중복 처리된 피격자 리스트(would be returned)
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
 	bool bSuccess = GetWorld()->OverlapMultiByChannel(
@@ -458,7 +469,8 @@ void AJK1Warrior::CheckSkillRTrace()
 			//Take Damage
 			if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(OverlappingActor))
 			{
-				HitPawn->CreatureStat->HitDamage(1.0f);
+				// HitPawn->CreatureStat->HitDamage(1.0f);
+				ValidHitResults.Add(HitResult);
 			}
 			FVector OverlapLocation = OverlappingActor->GetActorLocation();
 			float SphereRadius = 50.0f;
@@ -477,6 +489,8 @@ void AJK1Warrior::CheckSkillRTrace()
 		}
 	}
 	HitResults.Empty();
+
+	return ValidHitResults;
 }
 
 void AJK1Warrior::StopParticleSystem()

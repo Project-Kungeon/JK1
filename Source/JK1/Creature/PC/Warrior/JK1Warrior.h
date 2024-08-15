@@ -48,21 +48,21 @@ public:
 	virtual void SkillLShift(const FInputActionValue& value) override;
 
 	// Warrior
-	void WarriorQ();
-	void WarriorE();
-	void WarriorR();
-	void WarriorLShift();
+	virtual void WarriorQ();
+	virtual void WarriorE();
+	virtual void WarriorR();
+	virtual void WarriorLShift();
 
 
 	//refactoring
 	UFUNCTION()
 	TArray<FHitResult> CheckWeaponTrace();
 	void CheckParry();
-	void CheckParryHit();
+	TArray<FHitResult> CheckParryHit();
 	void PlayParticleSystem();
-	void DealDamageOverTime();
-	void StartROverTime();
-	void CheckSkillRTrace();
+	virtual void DealDamageOverTime();
+	virtual void StartROverTime();
+	TArray<FOverlapResult> CheckSkillRTrace();
 	void StopParticleSystem();
 	void ResetSkillCooldown();
 	//void ResetSkillLShift();
