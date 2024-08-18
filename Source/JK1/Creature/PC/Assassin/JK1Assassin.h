@@ -49,13 +49,19 @@ public:
 	UFUNCTION()
 
 	//Check Back Attack Fukction
-	virtual void OnHit(AActor* Actor, FHitResult& HitResult);
+	virtual bool IsBackAttack(AActor* Actor, FHitResult& HitResult);
 	void SpawnHitEffect(const FVector& Location);
 	virtual void SkillR(const FInputActionValue& Value) override;
 	virtual void SkillLShift(const FInputActionValue& Value) override;
 
+	virtual void AssassinQ(FVector SpawnPoint, FRotator SpawnRotation);
+	virtual void AssassinE();	// 평타 강화
+	virtual void AssassinR();
+	virtual void AssassinLS();
+
+
 	UFUNCTION()
-	void CheckWeaponTrace();
+	TArray<FHitResult> CheckWeaponTrace();
 	
 
 	//Cloaking

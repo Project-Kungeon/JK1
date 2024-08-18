@@ -48,6 +48,11 @@ public:
 	void HandleWarriorE(const skill::S_Warrior_E& skillPkt);
 	void HandleWarriorR(const skill::S_Warrior_R& skillPkt);
 
+	void HandleAssassinAttack(const skill::S_ASSASSIN_Attack& pkt);
+	void HandleAssassinQ(const skill::S_ASSASSIN_Q& pkt);
+	void HandleAssassinR(const skill::S_ASSASSIN_R& pkt);
+	void HandleAssassinLS(const skill::S_ASSASSIN_LS& pkt);
+
 private:
 	PacketSessionRef GameSession;
 

@@ -116,19 +116,19 @@ void AJK1Warrior::SkillQ(const FInputActionValue& value)
 void AJK1Warrior::SkillE(const FInputActionValue& value)
 {
 	Super::SkillE(value);
-	//WarriorE();
+	WarriorE();
 }
 
 void AJK1Warrior::SkillR(const FInputActionValue& value)
 {
 	Super::SkillR(value);
-	//WarriorR();
+	WarriorR();
 }
 
 void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 {
 	Super::SkillLShift(value);
-	//WarriorLShift();
+	WarriorLShift();
 }
 
 void AJK1Warrior::WarriorQ()

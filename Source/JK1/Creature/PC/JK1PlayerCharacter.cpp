@@ -78,6 +78,20 @@ void AJK1PlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerController = Cast<AJK1PlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+	// Set size for collision capsule
+	{
+		FVector Location = GetActorLocation();
+		FRotator Rotator = GetActorRotation();
+
+		DestInfo->set_x(Location.X);
+		DestInfo->set_y(Location.Y);
+		DestInfo->set_z(Location.Z);
+		DestInfo->set_yaw(Rotator.Yaw);
+		DestInfo->set_pitch(Rotator.Pitch);
+		DestInfo->set_roll(Rotator.Roll);
+
+		SetMoveState(message::MOVE_STATE_IDLE);
+	}
 	//if (PlayerController)
 		//PlayerController->GetPlayerWidget()->SetWidgetsStat(CharacterStat, nullptr);
 }

@@ -25,6 +25,7 @@
 
 
 AJK1Assassin::AJK1Assassin()
+	: Super()
 {
 	//Timeline 가져오기
 	MyTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("<MyTimeline"));
@@ -137,14 +138,9 @@ void AJK1Assassin::ComboActionEnd()
 void AJK1Assassin::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
-	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
-
 	FVector SpawnPoint = GetActorLocation() + SpawnLocation;
 	FRotator SpawnRotation = GetActorRotation();
-
-	SpawnDagger(SpawnPoint, SpawnRotation);
-	PlayAnimMontage(SkillQMontage, 1.5f);
-	SkillQTrace();	
+	AssassinQ(SpawnPoint, SpawnRotation);
 }
 
 void AJK1Assassin::SpawnDagger(FVector SpawnPoint, FRotator SpawnRotation)
@@ -196,7 +192,7 @@ void AJK1Assassin::SkillQTrace()
 	}
 }
 
-void AJK1Assassin::OnHit(AActor* Actor, FHitResult& HitResult)
+bool AJK1Assassin::IsBackAttack(AActor* Actor, FHitResult& HitResult)
 {
 	if (Actor)
 	{
@@ -206,13 +202,16 @@ void AJK1Assassin::OnHit(AActor* Actor, FHitResult& HitResult)
 
 		if (FVector::DotProduct(ForwardVector, OtherForwardVector) > 0)
 		{
-			if (HitEffect)
-			{
-				//TODO : 데미지 증가
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
-			}		
+			return true;
+			//if (HitEffect)
+			//{
+			//	//TODO : 데미지 증가
+			//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
+			//	
+			//}		
 		}
 	} 
+	return false;
 }
 
 void AJK1Assassin::SpawnHitEffect(const FVector& Location)
@@ -224,9 +223,37 @@ void AJK1Assassin::SpawnHitEffect(const FVector& Location)
 void AJK1Assassin::SkillR(const FInputActionValue& Value)
 {
 	//TODO : 난무 에셋이 어떤건지 잘 모르겠어
+	AssassinR();
 }
 
 void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
+{
+	UE_LOG(LogAssassin, Log, TEXT("This is Assassin Skill LShift"));
+	AssassinLS();
+
+}
+
+void AJK1Assassin::AssassinQ(FVector SpawnPoint, FRotator SpawnRotation)
+{
+	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
+
+	//FVector SpawnPoint = GetActorLocation() + SpawnLocation;
+	//FRotator SpawnRotation = GetActorRotation();
+
+
+	AsyncTask(ENamedThreads::GameThread, [this, SpawnPoint, SpawnRotation]() {
+		SpawnDagger(SpawnPoint, SpawnRotation);
+		PlayAnimMontage(SkillQMontage, 1.5f);
+		SkillQTrace();
+		});
+	
+}
+
+void AJK1Assassin::AssassinE()
+{
+}
+
+void AJK1Assassin::AssassinR()
 {
 	UE_LOG(LogAssassin, Log, TEXT("This is Assassin Skill LShift"));
 	if (IsCloakingProcess)
@@ -234,8 +261,8 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 		UE_LOG(LogAssassin, Log, TEXT("InCloakingProcess"));
 		return;
 	}
-	
-	if(!IsCloaking)
+
+	if (!IsCloaking)
 	{
 		//은신 진입
 		IsCloakingProcess = true;
@@ -270,13 +297,59 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 		IsCloaking = false;
 		GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	}
-
 }
 
-void AJK1Assassin::CheckWeaponTrace()
+void AJK1Assassin::AssassinLS()
 {
-	if (!bWeaponActive)
+	if (IsCloakingProcess)
+	{
+		UE_LOG(LogAssassin, Log, TEXT("InCloakingProcess"));
 		return;
+	}
+
+	if (!IsCloaking)
+	{
+		//은신 진입
+		IsCloakingProcess = true;
+		USkeletalMeshComponent* MeshComponent = GetMesh();
+
+		if (MeshComponent)
+		{
+			int32 MaterialCount = MeshComponent->GetNumMaterials();
+			for (int32 i = 0; i < MaterialCount; i++)
+				MeshComponent->SetMaterial(i, DynamicMaterial);
+		}
+
+		MyTimeline->PlayFromStart();
+		UE_LOG(LogTemp, Log, TEXT("%f"), TimelineValue);
+		IsCloakingProcess = false;
+		IsCloaking = true;
+		GetCharacterMovement()->MaxWalkSpeed = 700.f;
+	}
+	else
+	{
+		//은신 해제
+		IsCloakingProcess = true;
+		MyTimeline->Reverse();
+		USkeletalMeshComponent* MeshComponent = GetMesh();
+		if (MeshComponent)
+		{
+			int32 MaterialCount = MeshComponent->GetNumMaterials();
+			for (int32 i = 0; i < MaterialCount; i++)
+				MeshComponent->SetMaterial(i, StoredMaterials[i]);
+		}
+		IsCloakingProcess = false;
+		IsCloaking = false;
+		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	}
+}
+
+TArray<FHitResult> AJK1Assassin::CheckWeaponTrace()
+{
+	TArray<FHitResult> ValidHitResults;	// 중복 처리된 피격자 리스트(would be returned)
+
+	if (!bWeaponActive)
+		return ValidHitResults;
 
 	FVector StartL = GetMesh()->GetSocketLocation(FName(TEXT("sword_base_l")));
 	FVector StartR = GetMesh()->GetSocketLocation(FName(TEXT("sword_base_l")));
@@ -326,7 +399,8 @@ void AJK1Assassin::CheckWeaponTrace()
 			if (WeaponAttackTargets.Contains(Actor) == false)
 			{
 				WeaponAttackTargets.Add(Actor);
-				OnHit(Actor, HitResult);
+				//OnHit(Actor, HitResult);
+				ValidHitResults.Add(HitResult);
 				// TODO HitDamage
 				UE_LOG(LogTemp, Log, TEXT("HitDamage: %s"), *Actor->GetName());
 
@@ -369,6 +443,8 @@ void AJK1Assassin::CheckWeaponTrace()
 	);
 
 #endif
+
+	return ValidHitResults;
 }
 
 void AJK1Assassin::GetAndStoreMaterials()

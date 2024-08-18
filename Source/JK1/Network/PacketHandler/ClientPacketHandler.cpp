@@ -53,4 +53,25 @@ void ClientPacketHandler::Init()
         return HandlePacket<skill::S_Warrior_R>(BattlePacketHandler::Handle_S_WarriorR, session, buffer, header, offset);
     };
 
+    // Assassin
+    GPacketHandler[message::HEADER::ASSASSIN_ATTACK_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_AssassinAttack Handle"));
+        return HandlePacket<skill::S_ASSASSIN_Attack>(BattlePacketHandler::Handle_S_AssassinAttack, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::ASSASSIN_Q_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_AssassinQ Handle"));
+        return HandlePacket<skill::S_ASSASSIN_Q>(BattlePacketHandler::Handle_S_AssassinQ, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::ASSASSIN_R_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_AssassinR Handle"));
+        return HandlePacket<skill::S_ASSASSIN_R>(BattlePacketHandler::Handle_S_AssassinR, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::ASSASSIN_LS_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_AssassinLS Handle"));
+        return HandlePacket<skill::S_ASSASSIN_LS>(BattlePacketHandler::Handle_S_AssassinLS, session, buffer, header, offset);
+    };
 }

@@ -4,7 +4,6 @@ bool BattlePacketHandler::Handle_S_Attack(PacketSessionRef& session, message::S_
 {
 	if ( auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()) )
 	{
-		// TODO : 다른 오브젝트의 스폰 패킷을 처리
 		GameInstance->HandleAttack(pkt);
 	}
 	return true;
@@ -15,7 +14,6 @@ bool BattlePacketHandler::Handle_S_WarriorAttack(PacketSessionRef& session, skil
 
 	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
 	{
-		// TODO : 다른 오브젝트의 스폰 패킷을 처리
 		GameInstance->HandleWarriorAttack(pkt);
 	}
 	return true;
@@ -25,7 +23,6 @@ bool BattlePacketHandler::Handle_S_WarriorE(PacketSessionRef& session, skill::S_
 {
 	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
 	{
-		// TODO : 다른 오브젝트의 스폰 패킷을 처리
 		GameInstance->HandleWarriorE(pkt);
 	}
 	return true;
@@ -35,8 +32,43 @@ bool BattlePacketHandler::Handle_S_WarriorR(PacketSessionRef& session, skill::S_
 {
 	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
 	{
-		// TODO : 다른 오브젝트의 스폰 패킷을 처리
 		GameInstance->HandleWarriorR(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_AssassinAttack(PacketSessionRef& session, skill::S_ASSASSIN_Attack& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleAssassinAttack(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_AssassinQ(PacketSessionRef& session, skill::S_ASSASSIN_Q& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleAssassinQ(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_AssassinR(PacketSessionRef& session, skill::S_ASSASSIN_R& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleAssassinR(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_AssassinLS(PacketSessionRef& session, skill::S_ASSASSIN_LS& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleAssassinLS(pkt);
 	}
 	return true;
 }

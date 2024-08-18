@@ -52,19 +52,19 @@ void ANJK1Warrior::Tick(float DeltaTime)
 
 	if (!attackHits.IsEmpty())
 	{
+		message::C_Attack pkt;
 		for (FHitResult& hit : attackHits)
 		{
 			AActor* actor = hit.GetActor();
+			uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+			pkt.set_object_id(my_id);
+			pkt.set_damage(10.f);
+
 			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
 			{
-				uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+				
 				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
-
-				message::C_Attack pkt;
-				pkt.set_object_id(my_id);
 				pkt.add_target_ids(target_id);
-				pkt.set_damage(10.f);
-
 				SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
 			}
 		}
@@ -155,12 +155,12 @@ void ANJK1Warrior::ComboActionEnd()
 
 void ANJK1Warrior::SkillQ(const FInputActionValue& Value)
 {
-	Super::SkillQ(Value);
+	//Super::SkillQ(Value);
 }
 
 void ANJK1Warrior::SkillE(const FInputActionValue& Value)
 {
-	Super::SkillE(Value);
+	//Super::SkillE(Value);
 	if (isMyPlayer)
 	{
 		skill::C_Warrior_E skillPkt;
@@ -172,7 +172,7 @@ void ANJK1Warrior::SkillE(const FInputActionValue& Value)
 
 void ANJK1Warrior::SkillR(const FInputActionValue& Value)
 {
-	Super::SkillR(Value);
+	//Super::SkillR(Value);
 	if (isMyPlayer)
 	{
 		skill::C_Warrior_R skillPkt;
@@ -184,7 +184,7 @@ void ANJK1Warrior::SkillR(const FInputActionValue& Value)
 
 void ANJK1Warrior::SkillLShift(const FInputActionValue& Value)
 {
-	Super::SkillLShift(Value);
+	//Super::SkillLShift(Value);
 }
 
 void ANJK1Warrior::WarriorQ()
@@ -258,5 +258,5 @@ void ANJK1Warrior::StartROverTime()
 	// 총 데미지 지속 시간 초기화
 	RemainingDamageTime = DamageDuration;
 
-	GetWorldTimerManager().SetTimer(DamageTimerHandle, this, &AJK1Warrior::DealDamageOverTime, DamageInterval, true);
+	GetWorldTimerManager().SetTimer(DamageTimerHandle, this, &ANJK1Warrior::DealDamageOverTime, DamageInterval, true);
 }

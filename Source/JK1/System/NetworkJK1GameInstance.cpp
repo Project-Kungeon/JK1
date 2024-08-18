@@ -4,6 +4,7 @@
 #include "System/NetworkJK1GameInstance.h"
 #include "Creature/PC/JK1PlayerCharacter.h"
 #include "Creature/PC/Warrior/JK1Warrior.h"
+#include "Creature/PC/Assassin/JK1Assassin.h"
 #include "Creature/PC/Archor/JK1Archor.h"
 #include "Creature/JK1CreatureStatComponent.h"
 
@@ -107,6 +108,9 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::PlayerInfo& info, bool 
 				case message::PLAYER_TYPE_WARRIOR:
 					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(WarriorClass, &SpawnLocation));
 					break;
+				case message::PLAYER_TYPE_ASSASSIN:
+					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(AssassinClass, &SpawnLocation));
+					break;
 				default:
 					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(OtherPlayerClass, &SpawnLocation));
 					break;
@@ -139,6 +143,9 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::PlayerInfo& info, bool 
 				{
 				case message::PLAYER_TYPE_WARRIOR:
 					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(WarriorClass, &SpawnLocation));
+					break;
+				case message::PLAYER_TYPE_ASSASSIN:
+					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(AssassinClass, &SpawnLocation));
 					break;
 				default:
 					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(OtherPlayerClass, &SpawnLocation));
@@ -238,5 +245,51 @@ void UNetworkJK1GameInstance::HandleWarriorR(const skill::S_Warrior_R& skillPkt)
 		auto* Attacker = *(FindAttacker);
 		auto* Warrior = Cast<AJK1Warrior>(Attacker);
 		Warrior->WarriorR();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleAssassinAttack(const skill::S_ASSASSIN_Attack& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		Attacker->Attack();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleAssassinQ(const skill::S_ASSASSIN_Q& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Assassin = Cast<AJK1Assassin>(Attacker);
+		FVector SpawnPoint(pkt.x(), pkt.y(), pkt.z());
+		FRotator SpawnRotation(pkt.pitch(), pkt.yaw(), pkt.roll());
+
+		Assassin->AssassinQ(SpawnPoint, SpawnRotation);
+	}
+}
+
+void UNetworkJK1GameInstance::HandleAssassinR(const skill::S_ASSASSIN_R& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Assassin = Cast<AJK1Assassin>(Attacker);
+		Assassin->AssassinR();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleAssassinLS(const skill::S_ASSASSIN_LS& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Assassin = Cast<AJK1Assassin>(Attacker);
+		Assassin->AssassinLS();
 	}
 }
