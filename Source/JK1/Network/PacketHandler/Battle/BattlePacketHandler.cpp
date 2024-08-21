@@ -72,3 +72,21 @@ bool BattlePacketHandler::Handle_S_AssassinLS(PacketSessionRef& session, skill::
 	}
 	return true;
 }
+
+bool BattlePacketHandler::Handle_S_AssassinLSOff(PacketSessionRef& session, skill::S_Assassin_LS_Off& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleAssassinLsOff(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_AssassinE(PacketSessionRef& session, skill::S_Assassin_E& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleAssassinE(pkt);
+	}
+	return true;
+}

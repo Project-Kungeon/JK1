@@ -49,12 +49,24 @@ void ANJK1Assassin::Tick(float DeltaTime)
 
 				if (IsBackAttack(actor, hit))
 				{
-					// 백어택용
+					// 백어택 데미지
 					message::C_Attack backAttackPkt;
 					backAttackPkt.set_object_id(my_id);
 					backAttackPkt.set_damage(21.f);
 					backAttackPkt.add_target_ids(target_id);
-					SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, backAttackPkt);
+					//SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, backAttackPkt);
+				}
+				if (IsBackAttack(actor, hit))
+				{
+					// 백어택 이펙트
+					FVector HitLocation = hit.ImpactPoint;
+					skill::C_Assassin_E ePkt;
+					ePkt.set_object_id(my_id);
+					ePkt.set_x(HitLocation.X);
+					ePkt.set_y(HitLocation.Y);
+					ePkt.set_z(HitLocation.Z);
+
+					SEND_PACKET(message::HEADER::ASSASSIN_E_REQ, ePkt);
 					continue;
 				}
 				else

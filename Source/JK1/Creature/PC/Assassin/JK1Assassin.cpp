@@ -196,7 +196,6 @@ bool AJK1Assassin::IsBackAttack(AActor* Actor, FHitResult& HitResult)
 {
 	if (Actor)
 	{
-		FVector HitLocation = HitResult.ImpactPoint;
 		FVector ForwardVector = GetActorForwardVector();
 		FVector OtherForwardVector = Actor->GetActorForwardVector();
 
@@ -229,8 +228,14 @@ void AJK1Assassin::SkillR(const FInputActionValue& Value)
 void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 {
 	UE_LOG(LogAssassin, Log, TEXT("This is Assassin Skill LShift"));
-	AssassinLS();
-
+	if (IsCloaking)
+	{
+		AssassinLSOff();
+	}
+	else
+	{
+		AssassinLSOn();
+	}
 }
 
 void AJK1Assassin::AssassinQ(FVector SpawnPoint, FRotator SpawnRotation)
@@ -249,8 +254,16 @@ void AJK1Assassin::AssassinQ(FVector SpawnPoint, FRotator SpawnRotation)
 	
 }
 
-void AJK1Assassin::AssassinE()
+// 백어택 이펙트용 호출
+void AJK1Assassin::AssassinE(FVector HitLocation)
 {
+	if (HitEffect)
+		{
+			AsyncTask(ENamedThreads::GameThread, [this, HitLocation]() {
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
+			});
+			
+		}		
 }
 
 void AJK1Assassin::AssassinR()
@@ -299,7 +312,7 @@ void AJK1Assassin::AssassinR()
 	}
 }
 
-void AJK1Assassin::AssassinLS()
+void AJK1Assassin::AssassinLSOn()
 {
 	if (IsCloakingProcess)
 	{
@@ -307,41 +320,38 @@ void AJK1Assassin::AssassinLS()
 		return;
 	}
 
-	if (!IsCloaking)
-	{
-		//은신 진입
-		IsCloakingProcess = true;
-		USkeletalMeshComponent* MeshComponent = GetMesh();
+	//은신 진입
+	IsCloakingProcess = true;
+	USkeletalMeshComponent* MeshComponent = GetMesh();
 
-		if (MeshComponent)
-		{
-			int32 MaterialCount = MeshComponent->GetNumMaterials();
-			for (int32 i = 0; i < MaterialCount; i++)
-				MeshComponent->SetMaterial(i, DynamicMaterial);
-		}
-
-		MyTimeline->PlayFromStart();
-		UE_LOG(LogTemp, Log, TEXT("%f"), TimelineValue);
-		IsCloakingProcess = false;
-		IsCloaking = true;
-		GetCharacterMovement()->MaxWalkSpeed = 700.f;
-	}
-	else
+	if (MeshComponent)
 	{
-		//은신 해제
-		IsCloakingProcess = true;
-		MyTimeline->Reverse();
-		USkeletalMeshComponent* MeshComponent = GetMesh();
-		if (MeshComponent)
-		{
-			int32 MaterialCount = MeshComponent->GetNumMaterials();
-			for (int32 i = 0; i < MaterialCount; i++)
-				MeshComponent->SetMaterial(i, StoredMaterials[i]);
-		}
-		IsCloakingProcess = false;
-		IsCloaking = false;
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+		int32 MaterialCount = MeshComponent->GetNumMaterials();
+		for (int32 i = 0; i < MaterialCount; i++)
+			MeshComponent->SetMaterial(i, DynamicMaterial);
 	}
+
+	MyTimeline->PlayFromStart();
+	UE_LOG(LogTemp, Log, TEXT("%f"), TimelineValue);
+	IsCloakingProcess = false;
+	IsCloaking = true;
+	GetCharacterMovement()->MaxWalkSpeed = 700.f;
+}
+
+void AJK1Assassin::AssassinLSOff()
+{
+	IsCloakingProcess = true;
+	MyTimeline->Reverse();
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	if (MeshComponent)
+	{
+		int32 MaterialCount = MeshComponent->GetNumMaterials();
+		for (int32 i = 0; i < MaterialCount; i++)
+			MeshComponent->SetMaterial(i, StoredMaterials[i]);
+	}
+	IsCloakingProcess = false;
+	IsCloaking = false;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 }
 
 TArray<FHitResult> AJK1Assassin::CheckWeaponTrace()

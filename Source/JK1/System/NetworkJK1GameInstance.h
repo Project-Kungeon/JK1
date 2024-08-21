@@ -52,6 +52,8 @@ public:
 	void HandleAssassinQ(const skill::S_ASSASSIN_Q& pkt);
 	void HandleAssassinR(const skill::S_ASSASSIN_R& pkt);
 	void HandleAssassinLS(const skill::S_ASSASSIN_LS& pkt);
+	void HandleAssassinLsOff(const skill::S_Assassin_LS_Off& pkt);
+	void HandleAssassinE(const skill::S_Assassin_E& pkt);
 
 private:
 	PacketSessionRef GameSession;

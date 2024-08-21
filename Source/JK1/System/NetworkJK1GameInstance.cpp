@@ -290,6 +290,30 @@ void UNetworkJK1GameInstance::HandleAssassinLS(const skill::S_ASSASSIN_LS& pkt)
 	{
 		auto* Attacker = *(FindAttacker);
 		auto* Assassin = Cast<AJK1Assassin>(Attacker);
-		Assassin->AssassinLS();
+		Assassin->AssassinLSOn();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleAssassinLsOff(const skill::S_Assassin_LS_Off& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Assassin = Cast<AJK1Assassin>(Attacker);
+		Assassin->AssassinLSOff();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleAssassinE(const skill::S_Assassin_E& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Assassin = Cast<AJK1Assassin>(Attacker);
+
+		FVector HitLocation(pkt.x(), pkt.y(), pkt.z());
+		Assassin->AssassinE(HitLocation);
 	}
 }
