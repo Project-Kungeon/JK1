@@ -175,10 +175,8 @@ void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 		CurrentMontage = SkillLShiftMontage;
 		PlayAnimMontage(SkillLShiftMontage);
 
-		//DashVelocity = FVector::ZeroVector;
-		// CurrentMontage->GetPlayLength() : 1.8777777
-		/*FTimerHandle TimerHandle;
-		GetWorldTimerManager().SetTimer(TimerHandle, this, &AJK1Warrior::ResetSkillLShift, DashDuration, false);*/
+		FVector ForwardDirection = GetActorForwardVector();
+		LaunchCharacter(ForwardDirection * ForwardStrength + FVector(0, 0, JumpStrength), true, true);
 	} 
 }
 

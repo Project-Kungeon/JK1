@@ -85,5 +85,8 @@ public:
 	uint8 IsAttacking : 1;
 	uint8 SaveAttacking : 1;
 	int32 MaxCombo;
+
+	//Movement 제어를 위해 헤더파일에 선언
+	FVector2D MovementVector;
 	
 };

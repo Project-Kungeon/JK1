@@ -78,7 +78,7 @@ void AJK1PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 {
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	MovementVector = Value.Get<FVector2D>();
 	
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator CameraRotation = FollowCamera->GetComponentRotation();

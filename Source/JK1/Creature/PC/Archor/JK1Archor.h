@@ -39,14 +39,36 @@ protected:
 public:
 	//Skill Function
 	virtual void SkillQ(const FInputActionValue& value) override;
+	virtual void SkillE(const FInputActionValue& value) override;
+	virtual void SkillR(const FInputActionValue& value) override;
+	virtual void SkillLShift(const FInputActionValue& value) override;
 
-	UFUNCTION()
-	void CheckWeaponTrace();
+	void ShootNRecovery();
+	void EndSkillR();
+
 
 protected:
+	//InputMappingContext
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
 	//Montage, 클래스들은 각자 기본공격 몽타주 갯수가 다르다.
 	//Archor는 활을 쏘는 모션 하나.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> ComboActionMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> SkillQMonatge_Charge;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> SkillQMonatge_Recovery;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> SkillEMontage;
+
+	//Archor 일반공격 발사 애니메이션 재생 속도
+	float ComboActionMontagePlayRate = 1.0f;
+	//Archor SKillQMontage 재생 속도
+	float SkillQMontagePlayRate = 1.5f;
+	//SkillR 차징 애니메이션 재생 속도
+	float SkillRChargePlayRate = 2.f;
+	
+	
 	
 };

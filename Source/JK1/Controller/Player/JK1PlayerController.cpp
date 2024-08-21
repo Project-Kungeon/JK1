@@ -111,6 +111,15 @@ void AJK1PlayerController::MoveAct(const FInputActionValue& Value)
 	}
 }
 
+void AJK1PlayerController::StopAct(const FInputActionValue& Value)
+{
+	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+	if (EnhancedInputComponent)
+	{
+		EnhancedInputComponent->RemoveActionBinding(2);
+	}
+}
+
 void AJK1PlayerController::AttackAct()
 {
 	AJK1PlayerCharacter* ControlledCharacter = Cast<AJK1PlayerCharacter>(GetPawn());

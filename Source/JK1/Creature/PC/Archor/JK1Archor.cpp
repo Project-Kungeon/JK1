@@ -10,6 +10,10 @@
 #include "Animation/AnimMontage.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
+#include "InputMappingContext.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 
 AJK1Archor::AJK1Archor()
 {
@@ -21,6 +25,12 @@ AJK1Archor::AJK1Archor()
 	//GetCharacterMovement()->bOrientRotationToMovement = false;
 	//bUseControllerRotationYaw = true;
 
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_JK1.IMC_JK1'"));
+	if (nullptr != InputMappingContextRef.Object)
+	{
+		DefaultMappingContext = InputMappingContextRef.Object;
+	}
+
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> DefaultMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonSparrow/Characters/Heroes/Sparrow/Meshes/Sparrow.Sparrow'"));
 	if (nullptr != DefaultMesh.Object)
 	{
@@ -29,6 +39,7 @@ AJK1Archor::AJK1Archor()
 
 	//이렇게 해야 애니메이션이 두번 동작 안함
 	GetCharacterMovement()->JumpZVelocity = 400.f;
+	GetCharacterMovement()->AddForce(FVector(100.f, 0.f, 0.f));
 	GetCharacterMovement()->AirControl = 1.f;
 
 	//Camera Offset 처리
@@ -46,8 +57,6 @@ void AJK1Archor::BeginPlay()
 void AJK1Archor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (bWeaponActive)
-		CheckWeaponTrace();
 }
 
 void AJK1Archor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -73,13 +82,16 @@ void AJK1Archor::Shoot()
 	FRotator ArrowSpawnRotation;
 	UBlueprint* ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *path.ToString()));
 	FActorSpawnParameters SpawnParams;
+
 	//Skeletal mesh의 idle 상태에서 화살 촉이 있는 부분
 	FVector ShootPoint = GetMesh()->GetSocketLocation(FName(TEXT("BowEmitterSocket")));
 	FHitResult HitResult;
+
 	//Location Of Camera(Line Trace start)
 	FVector CrosshairWorldLocation;
 	FVector EndLocation;
 	FVector ImpactPoint;
+
 	//TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 	TEnumAsByte<EObjectTypeQuery> WorldStatic = UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic);
 	TEnumAsByte<EObjectTypeQuery> WorldDynamic = UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic);
@@ -159,7 +171,7 @@ void AJK1Archor::DoCombo()
 	{
 	case 0:
 		CurrentCombo = 1;
-		PlayAnimMontage(ComboActionMontage, 1.f);
+		PlayAnimMontage(ComboActionMontage, ComboActionMontagePlayRate);
 		Shoot();
 		break;
 	}
@@ -174,8 +186,53 @@ void AJK1Archor::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
 	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+		PlayAnimMontage(SkillQMonatge_Charge, SkillRChargePlayRate);
+		FTimerHandle ChargeHandler;
+		GetWorldTimerManager().SetTimer(ChargeHandler, this, &AJK1Archor::ShootNRecovery, SkillQMontagePlayRate, false);
+	}
+	//TODO: 움직임 제어
+	
 }
 
-void AJK1Archor::CheckWeaponTrace()
+void AJK1Archor::SkillE(const FInputActionValue& value)
 {
+	Super::SkillE(value);
+	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
+}
+
+void AJK1Archor::SkillR(const FInputActionValue& value)
+{
+	Super::SkillR(value);
+	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
+	{
+		ComboActionMontagePlayRate = 2.0f;
+		SkillQMontagePlayRate = 0.2f;
+		SkillRChargePlayRate = 5.0f;
+	}
+	//TODO: Timer로 Rate 변수 초기화
+}
+
+void AJK1Archor::SkillLShift(const FInputActionValue& value)
+{
+	Super::SkillLShift(value);
+	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());	
+}
+
+void AJK1Archor::ShootNRecovery()
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	Shoot();
+	PlayAnimMontage(SkillQMonatge_Recovery);
+}
+
+void AJK1Archor::EndSkillR()
+{
+	ComboActionMontagePlayRate = 1.0f;
+	SkillQMontagePlayRate = 1.5f;
+	SkillRChargePlayRate = 2.f;
 }
