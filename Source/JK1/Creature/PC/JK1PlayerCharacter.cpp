@@ -18,7 +18,7 @@ AJK1PlayerCharacter::AJK1PlayerCharacter()
 	//Pawn
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 
 	//Capsule (프로파일 설정)
 	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_JK1CAPSULE);
