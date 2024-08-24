@@ -135,4 +135,11 @@ protected:
 	float RemainingDamageTime;
 
 	FTimerHandle DamageTimerHandle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float JumpStrength = 400.0f;
+
+	// Forward movement strength when jumping
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float ForwardStrength = 1000.0f;
 };

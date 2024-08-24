@@ -52,6 +52,7 @@ public:
 	virtual bool IsBackAttack(AActor* Actor, FHitResult& HitResult);
 	void SpawnHitEffect(const FVector& Location);
 	virtual void SkillR(const FInputActionValue& Value) override;
+	void CheckCharacterMovement();
 	virtual void SkillLShift(const FInputActionValue& Value) override;
 
 	virtual void AssassinQ(FVector SpawnPoint, FRotator SpawnRotation);
@@ -82,6 +83,9 @@ protected:
 	TObjectPtr<class UAnimMontage> ComboActionMontage3;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> SkillQMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> SkillRMontage;
+
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	TObjectPtr<class UParticleSystem> HitEffect;
 

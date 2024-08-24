@@ -27,31 +27,33 @@
 AJK1Assassin::AJK1Assassin()
 	: Super()
 {
-	//Timeline 가져오기
+	//Timeline 선언
 	MyTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("<MyTimeline"));
 	
+	//FloatCurve
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> CurveRef(TEXT("/Game/Blueprints/Creature/PC/Assassin/CloakCurve.CloakCurve"));
 	if (CurveRef.Succeeded())
 	{
 		FloatCurve = CurveRef.Object;
 	}
+	//Character Skeletal Mesh
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> DefaultMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonKallari/Characters/Heroes/Kallari/Skins/Rogue/Meshes/Kallari_Rogue.Kallari_Rogue'"));
 	if (DefaultMesh.Succeeded())
 	{
 		Super::GetMesh()->SetSkeletalMesh(DefaultMesh.Object);
 	}
+	//Melee Success Particle Impact
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> HitEffectRef(TEXT("/Script/Engine.ParticleSystem'/Game/ParagonKallari/FX/Particles/Kallari/Abilities/Primary/FX/P_Kallari_Melee_SucessfulImpact.P_Kallari_Melee_SucessfulImpact'"));
 	if (HitEffectRef.Object)
 	{
 		HitEffect = HitEffectRef.Object;
 	}
+	//Cloaking Material Interface
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> CloakMaterialRef(TEXT("/Script/Engine.Material'/Game/Blueprints/Creature/PC/Assassin/TPS_Material_Translucnet.TPS_Material_Translucnet'"));
 	if (CloakMaterialRef.Succeeded())
 	{
 		CloakMaterial = CloakMaterialRef.Object;
 	}
-	
-
 	CreatureStat->SetOwner(true, FName("Assassin"));
 	SpawnLocation = FVector(-10.f, 0.f, 50.f); // 캐릭터 앞의 위치
 	ThrowDirection = FVector(1.f, 0.f, 0.f); // 앞으로 던지기
@@ -59,6 +61,7 @@ AJK1Assassin::AJK1Assassin()
 
 	// Skill Q 쿨 타임
 	SkillQCoolDownTime = 3.0f;
+	//Timeline 변수 초기화.
 	TimelineValue = 0.0f;
 		
 }
@@ -90,6 +93,12 @@ void AJK1Assassin::Tick(float DeltaTime)
 
 	if (MyTimeline)
 		MyTimeline->TickComponent(DeltaTime, ELevelTick::LEVELTICK_TimeOnly, nullptr);
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (AnimInstance)
+		if(AnimInstance->Montage_IsPlaying(SkillRMontage))
+			CheckCharacterMovement();
 }
 
 void AJK1Assassin::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -167,6 +176,7 @@ void AJK1Assassin::SpawnDagger(FVector SpawnPoint, FRotator SpawnRotation)
 
 void AJK1Assassin::SkillQTrace()
 {
+
 	FVector Start = GetActorLocation()+ SpawnLocation;
 	FVector End = Start + (GetActorForwardVector() * 1000.f); // 1000 유닛 앞까지 트레이스
 
@@ -223,6 +233,19 @@ void AJK1Assassin::SkillR(const FInputActionValue& Value)
 {
 	//TODO : 난무 에셋이 어떤건지 잘 모르겠어
 	AssassinR();
+}
+
+void AJK1Assassin::CheckCharacterMovement()
+{
+	FVector Velocity = GetVelocity();
+	float Speed = Velocity.Size();
+
+	if (Speed != 0.0f)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance)
+			AnimInstance->Montage_Stop(0.2f, SkillRMontage);
+	}
 }
 
 void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
@@ -362,8 +385,8 @@ TArray<FHitResult> AJK1Assassin::CheckWeaponTrace()
 		return ValidHitResults;
 
 	FVector StartL = GetMesh()->GetSocketLocation(FName(TEXT("sword_base_l")));
-	FVector StartR = GetMesh()->GetSocketLocation(FName(TEXT("sword_base_l")));
-	FVector EndL = GetMesh()->GetSocketLocation(FName(TEXT("sword_tip_r")));
+	FVector StartR = GetMesh()->GetSocketLocation(FName(TEXT("sword_base_r")));
+	FVector EndL = GetMesh()->GetSocketLocation(FName(TEXT("sword_tip_l")));
 	FVector EndR = GetMesh()->GetSocketLocation(FName(TEXT("sword_tip_r")));
 	FVector ExtendL = EndL - StartL;
 	FVector ExtendR = EndR - StartR;
