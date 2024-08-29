@@ -4,6 +4,7 @@
 #include "JK1Archor.h"
 #include "JK1/Physics/JK1Collision.h"
 #include "../../JK1CreatureStatComponent.h"
+#include "JK1/Creature/PC/Archor/JK1Arrow.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -17,22 +18,18 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "TimerManager.h"
+#include "Containers/Array.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AJK1Archor::AJK1Archor()
 {
 	//Path of Arrow Actor Blueprint Class
 	//해당 부분 C++ Class 로 전환
-	path = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Creature/PC/Archor/BP_JK1Arrow.BP_JK1Arrow'");
+	ArrowBP = TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Creature/PC/Archor/BP_JK1Arrow.BP_JK1Arrow'");
 
 	//Montage 상하체 미 분리때문에 발생하는 현상
 	//GetCharacterMovement()->bOrientRotationToMovement = false;
 	//bUseControllerRotationYaw = true;
-
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_JK1.IMC_JK1'"));
-	if (nullptr != InputMappingContextRef.Object)
-	{
-		DefaultMappingContext = InputMappingContextRef.Object;
-	}
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> DefaultMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonSparrow/Characters/Heroes/Sparrow/Meshes/Sparrow.Sparrow'"));
 	if (nullptr != DefaultMesh.Object)
@@ -45,12 +42,18 @@ AJK1Archor::AJK1Archor()
 	{
 		SkillEeffect = SkillEeffectRef.Object;
 	}
-	//이렇게 해야 애니메이션이 두번 동작 안함
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> SkillReffectRef(TEXT("/Script/Engine.ParticleSystem'/Game/ParagonSparrow/FX/Particles/Sparrow/Abilities/Ultimate/FX/P_SparrowBuff.P_SparrowBuff'"));
+	if (SkillReffectRef.Succeeded())
+	{
+		SkillReffect = SkillReffectRef.Object;
+	}
+
+	//Archor Jump Range 조절.
 	GetCharacterMovement()->JumpZVelocity = 400.f;
 	GetCharacterMovement()->AddForce(FVector(100.f, 0.f, 0.f));
 	GetCharacterMovement()->AirControl = 1.f;
 
-	//Camera Offset 처리
+	//Camera Offset 
 	CameraBoom->SocketOffset = FVector(0.f, 120.f, 75.f);
 	
 	CreatureStat->SetOwner(true, FName("Archor"));
@@ -79,16 +82,10 @@ void AJK1Archor::Attack()
 
 void AJK1Archor::Shoot()
 {
-	ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *path.ToString()));
+	ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *ArrowBP.ToString()));
 
-	//Skeletal mesh의 idle 상태에서 화살 촉이 있는 부분
 	FHitResult HitResult;
-	//Location Of Camera(Line Trace start)
-	
 	FVector EndLocation;
-	FVector ImpactPoint;
-
-	//TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
 	//Camera Info 가져오기.
@@ -124,22 +121,19 @@ void AJK1Archor::Shoot()
 			ImpactPoint = HitResult.ImpactPoint;
 			UE_LOG(LogArchor, Log, TEXT("%d, %d, %d"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
 		}
-		ArrowSpawnRotation = (ImpactPoint - CrosshairWorldLocation).Rotation();
-		//화살 생성
+
 		if (IsLShift)
 		{
 			CurrentTime = MaxTime;
 			GetWorldTimerManager().SetTimer(ArrowHandler, this, &AJK1Archor::SpawnArrowCheck, 0.1f, true);
+			//TODO : 데미지 5
 		}
 		else 
 		{
 			SpawnArrow();
+			//TODO : 데미지 1
 		}
 	}
-
-	
-	UE_LOG(LogArchor, Log, TEXT("%d %d %d"), )
-
 #if ENABLE_DRAW_DEBUG
 	FVector Direction = ImpactPoint - CrosshairWorldLocation;
 	FColor DrawColor = bSuccess ? FColor::Green : FColor::Red;
@@ -155,14 +149,57 @@ void AJK1Archor::Shoot()
 		0,
 		3.f
 	);
-
 #endif
 }
 
 void AJK1Archor::SpawnArrow()
 {
-	GetWorld()->SpawnActor<AActor>(ObjectToSpawn->GeneratedClass,
-		CrosshairWorldLocation, ArrowSpawnRotation, SpawnParams);
+	AJK1Arrow* Arrow = nullptr;
+	//LShift 상태면 랜덤한 스타팅 포인트에서 화살 발사
+	if (IsLShift)
+	{
+		float Radius = 50.0f; // 원하는 반지름 크기
+		FVector RandomDirection = UKismetMathLibrary::RandomUnitVector();
+		FVector Offset = RandomDirection * Radius;
+		ArrowStartLocation = CrosshairWorldLocation + Offset;
+		ArrowSpawnRotation = (ImpactPoint - ArrowStartLocation).Rotation();
+
+		Arrow = GetWorld()->SpawnActor<AJK1Arrow>(ObjectToSpawn->GeneratedClass,
+			ArrowStartLocation, ArrowSpawnRotation, SpawnParams);
+
+		// 디버그용으로 원의 가장자리에 있는 화살의 시작 위치 표시
+		DrawDebugSphere(
+			GetWorld(),
+			ArrowStartLocation,
+			10.0f,
+			12,
+			FColor::Blue,
+			false,
+			3.0f
+		);
+	}
+	else //아니라면 CameraForward Vector방향으로 발사
+	{
+		ArrowSpawnRotation = (ImpactPoint - CrosshairWorldLocation).Rotation();
+
+		Arrow = GetWorld()->SpawnActor<AJK1Arrow>(ObjectToSpawn->GeneratedClass,
+			CrosshairWorldLocation, ArrowSpawnRotation, SpawnParams);
+	}
+	
+	//Arrow가 Channel 제외한 다른 액터와 판정 안되게 하는 구문
+	if (Arrow)
+	{
+		UPrimitiveComponent* CollisionComponent = Cast<UPrimitiveComponent>(Arrow->GetComponentByClass(UPrimitiveComponent::StaticClass()));
+		if (CollisionComponent)
+		{
+			CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			CollisionComponent->SetCollisionObjectType(CCHANNEL_JK1ACTION);
+
+			// 모든 채널을 무시하고, 특정 채널에 대해서만 반응
+			CollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+			CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+		}
+	}
 }
 
 void AJK1Archor::SpawnArrowCheck()
@@ -185,6 +222,8 @@ void AJK1Archor::ComboActionBegin()
 
 void AJK1Archor::DoCombo()
 {
+	FVector ShootPoint = GetMesh()->GetSocketLocation(FName(TEXT("BowEmitterSocket")));
+
 	Super::DoCombo();
 	switch (CurrentCombo)
 	{
@@ -220,11 +259,12 @@ void AJK1Archor::SkillE(const FInputActionValue& value)
 {
 	Super::SkillE(value);
 	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
-
+	
+	//89.56f
 	SkillELocation = FVector(CalculateDamageLocation().X,CalculateDamageLocation().Y, 0.f);
 
+	PlayAnimMontage(SkillEMontage);
 	StartDamage();
-
 	PlayParticleSystem();
 }
 
@@ -237,13 +277,13 @@ void AJK1Archor::SkillR(const FInputActionValue& value)
 		SkillQMontagePlayRate = 0.2f;
 		SkillRChargePlayRate = 5.0f;
 	}
-	//TODO: Timer로 Rate 변수 초기화
 }
 
 void AJK1Archor::SkillLShift(const FInputActionValue& value)
 {
 	Super::SkillLShift(value);
 	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
+
 	IsLShift = true;
 
 	FTimerHandle LShiftTimerHandler;
@@ -284,8 +324,6 @@ void AJK1Archor::DealDamage()
 void AJK1Archor::StartDamage()
 {
 	// 0.2초 간격으로 DealDamage 함수를 호출하고, 5초 후에 멈춥니다.
-	RemainingDamageTime = 5.0f;
-
 	CheckSkillETrace();
 
 	GetWorldTimerManager().SetTimer(DamageTimerHandle, this, &AJK1Archor::DealDamage, DamageInterval, true);
@@ -295,9 +333,9 @@ void AJK1Archor::StopDamage()
 {
 	GetWorldTimerManager().ClearTimer(DamageTimerHandle);
 
-	if (DamageEffectComponent)
+	if (SkillEDamageEffectComponent)
 	{
-		DamageEffectComponent->Deactivate();
+		SkillEDamageEffectComponent->Deactivate();
 	}
 }
 
@@ -305,7 +343,6 @@ void AJK1Archor::CheckSkillETrace()
 {
 	// 타격 위치 계산
 	FVector DamageLocation = SkillELocation;
-	UE_LOG(LogArchor, Log, TEXT("%f %f %f"), DamageLocation.X, DamageLocation.Y, DamageLocation.Z);
 
 	// 구체로 범위를 지정하고 그 안의 모든 액터를 가져옵니다.
 	TArray<FHitResult> OverlappingActors;
@@ -313,15 +350,17 @@ void AJK1Archor::CheckSkillETrace()
 
 	DrawDebugSphere(
 		GetWorld(),
-		DamageLocation,         // 스피어의 위치
-		DamageRadius,           // 스피어의 반지름
-		12,                     // 스피어를 구성하는 선분의 수 (디테일 수준)
-		FColor::Red,            // 스피어의 색상
-		false,                  // 지속 시간 이후에 제거 (false: 자동 제거)
-		5.0f                    // 스피어가 표시될 시간 (초)
+		DamageLocation,        
+		DamageRadius,           
+		12,                     
+		FColor::Red,           
+		false,                  
+		5.0f                    
 	);
+
 	// Sphere를 생성하여 일정 범위 안에 있는 액터를 찾습니다.
 	FCollisionShape DamageSphere = FCollisionShape::MakeSphere(DamageRadius);
+
 	bool bHasHit = GetWorld()->SweepMultiByChannel(
 		OverlappingActors,
 		DamageLocation,
@@ -358,9 +397,10 @@ void AJK1Archor::CheckSkillETrace()
 void AJK1Archor::PlayParticleSystem()
 {
 	FTimerHandle TimerHandle;
-	const float Duration = 5.f;
 
-	DamageEffectComponent = UGameplayStatics::SpawnEmitterAtLocation(
+	const float SkillEDuration = 5.f;
+	
+	SkillEDamageEffectComponent = UGameplayStatics::SpawnEmitterAtLocation(
 		GetWorld(),
 		SkillEeffect,
 		SkillELocation,
@@ -368,10 +408,10 @@ void AJK1Archor::PlayParticleSystem()
 		false
 	);
 
-	if (DamageEffectComponent)
+	if (SkillEDamageEffectComponent)
 	{
 		// 파티클 시스템 재생
-		DamageEffectComponent->Activate(true);
+		SkillEDamageEffectComponent->Activate(true);
 
 		// 일정 시간 후에 파티클 시스템 제거를 위한 타이머 설정
 		//이건 파티클 제거를 위한 목적이니 남겨둠.
@@ -379,7 +419,7 @@ void AJK1Archor::PlayParticleSystem()
 			TimerHandle,
 			this,
 			&AJK1Archor::StopParticleSystem,
-			Duration,
+			SkillEDuration,
 			false
 		);
 	}
@@ -387,10 +427,10 @@ void AJK1Archor::PlayParticleSystem()
 
 void AJK1Archor::StopParticleSystem()
 {
-	if (DamageEffectComponent)
+	if (SkillEDamageEffectComponent)
 	{
-		DamageEffectComponent->Deactivate();
-		DamageEffectComponent->DestroyComponent();
+		SkillEDamageEffectComponent->Deactivate();
+		SkillEDamageEffectComponent->DestroyComponent();
 	}
 }
 

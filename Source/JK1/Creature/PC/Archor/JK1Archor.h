@@ -57,11 +57,9 @@ public:
 
 
 protected:
-	//InputMappingContext
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
 	//Montage, 클래스들은 각자 기본공격 몽타주 갯수가 다르다.
 	//Archor는 활을 쏘는 모션 하나.
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> ComboActionMontage;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
@@ -70,12 +68,13 @@ protected:
 	TObjectPtr<class UAnimMontage> SkillQMonatge_Recovery;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> SkillEMontage;
+
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	TObjectPtr<class UParticleSystem> SkillEeffect;
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	TObjectPtr<class UParticleSystem> SkillReffect;
 
-	// 데미지 범위 (Sphere) 변수
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
-	float DamageRadius = 500.0f;
+	
 
 	// 데미지량 변수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
@@ -96,22 +95,30 @@ protected:
 	//SkillR 차징 애니메이션 재생 속도
 	float SkillRChargePlayRate = 2.f;
 	// 총 데미지 지속 시간 동안 남은 시간
-	float RemainingDamageTime;
+	float RemainingDamageTime = 5.0f;
 
 private:
 	// 타격 위치 계산
 	FVector CalculateDamageLocation();
-	//이펙트 컴포넌트 변수
-	UParticleSystemComponent* DamageEffectComponent;
 
-	//SkillE 타격 Location
+	//Skill E 이펙트 컴포넌트 변수
+	UParticleSystemComponent* SkillEDamageEffectComponent;
+
+	//Skill E 타격 Location
 	FVector SkillELocation;
 
+	//현재 LShift스킬을 사용했는지 판단하는 bool type 변수
 	bool IsLShift = false;
 
-	FTimerDelegate TimerDel;
+	// 데미지 범위 (Sphere) 변수
+	float DamageRadius = 500.0f;
 
-	/*Shoot Arrow Parameter*/
+	//Arrow BP
+	FName ArrowBP;
+
+	/*
+	* Arrow Spawn에 필요한 Parameter 변수들
+	*/
 	UBlueprint* ObjectToSpawn;
 	FVector CrosshairWorldLocation;
 	FRotator ArrowSpawnRotation;
@@ -119,5 +126,7 @@ private:
 	FTimerHandle ArrowHandler;
 	int32 MaxTime = 5;
 	int32 CurrentTime = 0;
+	FVector ArrowStartLocation;
+	FVector ImpactPoint;
 	
 };

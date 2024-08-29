@@ -28,6 +28,7 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult
 	);
+	void PlaySkillQParticleEffect();
 
 public:
 	// Called every frame
@@ -52,5 +53,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Effect)
 	TObjectPtr<class UParticleSystem> Particle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Collision)
+	TObjectPtr<class UPrimitiveComponent> CollisionComponent;
 
 };
