@@ -97,6 +97,7 @@ void AJK1Archor::Shoot()
 		APlayerCameraManager* CameraManager = Cast<APlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
 		if (CameraManager)
 		{
+			// 발사좌표 계산
 			CrosshairWorldLocation = CameraManager->GetCameraLocation();
 			//카메라의 전방 벡터 가져오기.
 			EndLocation = CameraManager->GetActorForwardVector();
@@ -250,6 +251,23 @@ void AJK1Archor::SkillLShift(const FInputActionValue& value)
 
 	GetWorldTimerManager().SetTimer(LShiftTimerHandler, this,&AJK1Archor::BIsLShift, 5.0f, false);
 
+}
+
+void AJK1Archor::ArchorQ(FVector StartPoint, FVector EndPoint)
+{
+	
+}
+
+void AJK1Archor::ArchorE(FVector Point)
+{
+}
+
+void AJK1Archor::ArchorR()
+{
+}
+
+void AJK1Archor::ArchorLS()
+{
 }
 
 void AJK1Archor::ShootNRecovery()

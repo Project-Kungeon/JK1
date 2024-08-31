@@ -45,6 +45,12 @@ public:
 	virtual void SkillR(const FInputActionValue& value) override;
 	virtual void SkillLShift(const FInputActionValue& value) override;
 
+	virtual void ArchorQ(FVector StartPoint, FVector EndPoint);
+	virtual void ArchorE(FVector Point);
+	virtual void ArchorR();
+	virtual void ArchorLS();
+
+
 	void ShootNRecovery();
 	void EndSkillR();
 	void DealDamage();

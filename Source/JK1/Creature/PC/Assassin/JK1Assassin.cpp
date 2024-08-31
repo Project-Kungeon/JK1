@@ -291,48 +291,7 @@ void AJK1Assassin::AssassinE(FVector HitLocation)
 
 void AJK1Assassin::AssassinR()
 {
-	UE_LOG(LogAssassin, Log, TEXT("This is Assassin Skill LShift"));
-	if (IsCloakingProcess)
-	{
-		UE_LOG(LogAssassin, Log, TEXT("InCloakingProcess"));
-		return;
-	}
-
-	if (!IsCloaking)
-	{
-		//은신 진입
-		IsCloakingProcess = true;
-		USkeletalMeshComponent* MeshComponent = GetMesh();
-
-		if (MeshComponent)
-		{
-			int32 MaterialCount = MeshComponent->GetNumMaterials();
-			for (int32 i = 0; i < MaterialCount; i++)
-				MeshComponent->SetMaterial(i, DynamicMaterial);
-		}
-
-		MyTimeline->PlayFromStart();
-		UE_LOG(LogTemp, Log, TEXT("%f"), TimelineValue);
-		IsCloakingProcess = false;
-		IsCloaking = true;
-		GetCharacterMovement()->MaxWalkSpeed = 700.f;
-	}
-	else
-	{
-		//은신 해제
-		IsCloakingProcess = true;
-		MyTimeline->Reverse();
-		USkeletalMeshComponent* MeshComponent = GetMesh();
-		if (MeshComponent)
-		{
-			int32 MaterialCount = MeshComponent->GetNumMaterials();
-			for (int32 i = 0; i < MaterialCount; i++)
-				MeshComponent->SetMaterial(i, StoredMaterials[i]);
-		}
-		IsCloakingProcess = false;
-		IsCloaking = false;
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
-	}
+	PlayAnimMontage(SkillRMontage, 1.5f);
 }
 
 void AJK1Assassin::AssassinLSOn()
