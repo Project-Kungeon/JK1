@@ -18,7 +18,8 @@ public:
 	static bool Handle_S_AssassinE(PacketSessionRef& session, skill::S_Assassin_E& pkt);
 
 	static bool Handle_S_ArchorAttack(PacketSessionRef& session, skill::S_Archor_Attack& pkt);
-
+	static bool Handle_S_ArchorQ_Charging(PacketSessionRef& session, skill::S_Archor_Q_Charging& pkt);
+	static bool Handle_S_ArchorQ_Shot(PacketSessionRef& session, skill::S_Archor_Q_Shot& pkt);
 	static bool Handle_S_ArchorE(PacketSessionRef& session, skill::S_Archor_E& pkt);
 
 };

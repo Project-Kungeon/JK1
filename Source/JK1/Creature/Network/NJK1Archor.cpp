@@ -132,11 +132,35 @@ void ANJK1Archor::OnArrowHit(FHitResult hit)
 
 		if (IsLShift)
 		{
-			pkt.set_damage(5);
+			pkt.set_damage(10);
 		}
 		else
 		{
-			pkt.set_damage(1);
+			pkt.set_damage(5);
+		}
+
+		SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+	}
+}
+
+void ANJK1Archor::OnArchorQ_Hit(FHitResult hit)
+{
+	if (isMyPlayer)
+	{
+		// Create Attack Pkt
+		message::C_Attack pkt;
+		uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+		pkt.set_object_id(my_id);
+		AActor* actor = hit.GetActor();
+		if (auto* Actor = Cast<AJK1CreatureBase>(actor))
+		{
+			uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
+			pkt.add_target_ids(target_id);
+		}
+
+		else
+		{
+			pkt.set_damage(15);
 		}
 
 		SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
@@ -161,5 +185,28 @@ void ANJK1Archor::OnArchorE_Hit(TArray<FHitResult> hits)
 			}
 		}
 		SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+	}
+}
+
+void ANJK1Archor::ShootNRecovery()
+{
+	if (GetWorld() && isMyPlayer)
+	{
+		APlayerCameraManager* CameraManager = Cast<APlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
+		
+		skill::C_Archor_Q_Shot skillPkt;
+		skillPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
+		FVector ArrowStartLoc = GetStartArrowLoc(CameraManager);
+		FVector ArrowEndLoc = GetEndArrowLoc(CameraManager);
+
+		skillPkt.set_start_x(ArrowStartLoc.X);
+		skillPkt.set_start_y(ArrowStartLoc.Y);
+		skillPkt.set_start_z(ArrowStartLoc.Z);
+		skillPkt.set_end_x(ArrowEndLoc.X);
+		skillPkt.set_end_y(ArrowEndLoc.Y);
+		skillPkt.set_end_z(ArrowEndLoc.Z);
+
+		SEND_PACKET(message::HEADER::ARCHOR_Q_SHOT_REQ, skillPkt);
+
 	}
 }

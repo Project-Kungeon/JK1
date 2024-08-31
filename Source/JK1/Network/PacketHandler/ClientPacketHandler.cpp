@@ -91,6 +91,16 @@ void ClientPacketHandler::Init()
         UE_LOG(LogTemp, Log, TEXT("S_ArchorAttack Handle"));
         return HandlePacket<skill::S_Archor_Attack>(BattlePacketHandler::Handle_S_ArchorAttack, session, buffer, header, offset);
     };
+    GPacketHandler[message::HEADER::ARCHOR_Q_CHARGING_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_ArchorQ_Charging Handle"));
+        return HandlePacket<skill::S_Archor_Q_Charging>(BattlePacketHandler::Handle_S_ArchorQ_Charging, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::ARCHOR_Q_SHOT_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_ArchorQ_Shot Handle"));
+        return HandlePacket<skill::S_Archor_Q_Shot>(BattlePacketHandler::Handle_S_ArchorQ_Shot, session, buffer, header, offset);
+    };
 
     GPacketHandler[message::HEADER::ARCHOR_E_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
     {

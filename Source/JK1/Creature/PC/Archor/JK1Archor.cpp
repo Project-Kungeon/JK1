@@ -126,7 +126,56 @@ void AJK1Archor::Shoot(FVector StartLoc, FVector EndLoc)
 
 	DrawDebugLine(
 		GetWorld(),
-		CrosshairWorldLocation,
+		StartLoc,
+		ImpactPoint,
+		DrawColor,
+		false,
+		3.f,
+		0,
+		3.f
+	);
+#endif
+}
+
+void AJK1Archor::ShootQ(FVector StartLoc, FVector EndLoc)
+{
+	PlayAnimMontage(SkillQMonatge_Recovery);
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *ArrowBP.ToString()));
+
+	FHitResult HitResult;	// 히트 대상
+	FVector EndLocation;
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
+
+	ImpactPoint = StartLoc + EndLoc;
+
+	bool bSuccess = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		StartLoc,
+		ImpactPoint,
+		CCHANNEL_JK1ACTION,
+		Params
+	);
+
+	if (bSuccess)
+	{
+		if (HitResult.bBlockingHit)
+		{
+			ImpactPoint = HitResult.ImpactPoint;
+			UE_LOG(LogArchor, Log, TEXT("%d, %d, %d"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
+			OnArchorQ_Hit(HitResult);
+		}
+		SpawnArrow();
+	}
+#if ENABLE_DRAW_DEBUG
+	FVector Direction = ImpactPoint - CrosshairWorldLocation;
+	FColor DrawColor = bSuccess ? FColor::Green : FColor::Red;
+	FQuat QuatRotation = FQuat::FindBetweenNormals(FVector::UpVector, Direction.GetSafeNormal());
+
+	DrawDebugLine(
+		GetWorld(),
+		StartLoc,
 		ImpactPoint,
 		DrawColor,
 		false,
@@ -276,19 +325,24 @@ void AJK1Archor::ArchorAttack(FVector StartPoint, FVector EndPoint)
 
 void AJK1Archor::ArchorQ_Charging()
 {
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance)
-	{
-		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-		PlayAnimMontage(SkillQMonatge_Charge, SkillRChargePlayRate);
-		FTimerHandle ChargeHandler;
-		GetWorldTimerManager().SetTimer(ChargeHandler, this, &AJK1Archor::ShootNRecovery, SkillQMontagePlayRate, false);
-	}
+
+	AsyncTask(ENamedThreads::GameThread, [this]() {
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance)
+		{
+			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+			PlayAnimMontage(SkillQMonatge_Charge, SkillRChargePlayRate);
+			FTimerHandle ChargeHandler;
+			GetWorldTimerManager().SetTimer(ChargeHandler, this, &AJK1Archor::ShootNRecovery, SkillQMontagePlayRate, false);
+		}
+		});
+
+	
 }
 
 void AJK1Archor::ArchorQ_Shot(FVector StartPoint, FVector EndPoint)
 {
-	
+	ShootQ(StartPoint, EndPoint);
 }
 
 void AJK1Archor::ArchorE(FVector Point)
@@ -345,20 +399,21 @@ void AJK1Archor::OnArrowHit(FHitResult hit)
 
 }
 
+void AJK1Archor::OnArchorQ_Hit(FHitResult hit)
+{
+}
+
 void AJK1Archor::OnArchorE_Hit(TArray<FHitResult> hits)
 {
 }
 
 void AJK1Archor::ShootNRecovery()
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-
 	if (GetWorld())
 	{
 		APlayerCameraManager* CameraManager = Cast<APlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
-		Shoot(GetStartArrowLoc(CameraManager), GetEndArrowLoc(CameraManager));
+		ShootQ(GetStartArrowLoc(CameraManager), GetEndArrowLoc(CameraManager));
 	}
-	PlayAnimMontage(SkillQMonatge_Recovery);
 }
 
 void AJK1Archor::EndSkillR()
@@ -434,6 +489,7 @@ void AJK1Archor::CheckSkillETrace()
 
 	if (bHasHit)
 	{
+		OnArchorE_Hit(OverlappingActors);
 		for (FHitResult& result : OverlappingActors)
 		{
 			UE_LOG(LogArchor, Log, TEXT("%s"), *result.GetActor()->GetName());

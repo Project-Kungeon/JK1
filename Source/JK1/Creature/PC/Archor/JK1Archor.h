@@ -30,6 +30,7 @@ protected:
 	//Attack Funciton
 	void Attack();
 	void Shoot(FVector StartLoc, FVector EndLoc);
+	void ShootQ(FVector StartLoc, FVector EndLoc);
 	void SpawnArrow();
 	void SpawnArrowCheck();
 
@@ -58,6 +59,7 @@ public:
 
 	// Arrow Hit Listener
 	virtual void OnArrowHit(FHitResult hit);
+	virtual void OnArchorQ_Hit(FHitResult hit);
 	virtual void OnArchorE_Hit(TArray<FHitResult> hits);
 	
 

@@ -56,6 +56,8 @@ public:
 	void HandleAssassinE(const skill::S_Assassin_E& pkt);
 
 	void HandleArchorAttack(const skill::S_Archor_Attack& pkt);
+	void HandleArchorQ_Charging(const skill::S_Archor_Q_Charging& pkt);
+	void HandleArchorQ_Shot(const skill::S_Archor_Q_Shot& pkt);
 	void HandleArchorE(const skill::S_Archor_E& pkt);
 
 private:

@@ -100,6 +100,24 @@ bool BattlePacketHandler::Handle_S_ArchorAttack(PacketSessionRef& session, skill
 	return true;
 }
 
+bool BattlePacketHandler::Handle_S_ArchorQ_Charging(PacketSessionRef& session, skill::S_Archor_Q_Charging& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleArchorQ_Charging(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_ArchorQ_Shot(PacketSessionRef& session, skill::S_Archor_Q_Shot& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleArchorQ_Shot(pkt);
+	}
+	return true;
+}
+
 bool BattlePacketHandler::Handle_S_ArchorE(PacketSessionRef& session, skill::S_Archor_E& pkt)
 {
 	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))

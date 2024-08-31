@@ -337,6 +337,30 @@ void UNetworkJK1GameInstance::HandleArchorAttack(const skill::S_Archor_Attack& p
 	}
 }
 
+void UNetworkJK1GameInstance::HandleArchorQ_Charging(const skill::S_Archor_Q_Charging& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Archor = Cast<AJK1Archor>(Attacker);
+		Archor->ArchorQ_Charging();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleArchorQ_Shot(const skill::S_Archor_Q_Shot& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Archor = Cast<AJK1Archor>(Attacker);
+		FVector StartPoint(pkt.start_x(), pkt.start_y(), pkt.start_z());
+		FVector EndPoint(pkt.end_x(), pkt.end_y(), pkt.end_z());
+		Archor->ArchorQ_Shot(StartPoint, EndPoint);
+	}
+}
+
 void UNetworkJK1GameInstance::HandleArchorE(const skill::S_Archor_E& pkt)
 {
 	const uint64 objectId = pkt.object_id();

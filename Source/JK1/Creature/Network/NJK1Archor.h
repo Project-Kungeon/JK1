@@ -35,5 +35,8 @@ public:
 	virtual void SkillLShift(const FInputActionValue& value) override;
 
 	virtual void OnArrowHit(FHitResult hit) override;
+	virtual void OnArchorQ_Hit(FHitResult hit) override;
 	virtual void OnArchorE_Hit(TArray<FHitResult> hits) override;
+
+	virtual void ShootNRecovery() override;
 };
