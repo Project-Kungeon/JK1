@@ -79,7 +79,6 @@ public:
 
 	UPROPERTY()
 	TSet<AActor*> WeaponAttackTargets;
-	FName path;
 
 	// combo == 0 not start 
 	// combo >= 1 -> Combo Start
