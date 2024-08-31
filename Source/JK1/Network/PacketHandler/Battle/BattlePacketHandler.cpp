@@ -90,3 +90,21 @@ bool BattlePacketHandler::Handle_S_AssassinE(PacketSessionRef& session, skill::S
 	}
 	return true;
 }
+
+bool BattlePacketHandler::Handle_S_ArchorAttack(PacketSessionRef& session, skill::S_Archor_Attack& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleArchorAttack(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_ArchorE(PacketSessionRef& session, skill::S_Archor_E& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleArchorE(pkt);
+	}
+	return true;
+}

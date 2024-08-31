@@ -80,36 +80,19 @@ void AJK1Archor::Attack()
 	
 }
 
-void AJK1Archor::Shoot()
+void AJK1Archor::Shoot(FVector StartLoc, FVector EndLoc)
 {
 	ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *ArrowBP.ToString()));
 
-	FHitResult HitResult;
+	FHitResult HitResult;	// 히트 대상
 	FVector EndLocation;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
-	//Camera Info 가져오기.
-	if (GetWorld())
-	{
-		APlayerCameraManager* CameraManager = Cast<APlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
-		if (CameraManager)
-		{
-			// 발사좌표 계산
-			CrosshairWorldLocation = CameraManager->GetCameraLocation();
-			//카메라의 전방 벡터 가져오기.
-			EndLocation = CameraManager->GetActorForwardVector();
-			//scaling forward vector by 15,000, 추적의 끝 부분, Multifly Vector Size 15000
-			EndLocation.X *= 15000;
-			EndLocation.Y *= 15000;
-			EndLocation.Z *= 15000;
-			//탐지하고자 하는 끝부분, Impact Target Point
-			ImpactPoint = CrosshairWorldLocation + EndLocation;
-		}
-	}
+	ImpactPoint = StartLoc + EndLoc;
 
 	bool bSuccess = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
-		CrosshairWorldLocation,
+		StartLoc,
 		ImpactPoint,
 		CCHANNEL_JK1ACTION,
 		Params
@@ -121,6 +104,7 @@ void AJK1Archor::Shoot()
 		{
 			ImpactPoint = HitResult.ImpactPoint;
 			UE_LOG(LogArchor, Log, TEXT("%d, %d, %d"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
+			OnArrowHit(HitResult);
 		}
 
 		if (IsLShift)
@@ -230,8 +214,14 @@ void AJK1Archor::DoCombo()
 	{
 	case 0:
 		CurrentCombo = 1;
-		PlayAnimMontage(ComboActionMontage, ComboActionMontagePlayRate);
-		Shoot();
+		if (GetWorld())
+		{
+			APlayerCameraManager* CameraManager = Cast<APlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
+			FVector ArrowStartLoc = GetStartArrowLoc(CameraManager);
+			FVector ArrowEndLoc = GetEndArrowLoc(CameraManager);
+			ArchorAttack(ArrowStartLoc, ArrowEndLoc);
+		}
+		
 		break;
 	}
 }
@@ -246,6 +236,46 @@ void AJK1Archor::SkillQ(const FInputActionValue& value)
 	Super::SkillQ(value);
 	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
 
+	ArchorQ_Charging();
+}
+
+void AJK1Archor::SkillE(const FInputActionValue& value)
+{
+	Super::SkillE(value);
+	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
+	
+	ArchorE(CalculateDamageLocation());
+}
+
+void AJK1Archor::SkillR(const FInputActionValue& value)
+{
+	Super::SkillR(value);
+	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
+	ArchorR();
+}
+
+void AJK1Archor::SkillLShift(const FInputActionValue& value)
+{
+	Super::SkillLShift(value);
+	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
+
+	ArchorLS();
+
+}
+
+void AJK1Archor::ArchorAttack(FVector StartPoint, FVector EndPoint)
+{
+	AsyncTask(ENamedThreads::GameThread, [this, StartPoint, EndPoint]() {
+
+		PlayAnimMontage(ComboActionMontage, ComboActionMontagePlayRate);
+		Shoot(StartPoint, EndPoint);
+		});
+
+	
+}
+
+void AJK1Archor::ArchorQ_Charging()
+{
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
@@ -256,23 +286,29 @@ void AJK1Archor::SkillQ(const FInputActionValue& value)
 	}
 }
 
-void AJK1Archor::SkillE(const FInputActionValue& value)
+void AJK1Archor::ArchorQ_Shot(FVector StartPoint, FVector EndPoint)
 {
-	Super::SkillE(value);
-	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
 	
-	//89.56f
-	SkillELocation = FVector(CalculateDamageLocation().X,CalculateDamageLocation().Y, 0.f);
-
-	PlayAnimMontage(SkillEMontage);
-	StartDamage();
-	PlayParticleSystem();
 }
 
-void AJK1Archor::SkillR(const FInputActionValue& value)
+void AJK1Archor::ArchorE(FVector Point)
 {
-	Super::SkillR(value);
-	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
+	//89.56f
+	//SkillELocation = FVector(CalculateDamageLocation().X, CalculateDamageLocation().Y, 0.f);
+
+	AsyncTask(ENamedThreads::GameThread, [this, Point]() {
+		SkillELocation = FVector(Point.X, Point.Y, 0.f);
+
+		PlayAnimMontage(SkillEMontage);
+		StartDamage();
+		PlayParticleSystem();
+		});
+
+	
+}
+
+void AJK1Archor::ArchorR()
+{
 	{
 		ComboActionMontagePlayRate = 2.0f;
 		SkillQMontagePlayRate = 0.2f;
@@ -280,40 +316,48 @@ void AJK1Archor::SkillR(const FInputActionValue& value)
 	}
 }
 
-void AJK1Archor::SkillLShift(const FInputActionValue& value)
+void AJK1Archor::ArchorLS()
 {
-	Super::SkillLShift(value);
-	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
-
 	IsLShift = true;
 
 	FTimerHandle LShiftTimerHandler;
 
-	GetWorldTimerManager().SetTimer(LShiftTimerHandler, this,&AJK1Archor::BIsLShift, 5.0f, false);
-
+	GetWorldTimerManager().SetTimer(LShiftTimerHandler, this, &AJK1Archor::BIsLShift, 5.0f, false);
 }
 
-void AJK1Archor::ArchorQ(FVector StartPoint, FVector EndPoint)
+FVector AJK1Archor::GetStartArrowLoc(APlayerCameraManager* CameraManager)
 {
-	
+	return CameraManager->GetCameraLocation();
 }
 
-void AJK1Archor::ArchorE(FVector Point)
+FVector AJK1Archor::GetEndArrowLoc(APlayerCameraManager* CameraManager)
 {
+	FVector EndLoc = CameraManager->GetActorForwardVector();
+	EndLoc.X *= 15000;
+	EndLoc.Y *= 15000;
+	EndLoc.Z *= 15000;
+
+	return EndLoc;
 }
 
-void AJK1Archor::ArchorR()
+void AJK1Archor::OnArrowHit(FHitResult hit)
 {
+
 }
 
-void AJK1Archor::ArchorLS()
+void AJK1Archor::OnArchorE_Hit(TArray<FHitResult> hits)
 {
 }
 
 void AJK1Archor::ShootNRecovery()
 {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	Shoot();
+
+	if (GetWorld())
+	{
+		APlayerCameraManager* CameraManager = Cast<APlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
+		Shoot(GetStartArrowLoc(CameraManager), GetEndArrowLoc(CameraManager));
+	}
 	PlayAnimMontage(SkillQMonatge_Recovery);
 }
 
@@ -390,7 +434,7 @@ void AJK1Archor::CheckSkillETrace()
 
 	if (bHasHit)
 	{
-		for (FHitResult result : OverlappingActors)
+		for (FHitResult& result : OverlappingActors)
 		{
 			UE_LOG(LogArchor, Log, TEXT("%s"), *result.GetActor()->GetName());
 			AActor* SweepActor = result.GetActor();

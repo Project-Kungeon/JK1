@@ -55,6 +55,9 @@ public:
 	void HandleAssassinLsOff(const skill::S_Assassin_LS_Off& pkt);
 	void HandleAssassinE(const skill::S_Assassin_E& pkt);
 
+	void HandleArchorAttack(const skill::S_Archor_Attack& pkt);
+	void HandleArchorE(const skill::S_Archor_E& pkt);
+
 private:
 	PacketSessionRef GameSession;
 

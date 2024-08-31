@@ -28,8 +28,8 @@ public:
 	
 protected:
 	//Attack Funciton
-	virtual void Attack() override;
-	void Shoot();
+	void Attack();
+	void Shoot(FVector StartLoc, FVector EndLoc);
 	void SpawnArrow();
 	void SpawnArrowCheck();
 
@@ -45,21 +45,31 @@ public:
 	virtual void SkillR(const FInputActionValue& value) override;
 	virtual void SkillLShift(const FInputActionValue& value) override;
 
-	virtual void ArchorQ(FVector StartPoint, FVector EndPoint);
+	virtual void ArchorAttack(FVector StartPoint, FVector EndPoint);
+	virtual void ArchorQ_Charging();
+	virtual void ArchorQ_Shot(FVector StartPoint, FVector EndPoint);
 	virtual void ArchorE(FVector Point);
 	virtual void ArchorR();
 	virtual void ArchorLS();
 
+	// 발사좌표 함수
+	FVector GetStartArrowLoc(APlayerCameraManager* CameraManager);
+	FVector GetEndArrowLoc(APlayerCameraManager* CameraManager);
 
-	void ShootNRecovery();
-	void EndSkillR();
-	void DealDamage();
-	void StartDamage();
-	void StopDamage();
-	void CheckSkillETrace();
-	void PlayParticleSystem();
-	void StopParticleSystem();
-	void BIsLShift() { IsLShift = false; }
+	// Arrow Hit Listener
+	virtual void OnArrowHit(FHitResult hit);
+	virtual void OnArchorE_Hit(TArray<FHitResult> hits);
+	
+
+	virtual void ShootNRecovery();
+	virtual void EndSkillR();
+	virtual void DealDamage();
+	virtual void StartDamage();
+	virtual void StopDamage();
+	virtual void CheckSkillETrace();
+	virtual void PlayParticleSystem();
+	virtual void StopParticleSystem();
+	virtual void BIsLShift() { IsLShift = false; }
 
 
 protected:
@@ -103,7 +113,7 @@ protected:
 	// 총 데미지 지속 시간 동안 남은 시간
 	float RemainingDamageTime = 5.0f;
 
-private:
+protected:
 	// 타격 위치 계산
 	FVector CalculateDamageLocation();
 

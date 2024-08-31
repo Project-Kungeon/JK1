@@ -169,13 +169,15 @@ enum HEADER : int {
   ARCHOR_R_RES = 3110,
   ARCHOR_LS_REQ = 3111,
   ARCHOR_LS_RES = 3112,
+  ARCHOR_R_OFF_RES = 3113,
+  ARCHOR_LS_OFF_RES = 3114,
   COOLTIME_RES = 1000,
   HEADER_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   HEADER_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool HEADER_IsValid(int value);
 constexpr HEADER HEADER_MIN = NONE;
-constexpr HEADER HEADER_MAX = ARCHOR_LS_RES;
+constexpr HEADER HEADER_MAX = ARCHOR_LS_OFF_RES;
 constexpr int HEADER_ARRAYSIZE = HEADER_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* HEADER_descriptor();

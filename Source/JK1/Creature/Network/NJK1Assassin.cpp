@@ -102,10 +102,10 @@ void ANJK1Assassin::Attack()
 	Super::Attack();
 	if (isMyPlayer)
 	{
-		skill::C_ASSASSIN_Attack attcakPkt;
-		attcakPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
+		skill::C_ASSASSIN_Attack attackPkt;
+		attackPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
 
-		SEND_PACKET(message::HEADER::ASSASSIN_ATTACK_REQ, attcakPkt);
+		SEND_PACKET(message::HEADER::ASSASSIN_ATTACK_REQ, attackPkt);
 	}
 }
 

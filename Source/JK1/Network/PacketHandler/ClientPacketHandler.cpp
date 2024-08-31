@@ -84,4 +84,18 @@ void ClientPacketHandler::Init()
         UE_LOG(LogTemp, Log, TEXT("S_AssassinE Handle"));
         return HandlePacket<skill::S_Assassin_E>(BattlePacketHandler::Handle_S_AssassinE, session, buffer, header, offset);
     };
+
+    // Archor
+    GPacketHandler[message::HEADER::ARCHOR_ATTACK_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_ArchorAttack Handle"));
+        return HandlePacket<skill::S_Archor_Attack>(BattlePacketHandler::Handle_S_ArchorAttack, session, buffer, header, offset);
+    };
+
+    GPacketHandler[message::HEADER::ARCHOR_E_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_ArchorE Handle"));
+        return HandlePacket<skill::S_Archor_E>(BattlePacketHandler::Handle_S_ArchorE, session, buffer, header, offset);
+    };
+
 }

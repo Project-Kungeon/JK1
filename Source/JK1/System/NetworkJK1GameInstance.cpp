@@ -111,6 +111,9 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::PlayerInfo& info, bool 
 				case message::PLAYER_TYPE_ASSASSIN:
 					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(AssassinClass, &SpawnLocation));
 					break;
+				case message::PLAYER_TYPE_ARCHER:
+					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(ArchorClass, &SpawnLocation));
+					break;
 				default:
 					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(OtherPlayerClass, &SpawnLocation));
 					break;
@@ -146,6 +149,9 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::PlayerInfo& info, bool 
 					break;
 				case message::PLAYER_TYPE_ASSASSIN:
 					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(AssassinClass, &SpawnLocation));
+					break;
+				case message::PLAYER_TYPE_ARCHER:
+					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(ArchorClass, &SpawnLocation));
 					break;
 				default:
 					Player = Cast<AJK1PlayerCharacter>(World->SpawnActor(OtherPlayerClass, &SpawnLocation));
@@ -315,5 +321,30 @@ void UNetworkJK1GameInstance::HandleAssassinE(const skill::S_Assassin_E& pkt)
 
 		FVector HitLocation(pkt.x(), pkt.y(), pkt.z());
 		Assassin->AssassinE(HitLocation);
+	}
+}
+
+void UNetworkJK1GameInstance::HandleArchorAttack(const skill::S_Archor_Attack& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Archor = Cast<AJK1Archor>(Attacker);
+		FVector StartPoint(pkt.start_x(), pkt.start_y(), pkt.start_z());
+		FVector EndPoint(pkt.end_x(), pkt.end_y(), pkt.end_z());
+		Archor->ArchorAttack(StartPoint, EndPoint);
+	}
+}
+
+void UNetworkJK1GameInstance::HandleArchorE(const skill::S_Archor_E& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Archor = Cast<AJK1Archor>(Attacker);
+		FVector SkillPoint(pkt.x(), pkt.y(), pkt.z());
+		Archor->ArchorE(SkillPoint);
 	}
 }

@@ -16,4 +16,9 @@ public:
 	static bool Handle_S_AssassinLS(PacketSessionRef& session, skill::S_ASSASSIN_LS& pkt);
 	static bool Handle_S_AssassinLSOff(PacketSessionRef& session, skill::S_Assassin_LS_Off& pkt);
 	static bool Handle_S_AssassinE(PacketSessionRef& session, skill::S_Assassin_E& pkt);
+
+	static bool Handle_S_ArchorAttack(PacketSessionRef& session, skill::S_Archor_Attack& pkt);
+
+	static bool Handle_S_ArchorE(PacketSessionRef& session, skill::S_Archor_E& pkt);
+
 };
