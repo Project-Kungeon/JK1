@@ -372,3 +372,47 @@ void UNetworkJK1GameInstance::HandleArchorE(const skill::S_Archor_E& pkt)
 		Archor->ArchorE(SkillPoint);
 	}
 }
+
+void UNetworkJK1GameInstance::HandleArchorR(const skill::S_Archor_R& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Archor = Cast<AJK1Archor>(Attacker);
+		Archor->ArchorR();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleArchorR_Off(const skill::S_Archor_R_Off& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Archor = Cast<AJK1Archor>(Attacker);
+		Archor->EndSkillR();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleArchorLS(const skill::S_Archor_LS& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Archor = Cast<AJK1Archor>(Attacker);
+		Archor->ArchorLS();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleArchorLS_Off(const skill::S_Archor_LS_Off& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Archor = Cast<AJK1Archor>(Attacker);
+		Archor->BIsLShift();
+	}
+}

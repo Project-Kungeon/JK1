@@ -31,8 +31,8 @@ protected:
 	void Attack();
 	void Shoot(FVector StartLoc, FVector EndLoc);
 	void ShootQ(FVector StartLoc, FVector EndLoc);
-	void SpawnArrow();
-	void SpawnArrowCheck();
+	void SpawnArrow(FVector StartLoc, FVector EndLoc);
+	void SpawnArrowCheck(FVector StartLoc, FVector EndLoc);
 
 	//ComboAction
 	virtual void ComboActionBegin() override;

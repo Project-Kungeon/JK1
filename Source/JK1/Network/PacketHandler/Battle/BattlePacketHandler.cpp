@@ -126,3 +126,39 @@ bool BattlePacketHandler::Handle_S_ArchorE(PacketSessionRef& session, skill::S_A
 	}
 	return true;
 }
+
+bool BattlePacketHandler::Handle_S_ArchorR(PacketSessionRef& session, skill::S_Archor_R& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleArchorR(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_ArchorR_Off(PacketSessionRef& session, skill::S_Archor_R_Off& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleArchorR_Off(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_ArchorLS(PacketSessionRef& session, skill::S_Archor_LS& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleArchorLS(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_ArchorLS_Off(PacketSessionRef& session, skill::S_Archor_LS_Off& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleArchorLS_Off(pkt);
+	}
+	return true;
+}

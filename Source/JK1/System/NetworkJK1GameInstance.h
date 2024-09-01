@@ -59,6 +59,10 @@ public:
 	void HandleArchorQ_Charging(const skill::S_Archor_Q_Charging& pkt);
 	void HandleArchorQ_Shot(const skill::S_Archor_Q_Shot& pkt);
 	void HandleArchorE(const skill::S_Archor_E& pkt);
+	void HandleArchorR(const skill::S_Archor_R& pkt);
+	void HandleArchorR_Off(const skill::S_Archor_R_Off& pkt);
+	void HandleArchorLS(const skill::S_Archor_LS& pkt);
+	void HandleArchorLS_Off(const skill::S_Archor_LS_Off& pkt);
 
 private:
 	PacketSessionRef GameSession;

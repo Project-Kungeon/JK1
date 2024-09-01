@@ -106,19 +106,23 @@ void AJK1Archor::Shoot(FVector StartLoc, FVector EndLoc)
 			UE_LOG(LogArchor, Log, TEXT("%d, %d, %d"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
 			OnArrowHit(HitResult);
 		}
-
 		if (IsLShift)
 		{
 			CurrentTime = MaxTime;
-			GetWorldTimerManager().SetTimer(ArrowHandler, this, &AJK1Archor::SpawnArrowCheck, 0.1f, true);
+			GetWorldTimerManager().SetTimer(ArrowHandler, [this, StartLoc, EndLoc]()
+				{
+					this->SpawnArrowCheck(StartLoc, EndLoc);
+				}, 0.1f, true);
 			//TODO : 데미지 5
 		}
-		else 
+		else
 		{
-			SpawnArrow();
+			SpawnArrow(StartLoc, EndLoc);
 			//TODO : 데미지 1
 		}
 	}
+	
+
 #if ENABLE_DRAW_DEBUG
 	FVector Direction = ImpactPoint - CrosshairWorldLocation;
 	FColor DrawColor = bSuccess ? FColor::Green : FColor::Red;
@@ -166,7 +170,7 @@ void AJK1Archor::ShootQ(FVector StartLoc, FVector EndLoc)
 			UE_LOG(LogArchor, Log, TEXT("%d, %d, %d"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
 			OnArchorQ_Hit(HitResult);
 		}
-		SpawnArrow();
+		SpawnArrow(StartLoc, EndLoc);
 	}
 #if ENABLE_DRAW_DEBUG
 	FVector Direction = ImpactPoint - CrosshairWorldLocation;
@@ -186,7 +190,7 @@ void AJK1Archor::ShootQ(FVector StartLoc, FVector EndLoc)
 #endif
 }
 
-void AJK1Archor::SpawnArrow()
+void AJK1Archor::SpawnArrow(FVector StartLoc, FVector EndLoc)
 {
 	AJK1Arrow* Arrow = nullptr;
 	//LShift 상태면 랜덤한 스타팅 포인트에서 화살 발사
@@ -195,7 +199,8 @@ void AJK1Archor::SpawnArrow()
 		float Radius = 50.0f; // 원하는 반지름 크기
 		FVector RandomDirection = UKismetMathLibrary::RandomUnitVector();
 		FVector Offset = RandomDirection * Radius;
-		ArrowStartLocation = CrosshairWorldLocation + Offset;
+		ArrowStartLocation = StartLoc + Offset;
+		ImpactPoint = StartLoc + EndLoc;
 		ArrowSpawnRotation = (ImpactPoint - ArrowStartLocation).Rotation();
 
 		Arrow = GetWorld()->SpawnActor<AJK1Arrow>(ObjectToSpawn->GeneratedClass,
@@ -214,10 +219,10 @@ void AJK1Archor::SpawnArrow()
 	}
 	else //아니라면 CameraForward Vector방향으로 발사
 	{
-		ArrowSpawnRotation = (ImpactPoint - CrosshairWorldLocation).Rotation();
+		ArrowSpawnRotation = (ImpactPoint - StartLoc).Rotation();
 
 		Arrow = GetWorld()->SpawnActor<AJK1Arrow>(ObjectToSpawn->GeneratedClass,
-			CrosshairWorldLocation, ArrowSpawnRotation, SpawnParams);
+			StartLoc, ArrowSpawnRotation, SpawnParams);
 	}
 	
 	//Arrow가 Channel 제외한 다른 액터와 판정 안되게 하는 구문
@@ -236,12 +241,12 @@ void AJK1Archor::SpawnArrow()
 	}
 }
 
-void AJK1Archor::SpawnArrowCheck()
+void AJK1Archor::SpawnArrowCheck(FVector StartLoc, FVector EndLoc)
 {
 	if (CurrentTime > 0)
 	{
 		CurrentTime--;
-		SpawnArrow();
+		SpawnArrow(StartLoc, EndLoc);
 	}
 	else
 	{
@@ -374,9 +379,9 @@ void AJK1Archor::ArchorLS()
 {
 	IsLShift = true;
 
-	FTimerHandle LShiftTimerHandler;
+	//FTimerHandle LShiftTimerHandler;
 
-	GetWorldTimerManager().SetTimer(LShiftTimerHandler, this, &AJK1Archor::BIsLShift, 5.0f, false);
+	//GetWorldTimerManager().SetTimer(LShiftTimerHandler, this, &AJK1Archor::BIsLShift, 5.0f, false);
 }
 
 FVector AJK1Archor::GetStartArrowLoc(APlayerCameraManager* CameraManager)

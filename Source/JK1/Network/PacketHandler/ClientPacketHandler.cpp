@@ -101,11 +101,30 @@ void ClientPacketHandler::Init()
         UE_LOG(LogTemp, Log, TEXT("S_ArchorQ_Shot Handle"));
         return HandlePacket<skill::S_Archor_Q_Shot>(BattlePacketHandler::Handle_S_ArchorQ_Shot, session, buffer, header, offset);
     };
-
     GPacketHandler[message::HEADER::ARCHOR_E_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
     {
         UE_LOG(LogTemp, Log, TEXT("S_ArchorE Handle"));
         return HandlePacket<skill::S_Archor_E>(BattlePacketHandler::Handle_S_ArchorE, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::ARCHOR_R_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_ArchorR Handle"));
+        return HandlePacket<skill::S_Archor_R>(BattlePacketHandler::Handle_S_ArchorR, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::ARCHOR_R_OFF_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_ArchorR_Off Handle"));
+        return HandlePacket<skill::S_Archor_R_Off>(BattlePacketHandler::Handle_S_ArchorR_Off, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::ARCHOR_LS_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_ArchorLS Handle"));
+        return HandlePacket<skill::S_Archor_LS>(BattlePacketHandler::Handle_S_ArchorLS, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::ARCHOR_LS_OFF_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_ArchorR_Off Handle"));
+        return HandlePacket<skill::S_Archor_LS_Off>(BattlePacketHandler::Handle_S_ArchorLS_Off, session, buffer, header, offset);
     };
 
 }

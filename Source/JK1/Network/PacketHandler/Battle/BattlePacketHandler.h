@@ -21,5 +21,8 @@ public:
 	static bool Handle_S_ArchorQ_Charging(PacketSessionRef& session, skill::S_Archor_Q_Charging& pkt);
 	static bool Handle_S_ArchorQ_Shot(PacketSessionRef& session, skill::S_Archor_Q_Shot& pkt);
 	static bool Handle_S_ArchorE(PacketSessionRef& session, skill::S_Archor_E& pkt);
-
+	static bool Handle_S_ArchorR(PacketSessionRef& session, skill::S_Archor_R& pkt);
+	static bool Handle_S_ArchorR_Off(PacketSessionRef& session, skill::S_Archor_R_Off& pkt);
+	static bool Handle_S_ArchorLS(PacketSessionRef& session, skill::S_Archor_LS& pkt);
+	static bool Handle_S_ArchorLS_Off(PacketSessionRef& session, skill::S_Archor_LS_Off& pkt);
 };
