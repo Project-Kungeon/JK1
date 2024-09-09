@@ -70,7 +70,15 @@ protected:
 	class AJK1PlayerController* PlayerController;
 
 public:
-	FName path;
+	UPROPERTY(BlueprintReadWrite)
+	bool bWeaponActive;
+
+	/* 타이밍에 맞게 입력하는 패링으로 수정 */
+	UPROPERTY(BlueprintReadWrite)
+	bool bParryActive = false;
+
+	UPROPERTY()
+	TSet<AActor*> WeaponAttackTargets;
 
 	// combo == 0 not start 
 	// combo >= 1 -> Combo Start

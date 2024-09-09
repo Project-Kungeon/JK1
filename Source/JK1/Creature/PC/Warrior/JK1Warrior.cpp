@@ -3,14 +3,15 @@
 
 #include "JK1Warrior.h"
 #include "../../JK1CreatureStatComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "JK1/Physics/JK1Collision.h"
-
-#include "Animation/AnimMontage.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "TimerManager.h"
 #include "Engine/DamageEvents.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "TimerManager.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
+#include "Engine/World.h"
 
 AJK1Warrior::AJK1Warrior()
 {
@@ -21,16 +22,33 @@ AJK1Warrior::AJK1Warrior()
 	}
 
 	CreatureStat->SetOwner(true, FName("Warrior"));
+
+	SkillCooldown = 5.0f;
 }
 
 void AJK1Warrior::BeginPlay()
 {
 	Super::BeginPlay();
+	AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->Montage_Play(CurrentMontage);
 }
 
 void AJK1Warrior::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (bWeaponActive && !bParryActive)
+		CheckWeaponTrace();
+	if (bParryActive && AnimInstance->Montage_IsPlaying(SkillEMontage_Intro))
+		CheckParry();
+	if (bWeaponActive && bParryActive)
+		CheckParryHit();
+
+	/*----- 다른 방안 알아보기 -----*/
+	/*if (!DashVelocity.IsZero())
+	{
+		FVector NewLocation = GetActorLocation() + (DashVelocity * DeltaTime);
+		SetActorLocation(NewLocation);
+	}*/
 }
 
 void AJK1Warrior::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -47,25 +65,38 @@ void AJK1Warrior::ComboActionBegin()
 {
 	Super::ComboActionBegin();
 }
-
 void AJK1Warrior::DoCombo()
 {
 	Super::DoCombo();
-
-	switch (CurrentCombo)
+	if (AnimInstance && AnimInstance->Montage_IsPlaying(SkillEMontage_Intro))
 	{
-	case 0:
-		CurrentCombo = 1;
-		PlayAnimMontage(ComboActionMontage1, 1.4f);
-		break;
-	case 1:
-		CurrentCombo = 2;
-		PlayAnimMontage(ComboActionMontage2, 1.4f);
-		break;
-	case 2:
-		CurrentCombo = 3;
-		PlayAnimMontage(ComboActionMontage3, 1.4f);
-		break;
+		
+		IsAttacking = false;
+		SaveAttacking = false;
+		CurrentCombo = 0;
+		return;
+	}
+	else
+	{
+		switch (CurrentCombo)
+		{
+		case 0:
+			CurrentCombo = 1;
+			CurrentMontage = ComboActionMontage1;
+			PlayAnimMontage(ComboActionMontage1, 1.4f);
+			break;
+		case 1:
+			CurrentCombo = 2;
+			CurrentMontage = ComboActionMontage2;
+			PlayAnimMontage(ComboActionMontage2, 1.4f);
+			break;
+		case 2:
+			CurrentCombo = 3;
+			CurrentMontage = ComboActionMontage3;
+			PlayAnimMontage(ComboActionMontage3, 1.4f);
+			break;
+		}
+		
 	}
 }
 
@@ -83,19 +114,70 @@ void AJK1Warrior::SkillQ(const FInputActionValue& value)
 void AJK1Warrior::SkillE(const FInputActionValue& value)
 {
 	Super::SkillE(value);
+
+	if (!bWeaponActive && !AnimInstance->Montage_IsPlaying(CurrentMontage))
+	{
+		
+		CurrentMontage = SkillEMontage_Intro;
+		AnimInstance->Montage_Play(SkillEMontage_Intro);
+		{
+			IsAttacking = false;
+			SaveAttacking = false;
+			CurrentCombo = 0;
+		}
+		/*----멀티플레이 환경에서 패링이 테스트 가능해질 때 까지 코드 남겨둘 것 ----*/
+		FTimerHandle TimerHandle;
+		FTimerHandle TimerHandle2;
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &AJK1Warrior::SetParryActiveTrue, 1.f, false);
+		GetWorldTimerManager().SetTimer(TimerHandle2, this, &AJK1Warrior::SetParryActiveFalse, 1.5f, false);
+	}
 }
 
 void AJK1Warrior::SkillR(const FInputActionValue& value)
 {
 	Super::SkillR(value);
-	PlayAnimMontage(SkillRMontage, 1.4f);
-	PlayParticleSystem();
-	CheckSkillRTrace();
+	if (AnimInstance && AnimInstance->Montage_IsPlaying(CurrentMontage))
+	{
+		return;
+	}
+	else 
+	{
+		/*--------------------
+		SetTimer 델리게이트 사용해서 연속해서 사용되는 문제 해결
+	    --------------------*/
+		if (!bWeaponActive)
+		{
+			IsAttacking = false;
+			SaveAttacking = false;
+			CurrentCombo = 0;
+
+			CurrentMontage = SkillRMontage;
+			PlayAnimMontage(SkillRMontage);
+			PlayParticleSystem();
+			StartROverTime();
+		}
+	}
+	
 }
 
 void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 {
 	Super::SkillLShift(value);
+	if (AnimInstance && AnimInstance->Montage_IsPlaying(CurrentMontage))
+		return;
+	else
+	{
+		//bCanMove = false;
+		//1000.f 1.f
+		//FVector ForwardDash = GetActorForwardVector() * (DashDistance / DashDuration);
+		//DashVelocity = ForwardDash;
+
+		CurrentMontage = SkillLShiftMontage;
+		PlayAnimMontage(SkillLShiftMontage);
+
+		FVector ForwardDirection = GetActorForwardVector();
+		LaunchCharacter(ForwardDirection * ForwardStrength + FVector(0, 0, JumpStrength), true, true);
+	} 
 }
 
 void AJK1Warrior::CheckBATrace()
@@ -104,7 +186,7 @@ void AJK1Warrior::CheckBATrace()
 
 	if (!bBAActive)
 		return;
-
+	UE_LOG(LogTemp, Log, TEXT("This is Check WeaponTrace"));
 	FVector Start = GetMesh()->GetSocketLocation(FName(TEXT("FX_Sword_Bottom")));
 	FVector End = GetMesh()->GetSocketLocation(FName(TEXT("FX_Sword_Top")));
 	FVector Extend = End - Start;
@@ -174,6 +256,7 @@ void AJK1Warrior::PlayParticleSystem()
 		ParticleSystemComponent->Activate(true);
 
 		// 일정 시간 후에 파티클 시스템 제거를 위한 타이머 설정
+		//이건 파티클 제거를 위한 목적이니 남겨둠.
 		GetWorldTimerManager().SetTimer(
 			TimerHandle,
 			this,
@@ -184,8 +267,38 @@ void AJK1Warrior::PlayParticleSystem()
 	}
 }
 
+void AJK1Warrior::DealDamageOverTime()
+{
+	// 남은 시간이 있다면 데미지를 적용
+	if (RemainingDamageTime > 0)
+	{
+		CheckSkillRTrace();
+		RemainingDamageTime -= DamageInterval;
+
+		// 남은 시간이 0 이하가 되면 타이머 중지
+		if (RemainingDamageTime <= 0)
+		{
+			GetWorldTimerManager().ClearTimer(DamageTimerHandle);
+			ResetSkillCooldown();
+		}
+	}
+}
+
+void AJK1Warrior::StartROverTime()
+{
+	// 총 데미지 지속 시간 초기화
+	RemainingDamageTime = DamageDuration;
+
+	CheckSkillRTrace();
+
+	GetWorldTimerManager().SetTimer(DamageTimerHandle, this, &AJK1Warrior::DealDamageOverTime, DamageInterval, true);
+}
+
+//return type Tarray변경
 void AJK1Warrior::CheckSkillRTrace()
 {
+	UE_LOG(LogTemp, Log, TEXT("CheckSkillRTrace Active"));
+	FVector Location = GetActorLocation();
 	TArray<FOverlapResult> HitResults;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
@@ -204,7 +317,10 @@ void AJK1Warrior::CheckSkillRTrace()
 		{
 			AActor* OverlappingActor = HitResult.GetActor();
 			//Take Damage
-
+			if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(OverlappingActor))
+			{
+				HitPawn->CreatureStat->HitDamage(1.0f);
+			}
 			FVector OverlapLocation = OverlappingActor->GetActorLocation();
 			float SphereRadius = 50.0f;
 			FColor SphereColor = FColor::Green;
@@ -221,6 +337,7 @@ void AJK1Warrior::CheckSkillRTrace()
 			);
 		}
 	}
+	HitResults.Empty();
 }
 
 void AJK1Warrior::StopParticleSystem()
@@ -231,3 +348,25 @@ void AJK1Warrior::StopParticleSystem()
 		ParticleSystemComponent->DestroyComponent();
 	}
 }
+
+void AJK1Warrior::ResetSkillCooldown()
+{
+	{
+		//이걸 안해주면 콤보 제어 변수가 이상하게 변경됨.
+		IsAttacking = false;
+		SaveAttacking = false;
+		CurrentCombo = 0;
+	}
+}
+//
+//void AJK1Warrior::ResetSkillLShift()
+//{
+//	bCanMove = true;
+//	// Reset the dash velocity
+//	DashVelocity = FVector::ZeroVector;
+//
+//	// Clear the timer
+//	GetWorldTimerManager().ClearTimer(DashTimerHandle);
+//}
+
+

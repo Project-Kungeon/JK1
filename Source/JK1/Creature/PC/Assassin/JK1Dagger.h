@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "JK1Arrow.generated.h"
+#include "JK1Dagger.generated.h"
 
 UCLASS()
-class JK1_API AJK1Arrow : public AActor
+class JK1_API AJK1Dagger : public AActor
 {
 	GENERATED_BODY()
-
-public:
+	
+public:	
 	// Sets default values for this actor's properties
-	AJK1Arrow();
+	AJK1Dagger();
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,9 +28,8 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult
 	);
-	void PlaySkillQParticleEffect();
 
-public:
+public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -43,7 +42,7 @@ protected:
 	TObjectPtr<class USceneComponent> DefaultRootComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = StaticMesh)
-	TObjectPtr<class UStaticMeshComponent> Arrow;
+	TObjectPtr<class UStaticMeshComponent> Dagger;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Collision)
 	TObjectPtr<class UBoxComponent> Box;
@@ -53,8 +52,5 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Effect)
 	TObjectPtr<class UParticleSystem> Particle;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Collision)
-	TObjectPtr<class UPrimitiveComponent> CollisionComponent;
 
 };

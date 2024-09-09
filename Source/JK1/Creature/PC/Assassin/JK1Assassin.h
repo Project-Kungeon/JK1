@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "../JK1PlayerCharacter.h"
+#include "Components/TimelineComponent.h"
+#include "Curves/CurveFloat.h"
 #include "JK1Assassin.generated.h"
 
 /**
@@ -32,6 +34,7 @@ public:
 protected:
 	//Attack Funciton
 	virtual void Attack() override;
+	
 
 	//ComboAction
 	virtual void ComboActionBegin() override;
@@ -41,11 +44,25 @@ protected:
 public:
 	//Skill Function
 	virtual void SkillQ(const FInputActionValue& value) override;
+	void SpawnDagger();
+	void SkillQTrace();
+	UFUNCTION()
+
+	//Check Back Attack Fukction
+	virtual void OnHit(AActor* Actor, FHitResult& HitResult);
+	void SpawnHitEffect(const FVector& Location);
+	virtual void SkillR(const FInputActionValue& Value) override;
+	void CheckCharacterMovement();
+	virtual void SkillLShift(const FInputActionValue& Value) override;
 
 	UFUNCTION()
-	virtual void CheckBATrace() override;
+	void CheckWeaponTrace();
+	
 
-
+	//Cloaking
+	void GetAndStoreMaterials();
+	UFUNCTION()
+	void TimelineProgress(float Value);
 	/*
 	*  Member Variable
 	*/
@@ -57,4 +74,52 @@ protected:
 	TObjectPtr<class UAnimMontage> ComboActionMontage2;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> ComboActionMontage3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> SkillQMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> SkillRMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	TObjectPtr<class UParticleSystem> HitEffect;
+
+	
+	//Cloaking
+	UPROPERTY(BlueprintReadWrite, Category = "Cloaking")
+	bool IsCloaking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material")
+	TObjectPtr<class UMaterialInterface> CloakMaterial;
+
+	UPROPERTY()
+	TObjectPtr<class UMaterialInstanceDynamic> DynamicMaterial;
+
+	TArray<UMaterialInterface*> StoredMaterials;
+
+	bool IsCloakingProcess = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timeline")
+	float TimelineValue;
+
+	TObjectPtr<class UCurveFloat> FloatCurve;
+	UPROPERTY()
+	TObjectPtr<class UTimelineComponent> MyTimeline;
+	
+
+	//Dagger Spawning
+	UPROPERTY(EditAnywhere, Category = "Spawning")
+	TSubclassOf<AActor> DaggerActor;
+	UPROPERTY(EditAnywhere, Category = "Spawning")
+	FVector SpawnLocation;
+	UPROPERTY(EditAnywhere, Category = "Spawning")
+	FVector ThrowDirection;
+	UPROPERTY(EditAnywhere, Category = "Spawning")
+	float ThrowForce;
+	UPROPERTY(EditAnywhere, Category = "CoolDown")
+	float SkillQCoolDownTime;
+	bool bCanThrow = true;
+
+
+	
+
+	
 };

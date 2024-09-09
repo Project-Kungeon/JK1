@@ -49,15 +49,31 @@ public:
 
 	//refactoring
 	UFUNCTION()
-	virtual void CheckBATrace() override;
+	void CheckWeaponTrace();
+	void CheckParry();
+	void CheckParryHit();
 	void PlayParticleSystem();
+	void DealDamageOverTime();
+	void StartROverTime();
 	void CheckSkillRTrace();
 	void StopParticleSystem();
+	void ResetSkillCooldown();
+	//void ResetSkillLShift();
+	//void bCanUseSkillActive() { bCanUseSkill = true; };
+	//삭제해야하는 테스트용 함수.
+	void SetParryActiveTrue() { bParryActive = true; };
+	void SetParryActiveFalse() { bParryActive = false; };
+	
+	
+
 
 	/*
 	*  Member Variable
 	*/
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> CurrentMontage;
+
 	//Montage, 클래스들은 각자 기본공격 몽타주 갯수가 다르다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> ComboActionMontage1;
@@ -72,8 +88,51 @@ protected:
 	TObjectPtr<class UAnimMontage> SkillRMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> SkillEMontage_Intro;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> SkillEMontage_HitReact;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> SkillLShiftMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UParticleSystem> SkillREffect;
 
 	UPROPERTY()
-	UParticleSystemComponent* ParticleSystemComponent;
+	TObjectPtr<class UParticleSystemComponent> ParticleSystemComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float DashDistance=1000.f;
+
+	// Dash duration
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float DashDuration=1.f;
+
+	// Timer handle for controlling dash duration
+	FTimerHandle DashTimerHandle;
+
+	// Current speed of the dash
+	FVector DashVelocity;
+	
+	float SkillCooldown;
+	FTimerHandle SkillCooldownTimerHandle;
+	uint32 ParryCount = 0;
+	UAnimInstance* AnimInstance = nullptr;
+	// 데미지 처리 주기
+	const float DamageInterval = 0.5f;
+	// 데미지 주기 지속 시간
+	const float DamageDuration = 5.0f;
+
+	// 총 데미지 지속 시간 동안 남은 시간
+	float RemainingDamageTime;
+
+	FTimerHandle DamageTimerHandle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float JumpStrength = 400.0f;
+
+	// Forward movement strength when jumping
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float ForwardStrength = 1000.0f;
 };
