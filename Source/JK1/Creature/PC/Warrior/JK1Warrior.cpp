@@ -36,12 +36,6 @@ void AJK1Warrior::BeginPlay()
 void AJK1Warrior::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (bWeaponActive && !bParryActive)
-		CheckWeaponTrace();
-	if (bParryActive && AnimInstance->Montage_IsPlaying(SkillEMontage_Intro))
-		CheckParry();
-	if (bWeaponActive && bParryActive)
-		CheckParryHit();
 
 	/*----- 다른 방안 알아보기 -----*/
 	/*if (!DashVelocity.IsZero())
@@ -186,6 +180,7 @@ void AJK1Warrior::CheckBATrace()
 
 	if (!bBAActive)
 		return;
+
 	UE_LOG(LogTemp, Log, TEXT("This is Check WeaponTrace"));
 	FVector Start = GetMesh()->GetSocketLocation(FName(TEXT("FX_Sword_Bottom")));
 	FVector End = GetMesh()->GetSocketLocation(FName(TEXT("FX_Sword_Top")));
@@ -319,7 +314,7 @@ void AJK1Warrior::CheckSkillRTrace()
 			//Take Damage
 			if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(OverlappingActor))
 			{
-				HitPawn->CreatureStat->HitDamage(1.0f);
+				//HitPawn->CreatureStat->HitDamage(1.0f);
 			}
 			FVector OverlapLocation = OverlappingActor->GetActorLocation();
 			float SphereRadius = 50.0f;

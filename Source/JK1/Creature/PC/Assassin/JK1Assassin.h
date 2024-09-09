@@ -56,7 +56,7 @@ public:
 	virtual void SkillLShift(const FInputActionValue& Value) override;
 
 	UFUNCTION()
-	void CheckWeaponTrace();
+	virtual void CheckBATrace() override; 
 	
 
 	//Cloaking

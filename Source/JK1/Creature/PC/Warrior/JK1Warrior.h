@@ -49,9 +49,7 @@ public:
 
 	//refactoring
 	UFUNCTION()
-	void CheckWeaponTrace();
-	void CheckParry();
-	void CheckParryHit();
+	virtual void CheckBATrace() override;
 	void PlayParticleSystem();
 	void DealDamageOverTime();
 	void StartROverTime();
