@@ -14,6 +14,7 @@
 #include "Engine/World.h"
 
 AJK1Warrior::AJK1Warrior()
+	: Super()
 {
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> DefaultMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonGreystone/Characters/Heroes/Greystone/Meshes/Greystone.Greystone'"));
 	if (nullptr != DefaultMesh.Object)
@@ -102,13 +103,34 @@ void AJK1Warrior::ComboActionEnd()
 void AJK1Warrior::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
+	//WarriorQ();
 	UE_LOG(LogWarrior, Log, TEXT("This is %s"), *this->GetName());
 }
 
 void AJK1Warrior::SkillE(const FInputActionValue& value)
 {
 	Super::SkillE(value);
+	WarriorE();
+}
 
+void AJK1Warrior::SkillR(const FInputActionValue& value)
+{
+	Super::SkillR(value);
+	WarriorR();
+}
+
+void AJK1Warrior::SkillLShift(const FInputActionValue& value)
+{
+	Super::SkillLShift(value);
+	WarriorLShift();
+}
+
+void AJK1Warrior::WarriorQ()
+{
+}
+
+void AJK1Warrior::WarriorE()
+{
 	if (!bWeaponActive && !AnimInstance->Montage_IsPlaying(CurrentMontage))
 	{
 		
@@ -127,14 +149,13 @@ void AJK1Warrior::SkillE(const FInputActionValue& value)
 	}
 }
 
-void AJK1Warrior::SkillR(const FInputActionValue& value)
+void AJK1Warrior::WarriorR()
 {
-	Super::SkillR(value);
 	if (AnimInstance && AnimInstance->Montage_IsPlaying(CurrentMontage))
 	{
 		return;
 	}
-	else 
+	else
 	{
 		/*--------------------
 		SetTimer 델리게이트 사용해서 연속해서 사용되는 문제 해결
@@ -146,17 +167,19 @@ void AJK1Warrior::SkillR(const FInputActionValue& value)
 			CurrentCombo = 0;
 
 			CurrentMontage = SkillRMontage;
-			PlayAnimMontage(SkillRMontage);
-			PlayParticleSystem();
-			StartROverTime();
+			
+			AsyncTask(ENamedThreads::GameThread, [this]() {
+				this->PlayAnimMontage(SkillRMontage);
+				this->PlayParticleSystem();
+				this->StartROverTime();
+				}
+			);
 		}
 	}
-	
 }
 
-void AJK1Warrior::SkillLShift(const FInputActionValue& value)
+void AJK1Warrior::WarriorLShift()
 {
-	Super::SkillLShift(value);
 	if (AnimInstance && AnimInstance->Montage_IsPlaying(CurrentMontage))
 		return;
 	else
@@ -187,7 +210,7 @@ void AJK1Warrior::CheckBATrace()
 	FVector Extend = End - Start;
 	const float AttackRadius = 20.f;
 
-	TArray<FHitResult> HitResults;
+	
 	//FHitResult HitResult;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
@@ -227,6 +250,7 @@ void AJK1Warrior::CheckBATrace()
 	);
 
 #endif
+	return ValidHitResults;
 }
 
 void AJK1Warrior::PlayParticleSystem()
@@ -235,31 +259,35 @@ void AJK1Warrior::PlayParticleSystem()
 	//timer
 	const float Duration = 5.f;
 
-	ParticleSystemComponent = UGameplayStatics::SpawnEmitterAttached(
-		SkillREffect,
-		GetMesh(),
-		TEXT("NONE"),
-		FVector::ZeroVector,
-		FRotator::ZeroRotator,
-		EAttachLocation::KeepRelativeOffset,
+	UGameInstance* instance = GetGameInstance();
+	AsyncTask(ENamedThreads::GameThread, [this, TimerHandle, Duration, instance]()
+		{
+			ParticleSystemComponent = UGameplayStatics::SpawnEmitterAttached(
+				SkillREffect,
+				GetMesh(),
+				TEXT("NONE"),
+				FVector::ZeroVector,
+				FRotator::ZeroRotator,
+				EAttachLocation::KeepRelativeOffset,
+				false
+			);
+			if (ParticleSystemComponent)
+			{
+				// 파티클 시스템 재생
+				ParticleSystemComponent->Activate(true);
+			}
+		}
+		
+	);
+	// 일정 시간 후에 파티클 시스템 제거를 위한 타이머 설정
+	//이건 파티클 제거를 위한 목적이니 남겨둠.
+	GetWorldTimerManager().SetTimer(
+		TimerHandle,
+		this,
+		&AJK1Warrior::StopParticleSystem,
+		Duration,
 		false
 	);
-
-	if (ParticleSystemComponent)
-	{
-		// 파티클 시스템 재생
-		ParticleSystemComponent->Activate(true);
-
-		// 일정 시간 후에 파티클 시스템 제거를 위한 타이머 설정
-		//이건 파티클 제거를 위한 목적이니 남겨둠.
-		GetWorldTimerManager().SetTimer(
-			TimerHandle,
-			this,
-			&AJK1Warrior::StopParticleSystem,
-			Duration,
-			false
-		);
-	}
 }
 
 void AJK1Warrior::DealDamageOverTime()
@@ -290,11 +318,12 @@ void AJK1Warrior::StartROverTime()
 }
 
 //return type Tarray변경
-void AJK1Warrior::CheckSkillRTrace()
+TArray<FOverlapResult> AJK1Warrior::CheckSkillRTrace()
 {
 	UE_LOG(LogTemp, Log, TEXT("CheckSkillRTrace Active"));
 	FVector Location = GetActorLocation();
 	TArray<FOverlapResult> HitResults;
+	TArray<FOverlapResult> ValidHitResults;	// 중복 처리된 피격자 리스트(would be returned)
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
 	bool bSuccess = GetWorld()->OverlapMultiByChannel(
@@ -314,7 +343,8 @@ void AJK1Warrior::CheckSkillRTrace()
 			//Take Damage
 			if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(OverlappingActor))
 			{
-				//HitPawn->CreatureStat->HitDamage(1.0f);
+				// HitPawn->CreatureStat->HitDamage(1.0f);
+				ValidHitResults.Add(HitResult);
 			}
 			FVector OverlapLocation = OverlappingActor->GetActorLocation();
 			float SphereRadius = 50.0f;
@@ -333,6 +363,8 @@ void AJK1Warrior::CheckSkillRTrace()
 		}
 	}
 	HitResults.Empty();
+
+	return ValidHitResults;
 }
 
 void AJK1Warrior::StopParticleSystem()

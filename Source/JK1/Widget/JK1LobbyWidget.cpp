@@ -1,5 +1,7 @@
 #include "JK1LobbyWidget.h"
 #include "JK1LogChannels.h"
+#include "../System/NetworkJK1GameInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 #include "Components/HorizontalBox.h"
 
@@ -41,27 +43,41 @@ void UJK1LobbyWidget::GameStart()
 {
 	UE_LOG(LogSystem, Log, TEXT("Game Start"));
 	// GameStart버튼을 눌렀을 때
-
-	// 선택된 버튼에 따라 작업
-	switch (index)
+	
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(GetGameInstance()))
 	{
-	case 0:
-		UE_LOG(LogSystem, Log, TEXT("Warrior"));
-		IsOpen = false;
-		break;
-	case 1:
-		UE_LOG(LogSystem, Log, TEXT("Archor"));
-		IsOpen = false;
-		break;
-	case 2:
-		UE_LOG(LogSystem, Log, TEXT("Assassin"));
-		IsOpen = false;
-		break;
-	default:
-		UE_LOG(LogSystem, Log, TEXT("Game Start Error, Not Choice Character"));
-		break;
-	}
+		// 선택된 버튼에 따라 작업
+		switch (index)
+		{
+		case 0:
+			UE_LOG(LogSystem, Log, TEXT("Warrior"));
+			GameInstance->MyCharacterClass = "Warrior";
+			IsOpen = false;
+			break;
+		case 1:
+			UE_LOG(LogSystem, Log, TEXT("Archor"));
+			GameInstance->MyCharacterClass = "Archor";
+			IsOpen = false;
+			break;
+		case 2:
+			UE_LOG(LogSystem, Log, TEXT("Assassin"));
+			GameInstance->MyCharacterClass = "Assassin";
+			IsOpen = false;
+			break;
+		default:
+			UE_LOG(LogSystem, Log, TEXT("Game Start Error, Not Choice Character"));
+			return;
+		}
 
-	if(IsOpen == false)
-		WidgetClose();
+		UGameplayStatics::OpenLevel(this, FName("NetworkDevMap"));
+		if (IsOpen == false)
+			WidgetClose();
+	}
+	else
+	{
+		UE_LOG(LogSystem, Log, TEXT("GameInstnace could not be casted into UNetworkJK1GameInstance"));
+	}
+	
+
+	
 }

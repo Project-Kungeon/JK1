@@ -33,6 +33,7 @@ public:
 	//Skill Function
 	virtual void SkillQ(const FInputActionValue& value) override;
 	void SpawnDagger(FVector SpawnPoint, FRotator SpawnRotation);
+	virtual void SkillQTrace();
 
 	//Check Back Attack Fukction
 	virtual void OnHit(AActor* Actor, FHitResult& HitResult);

@@ -15,6 +15,8 @@ UJK1CreatureStatComponent::UJK1CreatureStatComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
+
+	CreatureInfo = new message::CreatureInfo();
 }
 
 
@@ -199,6 +201,16 @@ float UJK1CreatureStatComponent::GetHPRatio()
 	return (BasicStatData->MaxHP < KINDA_SMALL_NUMBER) ? 0.f : (CurrentHP / BasicStatData->MaxHP);
 }
 
+	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage/CurrentStat[1], 0.f, BasicStatData->MaxHP));
+	UE_LOG(LogSystem, Log, TEXT("Hit Damage: %f"), NewDamage);
+}
+
+void UJK1CreatureStatComponent::SetCreatureInfo(message::CreatureInfo Info)
+{
+	if (CreatureInfo->object_info().object_id() != 0)
+		return;
+	CreatureInfo->CopyFrom(Info);
+}
 float UJK1CreatureStatComponent::GetExpRatio()
 {
 	check(BasicStatData != nullptr);

@@ -44,12 +44,12 @@ protected:
 public:
 	//Skill Function
 	virtual void SkillQ(const FInputActionValue& value) override;
-	void SpawnDagger();
-	void SkillQTrace();
+	void SpawnDagger(FVector SpawnPoint, FRotator SpawnRotation);
+	virtual void SkillQTrace();
 	UFUNCTION()
 
 	//Check Back Attack Fukction
-	virtual void OnHit(AActor* Actor, FHitResult& HitResult);
+	virtual bool IsBackAttack(AActor* Actor, FHitResult& HitResult);
 	void SpawnHitEffect(const FVector& Location);
 	virtual void SkillR(const FInputActionValue& Value) override;
 	void CheckCharacterMovement();

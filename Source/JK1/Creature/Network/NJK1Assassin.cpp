@@ -34,38 +34,18 @@ void ANJK1Assassin::Tick(float DeltaTime)
 
 	if (!attackHits.IsEmpty())
 	{
-		//message::C_Attack pkt;
-		//uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
-		//pkt.set_object_id(my_id);
+		message::C_Attack pkt;
+		uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+		pkt.set_object_id(my_id);
 
-		//for (FHitResult& hit : attackHits)
-		//{
-		//	
-		//	AActor* actor = hit.GetActor();
-		//	if (auto* Actor = Cast<AJK1CreatureBase>(actor))
-		//	{
-		//		uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
-		//		
-
-		//		if (IsBackAttack(actor, hit))
-		//		{
-		//			// 백어택 데미지
-		//			message::C_Attack backAttackPkt;
-		//			backAttackPkt.set_object_id(my_id);
-		//			backAttackPkt.set_damage(21.f);
-		//			backAttackPkt.add_target_ids(target_id);
-		//			//SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, backAttackPkt);
-		//		}
-		//		if (IsBackAttack(actor, hit))
-		//		{
-		//			// 백어택 이펙트
-		//			FVector HitLocation = hit.ImpactPoint;
-		//			skill::C_Assassin_E ePkt;
-		//			ePkt.set_object_id(my_id);
-		//			ePkt.set_x(HitLocation.X);
-		//			ePkt.set_y(HitLocation.Y);
-		//			ePkt.set_z(HitLocation.Z);
-
+		for (FHitResult& hit : attackHits)
+		{
+			
+			AActor* actor = hit.GetActor();
+			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
+			{
+				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
+				
 		//			SEND_PACKET(message::HEADER::ASSASSIN_E_REQ, ePkt);
 		//			continue;
 		//		}
@@ -74,10 +54,37 @@ void ANJK1Assassin::Tick(float DeltaTime)
 		//			pkt.set_damage(13.f);
 		//		}
 
-		//		pkt.add_target_ids(target_id);
-		//	}
-		//}
-		//SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+				if (IsBackAttack(actor, hit))
+				{
+					// 백어택 데미지
+					message::C_Attack backAttackPkt;
+					backAttackPkt.set_object_id(my_id);
+					backAttackPkt.set_damage(21.f);
+					backAttackPkt.add_target_ids(target_id);
+					//SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, backAttackPkt);
+				}
+				if (IsBackAttack(actor, hit))
+				{
+					// 백어택 이펙트
+					FVector HitLocation = hit.ImpactPoint;
+					skill::C_Assassin_E ePkt;
+					ePkt.set_object_id(my_id);
+					ePkt.set_x(HitLocation.X);
+					ePkt.set_y(HitLocation.Y);
+					ePkt.set_z(HitLocation.Z);
+
+					SEND_PACKET(message::HEADER::ASSASSIN_E_REQ, ePkt);
+					continue;
+				}
+				else
+				{
+					pkt.set_damage(13.f);
+				}
+
+				pkt.add_target_ids(target_id);
+			}
+		}
+		SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
 	}
 
 }
@@ -135,6 +142,47 @@ void ANJK1Assassin::SkillQ(const FInputActionValue& value)
 void ANJK1Assassin::SpawnDagger(FVector SpawnPoint, FRotator SpawnRotation)
 {
 	Super::SpawnDagger(SpawnPoint, SpawnRotation);
+}
+
+void ANJK1Assassin::SkillQTrace()
+{
+	FVector Start = GetActorLocation() + SpawnLocation;
+	FVector End = Start + (GetActorForwardVector() * 1000.f); // 1000 유닛 앞까지 트레이스
+
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		Start,
+		End,
+		CCHANNEL_JK1ACTION,
+		CollisionParams
+	);
+	if (bHit)
+	{
+		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 3, 0, 3);
+		UE_LOG(LogTemp, Warning, TEXT("Pawn Hit: %s"), *HitResult.GetActor()->GetName());
+
+		if (auto* Actor = Cast<AJK1CreatureBase>(HitResult.GetActor()))
+		{
+			uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+			uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
+
+			message::C_Attack pkt;
+			pkt.set_object_id(my_id);
+			pkt.add_target_ids(target_id);
+			pkt.set_damage(15.f);
+
+			SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+		}
+
+	}
+	else
+	{
+		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 3, 0, 3);
+	}
 }
 
 void ANJK1Assassin::OnHit(AActor* Actor, FHitResult& HitResult)
@@ -235,7 +283,7 @@ void ANJK1Assassin::OnAttackHit(TArray<FHitResult> attackHits)
 void ANJK1Assassin::OnAssassinQ_Hit(FHitResult hit)
 {
 	if (auto* Actor = Cast<AJK1CreatureBase>(hit.GetActor()))
-	{
+{
 		uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
 		uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
 

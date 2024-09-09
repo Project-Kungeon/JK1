@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "JK1.h"
 #include "../JK1LogChannels.h"
 #include "JK1CreatureBase.generated.h"
 

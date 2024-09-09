@@ -25,6 +25,7 @@
 
 
 AJK1Assassin::AJK1Assassin()
+	: Super()
 {
 	//Timeline ����
 	MyTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("<MyTimeline"));
@@ -143,24 +144,16 @@ void AJK1Assassin::ComboActionEnd()
 void AJK1Assassin::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
-	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
-
-	float ForwardValue = value.Get<float>();
-	float RightValue = value.Get<float>();
-
-	UE_LOG(LogAssassin, Log, TEXT("%f %f"), ForwardValue, RightValue);
-
-	SpawnDagger();
-	PlayAnimMontage(SkillQMontage, 1.5f);
-	SkillQTrace();	
+	FVector SpawnPoint = GetActorLocation() + SpawnLocation;
+	FRotator SpawnRotation = GetActorRotation();
+	AssassinQ(SpawnPoint, SpawnRotation);
 }
 
-void AJK1Assassin::SpawnDagger()
+void AJK1Assassin::SpawnDagger(FVector SpawnPoint, FRotator SpawnRotation)
 {
 	if (DaggerActor)
 	{
-		FVector SpawnPoint = GetActorLocation() + SpawnLocation;
-		FRotator SpawnRotation = GetActorRotation();
+		
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = GetInstigator();
@@ -207,23 +200,25 @@ void AJK1Assassin::SkillQTrace()
 	}
 }
 
-void AJK1Assassin::OnHit(AActor* Actor, FHitResult& HitResult)
+bool AJK1Assassin::IsBackAttack(AActor* Actor, FHitResult& HitResult)
 {
 	if (Actor)
 	{
-		FVector HitLocation = HitResult.ImpactPoint;
 		FVector ForwardVector = GetActorForwardVector();
 		FVector OtherForwardVector = Actor->GetActorForwardVector();
 
 		if (FVector::DotProduct(ForwardVector, OtherForwardVector) > 0)
 		{
-			if (HitEffect)
-			{
-				//TODO : ������ ����
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
-			}		
+			return true;
+			//if (HitEffect)
+			//{
+			//	//TODO : 데미지 증가
+			//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
+			//	
+			//}		
 		}
 	} 
+	return false;
 }
 
 void AJK1Assassin::SpawnHitEffect(const FVector& Location)
@@ -234,13 +229,8 @@ void AJK1Assassin::SpawnHitEffect(const FVector& Location)
 
 void AJK1Assassin::SkillR(const FInputActionValue& Value)
 {
-	
-	Super::SkillR(Value);
-	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
-	//TODO: Forward & RightValue�� 0���� �ƴ϶�� �ٷ� ��Ÿ�� ����.,
-
-	PlayAnimMontage(SkillRMontage, 1.5f);
-
+	//TODO : 난무 에셋이 어떤건지 잘 모르겠어
+	AssassinR();
 }
 
 void AJK1Assassin::CheckCharacterMovement()
@@ -259,6 +249,51 @@ void AJK1Assassin::CheckCharacterMovement()
 void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 {
 	UE_LOG(LogAssassin, Log, TEXT("This is Assassin Skill LShift"));
+	if (IsCloaking)
+	{
+		AssassinLSOff();
+	}
+	else
+	{
+		AssassinLSOn();
+	}
+}
+
+void AJK1Assassin::AssassinQ(FVector SpawnPoint, FRotator SpawnRotation)
+{
+	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
+
+	//FVector SpawnPoint = GetActorLocation() + SpawnLocation;
+	//FRotator SpawnRotation = GetActorRotation();
+
+
+	AsyncTask(ENamedThreads::GameThread, [this, SpawnPoint, SpawnRotation]() {
+		SpawnDagger(SpawnPoint, SpawnRotation);
+		PlayAnimMontage(SkillQMontage, 1.5f);
+		SkillQTrace();
+		});
+	
+}
+
+// 백어택 이펙트용 호출
+void AJK1Assassin::AssassinE(FVector HitLocation)
+{
+	if (HitEffect)
+		{
+			AsyncTask(ENamedThreads::GameThread, [this, HitLocation]() {
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
+			});
+			
+		}		
+}
+
+void AJK1Assassin::AssassinR()
+{
+	PlayAnimMontage(SkillRMontage, 1.5f);
+}
+
+void AJK1Assassin::AssassinLSOn()
+{
 	if (IsCloakingProcess)
 	{
 		UE_LOG(LogAssassin, Log, TEXT("InCloakingProcess"));
@@ -267,18 +302,40 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 	
 	if(!IsCloaking)
 	{
-		//���� ����
+		// 은신 진입
 		IsCloakingProcess = true;
 		ChangeStatusEffect(true, 3);
 		USkeletalMeshComponent* MeshComponent = GetMesh();
 
-		if (MeshComponent)
-		{
-			int32 MaterialCount = MeshComponent->GetNumMaterials();
-			for (int32 i = 0; i < MaterialCount; i++)
-				MeshComponent->SetMaterial(i, DynamicMaterial);
-		}
+	if (MeshComponent)
+	{
+		int32 MaterialCount = MeshComponent->GetNumMaterials();
+		for (int32 i = 0; i < MaterialCount; i++)
+			MeshComponent->SetMaterial(i, DynamicMaterial);
+	}
 
+	MyTimeline->PlayFromStart();
+	UE_LOG(LogTemp, Log, TEXT("%f"), TimelineValue);
+	IsCloakingProcess = false;
+	IsCloaking = true;
+	GetCharacterMovement()->MaxWalkSpeed = 700.f;
+}
+
+void AJK1Assassin::AssassinLSOff()
+{
+	IsCloakingProcess = true;
+	MyTimeline->Reverse();
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	if (MeshComponent)
+	{
+		int32 MaterialCount = MeshComponent->GetNumMaterials();
+		for (int32 i = 0; i < MaterialCount; i++)
+			MeshComponent->SetMaterial(i, StoredMaterials[i]);
+	}
+	IsCloakingProcess = false;
+	IsCloaking = false;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+}
 		MyTimeline->PlayFromStart();
 		UE_LOG(LogTemp, Log, TEXT("%f"), TimelineValue);
 		IsCloakingProcess = false;
@@ -287,7 +344,7 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 	}
 	else
 	{
-		//���� ����
+		// 은신 작업
 		IsCloakingProcess = true;
 		ChangeStatusEffect(false, 3);
 		MyTimeline->Reverse();
@@ -311,10 +368,10 @@ void AJK1Assassin::OnAssassinQ_Hit(FHitResult hit)
 {
 }
 
-void AJK1Assassin::CheckWeaponTrace()
+void AJK1Assassin::CheckBATrace()
 {
 	if (!bBAActive)
-		return;
+		return ValidHitResults;
 
 	
 	float AttackRadius = 20.f;
@@ -347,6 +404,40 @@ void AJK1Assassin::CheckWeaponTrace()
 		Params
 	);
 
+	bool bSuccessR = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		StartR,
+		EndR,
+		FQuat::Identity,
+		CCHANNEL_JK1ACTION,
+		FCollisionShape::MakeCapsule(ExtendR),
+		Params
+	);
+
+	if (bSuccessL || bSuccessR)
+	{
+		// FDamageEvent DamageEvent;
+
+		for (FHitResult& HitResult : HitResults)
+		{
+			AActor* Actor = HitResult.GetActor();
+
+			
+
+			if (Actor == nullptr)
+				continue;
+
+			if (WeaponAttackTargets.Contains(Actor) == false)
+			{
+				WeaponAttackTargets.Add(Actor);
+				//OnHit(Actor, HitResult);
+				ValidHitResults.Add(HitResult);
+				// TODO HitDamage
+				UE_LOG(LogTemp, Log, TEXT("HitDamage: %s"), *Actor->GetName());
+
+			}
+		}
+	}
 	if (bSuccess)
 		ApplyDamageToTarget(HitResults, 1.0f);
 	

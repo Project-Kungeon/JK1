@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "JK1.h"
 #include "JK1CreatureStatComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
@@ -64,6 +65,16 @@ public:
 	
 
 	/*
+	 * Network Function 
+	 */
+public:
+	void SetCreatureInfo(message::CreatureInfo Info);
+	message::CreatureInfo* GetCreatureInfo() { return this->CreatureInfo; }
+
+public:
+	float GetHP() { return this->CurrentHP; }
+
+	/*
 	*  Member Variable
 	*/
 public:
@@ -83,6 +94,9 @@ private:
 	
 	// Stat Data
 	struct FJK1CreatureData* BasicStatData;
+
+	message::CreatureInfo* CreatureInfo;
+
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	FName Name;
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))

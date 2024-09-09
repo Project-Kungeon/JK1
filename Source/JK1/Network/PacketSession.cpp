@@ -118,7 +118,6 @@ void PacketSession::OnRead(const boost::system::error_code& err, size_t size)
 {
 	if (!err)
 	{
-		UE_LOG(LogTemp, Error, TEXT("OnRead : %d"), size);
 		HandlePacket(_recvBuffer, size);
 		AsyncRead();
 	}
