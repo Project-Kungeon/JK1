@@ -180,9 +180,11 @@ void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 	} 
 }
 
-void AJK1Warrior::CheckWeaponTrace()
+void AJK1Warrior::CheckBATrace()
 {
-	if (!bWeaponActive)
+	Super::CheckBATrace();
+
+	if (!bBAActive)
 		return;
 	UE_LOG(LogTemp, Log, TEXT("This is Check WeaponTrace"));
 	FVector Start = GetMesh()->GetSocketLocation(FName(TEXT("FX_Sword_Bottom")));
@@ -207,122 +209,8 @@ void AJK1Warrior::CheckWeaponTrace()
 	);
 
 	if (bSuccess)
-	{
-		FDamageEvent DamageEvent;
+		ApplyDamageToTarget(HitResults, 1.f);
 
-		for (FHitResult& HitResult : HitResults)
-		{
-			AActor* Actor = HitResult.GetActor();
-			if (Actor == nullptr)
-				continue;
-
-			if (WeaponAttackTargets.Contains(Actor) == false)
-			{
-				WeaponAttackTargets.Add(Actor);
-
-				if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(Actor))
-				{
-					// Server Code need
-					//HitPawn->CreatureStat->HitDamage(1.0f);
-					UE_LOG(LogWarrior, Log, TEXT("Hit target: %s"), *Actor->GetName());
-				}
-
-			}
-		}
-
-	}
-
-#if ENABLE_DRAW_DEBUG
-	FVector Direction = End - Start;
-	float CapsuleHalfHeight = Direction.Size() / 2.f;
-	FVector CapsuleOrigin = Start + (End - Start) / 2.f;
-	FColor DrawColor = bSuccess ? FColor::Green : FColor::Red;
-	FQuat QuatRotation = FQuat::FindBetweenNormals(FVector::UpVector, Direction.GetSafeNormal());
-
-	DrawDebugCapsule(
-		GetWorld(),
-		CapsuleOrigin,
-		CapsuleHalfHeight,
-		AttackRadius,
-		QuatRotation,
-		DrawColor,
-		false,
-		1.f,
-		0
-	);
-
-#endif
-}
-
-void AJK1Warrior::CheckParry()
-{
-    /*
-	*   추가해야하는것
-	*   1. 플레이어 전방에 충돌이 감지됐는지 판별구문
-	*   2. 데미지 들어오는걸 상쇄하는 구문
-	*   원래는 조건문을 추가하여 공격이 감지된다면 실행해야함.
-	*/
-
-	CurrentMontage = SkillEMontage_HitReact;
-	AnimInstance->StopAllMontages(0.2f);
-	AnimInstance->Montage_Play(SkillEMontage_HitReact);
-	/*FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AJK1Warrior::bCanUseSkillActive, SkillEMontage_HitReact->SequenceLength, false);*/
-
-
-}
-
-void AJK1Warrior::CheckParryHit()
-{
-	if (!bParryActive)
-		return;
-	UE_LOG(LogTemp, Log, TEXT("This is Check WeaponTrace"));
-	FVector Start = GetMesh()->GetSocketLocation(FName(TEXT("FX_Trail_L_01")));
-	FVector End = GetMesh()->GetSocketLocation(FName(TEXT("FX_Trail_L_02")));
-	FVector Extend = End - Start;
-	const float AttackRadius = 20.f;
-
-	TArray<FHitResult> HitResults;
-	//FHitResult HitResult;
-	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
-
-	/*  sweep / multi / ByChannel */
-
-	bool bSuccess = GetWorld()->SweepMultiByChannel(
-		HitResults,
-		Start,
-		End,
-		FQuat::Identity,
-		CCHANNEL_JK1ACTION,
-		FCollisionShape::MakeCapsule(Extend),
-		Params
-	);
-
-	if (bSuccess)
-	{
-		FDamageEvent DamageEvent;
-
-		for (FHitResult& HitResult : HitResults)
-		{
-			AActor* Actor = HitResult.GetActor();
-			if (Actor == nullptr)
-				continue;
-
-			if (WeaponAttackTargets.Contains(Actor) == false)
-			{
-				WeaponAttackTargets.Add(Actor);
-
-				if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(Actor))
-				{
-					// Server Code need
-					//HitPawn->CreatureStat->HitDamage(1.0f);
-					UE_LOG(LogWarrior, Log, TEXT("Hit target: %s"), *Actor->GetName());
-				}
-
-			}
-		}
-
-	}
 
 #if ENABLE_DRAW_DEBUG
 	FVector Direction = End - Start;

@@ -2,6 +2,7 @@
 
 
 #include "JK1GameInstance.h"
+#include "JK1LogChannels.h"
 
 UJK1GameInstance::UJK1GameInstance()
 {
@@ -20,8 +21,8 @@ void UJK1GameInstance::Init()
 {
 	Super::Init();
 
-	UE_LOG(LogTemp, Log, TEXT("ExpForNextLevel 2 JK1Player : %f"), GetJK1PlayerData(FName(TEXT("Warrior")))->Exp);
-	UE_LOG(LogTemp, Log, TEXT("DropExp 2 JK1Monster : %f"), GetJK1MonsterData(FName(TEXT("MonsterBase")))->Exp);
+	UE_LOG(LogSystem, Log, TEXT("ExpForNextLevel 2 JK1Player : %f"), GetJK1PlayerData(FName(TEXT("Warrior")))->Exp);
+	UE_LOG(LogSystem, Log, TEXT("DropExp 2 JK1Monster : %f"), GetJK1MonsterData(FName(TEXT("MonsterBase")))->Exp);
 }
 
 FJK1CreatureData* UJK1GameInstance::GetJK1PlayerData(FName ClassName)

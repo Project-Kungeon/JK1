@@ -4,6 +4,8 @@
 #include "JK1PlayerCharacter.h"
 #include "JK1/Physics/JK1Collision.h"
 #include "JK1/Controller/Player/JK1PlayerController.h"
+#include "JK1/Widget/JK1PlayerHUD.h"
+#include "JK1/Creature/JK1CreatureStatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -55,6 +57,8 @@ AJK1PlayerCharacter::AJK1PlayerCharacter()
 
 	IsAttacking = false;
 	SaveAttacking = false;
+
+	CreatureStat->SetOwner(true, FName("PlayerCharacter"));
 }
 
 void AJK1PlayerCharacter::BeginPlay()
@@ -62,8 +66,10 @@ void AJK1PlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerController = Cast<AJK1PlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-	//if (PlayerController)
-		//PlayerController->GetPlayerWidget()->SetWidgetsStat(CharacterStat, nullptr);
+	if (PlayerController != nullptr)
+	{
+		//PlayerController->GetPlayerWidget()->SetWidgetsStat(CreatureStat, nullptr);
+	}
 }
 
 void AJK1PlayerCharacter::Tick(float DeltaTime)
@@ -157,4 +163,10 @@ void AJK1PlayerCharacter::SkillLShift(const FInputActionValue& Value)
 	UE_LOG(LogPlayerCharacter, Log, TEXT("This is Parent Class SKillLShift"));
 }
 
+void AJK1PlayerCharacter::Death()
+{
+	Super::Death();
 
+	Cast<AJK1PlayerController>(GetController())->RemoveInputSystem();
+	UE_LOG(LogPlayerCharacter, Log, TEXT("Player is Down!!"));
+}

@@ -28,11 +28,13 @@ void UJK1CreatureStatComponent::BeginPlay()
 
 void UJK1CreatureStatComponent::InitializeComponent()
 {
+	IsImmunity = false;
+
 	// initialize stat
 	BasicStatData = nullptr;
-	IsPlayer = true;
 	CurrentHP = 0;
 	CurrentExp = 0;
+	CurrentLevel = 1;
 	CurrentStat[0] = 0;
 	CurrentStat[1] = 0;
 }
@@ -55,7 +57,7 @@ void UJK1CreatureStatComponent::LoadData()
 
 	if (BasicStatData != nullptr)
 	{
-		SetHP(BasicStatData->MaxHP);
+		SetCurrentHP(BasicStatData->MaxHP);
 		SetStat(0, BasicStatData->ATK);
 		SetStat(1, BasicStatData->DEF);
 		UE_LOG(LogSystem, Log, TEXT("Set (%s)'s Default Stat"), *Name.ToString());
@@ -64,29 +66,33 @@ void UJK1CreatureStatComponent::LoadData()
 		UE_LOG(LogSystem, Error, TEXT("(%s) data doesn't exist"), *Name.ToString());
 }
 
-void UJK1CreatureStatComponent::SetHP(float NewHP)
+void UJK1CreatureStatComponent::SetCurrentHP(float NewHP)
 {
-	
 	CurrentHP = NewHP;
 	UE_LOG(LogSystem, Log, TEXT("Remain HP : %f"), CurrentHP);
-	//OnHPChanged.Broadcast();
+	OnHPChanged.Broadcast();
 
 	if (CurrentHP <= KINDA_SMALL_NUMBER)
 	{
 		CurrentHP = 0.f;
-		//OnHPIsZero.Broadcast();
+		OnHPIsZero.Broadcast();
 
 		// TEMP CODE
-		//if (!DamageInstigator.IsEmpty())
-		//{
-		//	for (AJ1PlayerController* instigator : DamageInstigator)
-		//	{
-		//		if (auto character = Cast<ACharacterBase>(instigator->GetPawn()))
-		//		{
-		//			character->CharacterStat->PlusExp(CurrentStatData->DropExp);
-		//		}
-		//	}
-		//}
+		if (!DamageInstigator.IsEmpty())
+		{
+			TArray<AController*> temp;
+			DamageInstigator.GetKeys(temp);
+
+			for (AController* instigator : temp)
+			{
+				if(auto player = Cast<AJK1PlayerController>(instigator))
+					if (auto Character = Cast<AJK1CreatureBase>(player->GetPawn()))
+					{
+						Character->CreatureStat->PlusExp(BasicStatData->Exp);
+						Cast<AJK1PlayerController>(Character->GetController())->DisengagedLockOn();
+					}
+			}
+		}
 	}
 }
 
@@ -112,20 +118,89 @@ void UJK1CreatureStatComponent::SetStat(int index, float value)
 void UJK1CreatureStatComponent::PlusExp(float Exp)
 {
 	CurrentExp += Exp;
+	OnExpChanged.Broadcast();
 
 	// TODO
 	// Exp 초과 시 레벨 올리고 broadcast
+	if (CurrentExp >= BasicStatData->Exp)
+	{
+		CurrentExp -= BasicStatData->Exp;
+		OnExpChanged.Broadcast();
 
+		CurrentLevel += 1;
+		LevelUP(CurrentLevel);
+		OnLevelUp.Broadcast();
+	}
 }
 
-void UJK1CreatureStatComponent::HitDamage(float NewDamage)
+void UJK1CreatureStatComponent::LevelUP(int level)
+{
+	// 레벨업을 했을 때 스탯 변화를 어캐할 것인가
+	// 1. 레벨에 맞는 스탯표를 만들어 그에 맞게 변화
+	// 2. 단순히 레벨업 당 단순 수치 추가
+	// ex) hp+100, stat+1
+	CurrentHP += 100;
+	CurrentStat[0] += 10;
+	CurrentStat[1] += 10;
+}
+
+bool UJK1CreatureStatComponent::HitDamage(float NewDamage, AController* instigator)
+{
+	if (IsImmunity)
+		return false;
+
+	check(BasicStatData != nullptr);
+	DamageInstigator.Add(instigator, NewDamage);
+	
+	SetCurrentHP(FMath::Clamp<float>(CurrentHP - NewDamage/CurrentStat[1], 0.f, BasicStatData->MaxHP));
+	UE_LOG(LogSystem, Log, TEXT("Hit Damage: %f"), NewDamage);
+
+	return true;
+}
+
+float UJK1CreatureStatComponent::TotalDamageBy(AController* instigator)
+{
+	if (!DamageInstigator.Contains(instigator))
+		return -1;
+	
+	float total = 0;
+	for (auto it : DamageInstigator)
+	{
+		if (it.Key == instigator)
+			total += it.Value;
+	}
+
+	return total;
+}
+
+FName UJK1CreatureStatComponent::GetCharacterName()
+{
+	return Name;
+}
+
+float UJK1CreatureStatComponent::GetCurrentHP()
+{
+	return CurrentHP;
+}
+
+float UJK1CreatureStatComponent::GetMaxHp()
+{
+	return BasicStatData->MaxHP;
+}
+
+int32 UJK1CreatureStatComponent::GetCurrentLevel()
+{
+	return CurrentLevel;
+}
+
+float UJK1CreatureStatComponent::GetHPRatio()
 {
 	check(BasicStatData != nullptr);
-	
-	// 서버와 의논
-	//if (AJK1PlayerController* DamageActorController = Cast<AJK1PlayerController>(instigator))
-		//DamageInstigator.AddUnique(DamageActorController);
+	return (BasicStatData->MaxHP < KINDA_SMALL_NUMBER) ? 0.f : (CurrentHP / BasicStatData->MaxHP);
+}
 
-	SetHP(FMath::Clamp<float>(CurrentHP - NewDamage/CurrentStat[1], 0.f, BasicStatData->MaxHP));
-	UE_LOG(LogSystem, Log, TEXT("Hit Damage: %f"), NewDamage);
+float UJK1CreatureStatComponent::GetExpRatio()
+{
+	check(BasicStatData != nullptr);
+	return (BasicStatData->Exp < KINDA_SMALL_NUMBER) ? 0.f : (CurrentExp / BasicStatData->Exp);
 }
