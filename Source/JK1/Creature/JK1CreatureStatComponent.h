@@ -40,11 +40,13 @@ public:
 	void LoadData();
 
 	// Battle System
+	void SetImmunity(bool Onoff) { IsImmunity = Onoff; }
 	void SetCurrentHP(float NewHP);
 	void SetStat(int index, float value);
 	void PlusExp(float Exp);
 	void LevelUP(int level);
-	void HitDamage(float NewDamage, AController* instigator);
+	bool HitDamage(float NewDamage, AController* instigator);
+	float TotalDamageBy(AController* instigator);
 
 	// For Widget
 	UFUNCTION(BlueprintCallable)
@@ -65,37 +67,33 @@ public:
 	*  Member Variable
 	*/
 public:
+	// Delegate
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnHPIsZeroDelegate OnHPIsZero;
-
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnHPChangedDelegate OnHPChanged;
-
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnExpChangedDelegate OnExpChanged;
-
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnLevelUpDelegate OnLevelUp;
 
 private:
 	bool IsPlayer;
+	bool IsImmunity;
+	
+	// Stat Data
 	struct FJK1CreatureData* BasicStatData;
-
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	FName Name;
-
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
-
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float CurrentExp;
-
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	int32 CurrentLevel;
-
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float CurrentStat[2];
 
 	// 데미지 입힌 대상
-	TArray<AController*> DamageInstigator;
+	TMultiMap<AController*, float> DamageInstigator;
 };

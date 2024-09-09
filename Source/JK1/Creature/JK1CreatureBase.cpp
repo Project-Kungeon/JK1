@@ -3,8 +3,11 @@
 
 #include "JK1CreatureBase.h"
 #include "JK1CreatureStatComponent.h"
+#include "JK1LogChannels.h"
+#include "Controller/Player/JK1PlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include <BrainComponent.h>
 
 // Sets default values
 AJK1CreatureBase::AJK1CreatureBase()
@@ -14,14 +17,18 @@ AJK1CreatureBase::AJK1CreatureBase()
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("CharacterBase"));
 	CreatureStat = CreateDefaultSubobject<UJK1CreatureStatComponent>(TEXT("CreatureStat"));
-
+	
+	// 0000|0000
+	statusEffect = 0;
+	bBAActive = false;
 }
 
 // Called when the game starts or when spawned
 void AJK1CreatureBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	CreatureStat->OnHPIsZero.AddDynamic(this, &AJK1CreatureBase::Death);
 }
 
 // Called every frame
@@ -60,5 +67,76 @@ void AJK1CreatureBase::PossessedBy(AController* NewController)
 
 		GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	}
+}
+
+void AJK1CreatureBase::CheckBATrace()
+{
+}
+
+void AJK1CreatureBase::ChangeStatusEffect(bool On, int status)
+{
+	if (On)
+		statusEffect |= (1 << status);
+	else
+		statusEffect &= ~(1 << status);
+
+	ApplyStatusEffect();
+}
+
+void AJK1CreatureBase::ApplyStatusEffect()
+{
+	if (statusEffect & (1 << 0))
+	{
+		CreatureStat->SetImmunity(true);
+		UE_LOG(LogCreature, Log, TEXT("면역"));
+	}
+	else
+	{
+		if (statusEffect & (1 << 1))
+		{
+			GetCharacterMovement()->MaxWalkSpeed /= 2;
+			UE_LOG(LogCreature, Log, TEXT("이감"));
+		}
+		else if (statusEffect & (1 << 2))
+		{
+			Cast<AJK1PlayerController>(GetController())->RemoveInputSystem();
+			UE_LOG(LogCreature, Log, TEXT("기절"));
+		}
+		else if (statusEffect & (1 << 3))
+		{
+			UE_LOG(LogCreature, Log, TEXT("은신"));
+		}
+	}
+}
+
+void AJK1CreatureBase::ApplyDamageToTarget(TArray<FHitResult> HitResults, float damage)
+{
+	for (FHitResult& HitResult : HitResults)
+	{
+		AActor* Actor = HitResult.GetActor();
+		if (Actor == nullptr)
+			continue;
+
+		if (BasicAttackTargets.Contains(Actor) == false)
+		{
+			BasicAttackTargets.Add(Actor);
+
+			if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(Actor))
+			{
+				// Server Code need
+				if (HitPawn->CreatureStat->HitDamage(damage, Controller))
+				{
+					UE_LOG(LogSystem, Log, TEXT("Hit target: %s"), *Actor->GetName());
+				}
+				else
+					UE_LOG(LogSystem, Log, TEXT("%s is immunity"), *Actor->GetName());
+			}
+		}
+	}
+}
+
+void AJK1CreatureBase::Death()
+{
+	StopAnimMontage();
 }
 

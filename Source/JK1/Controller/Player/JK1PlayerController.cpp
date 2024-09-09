@@ -18,15 +18,19 @@
 
 AJK1PlayerController::AJK1PlayerController()
 {
-	//InputMappingContext & InputAction
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_JK1.IMC_JK1'"));
-	if (nullptr != InputMappingContextRef.Object)
-		DefaultMappingContext = InputMappingContextRef.Object;
+	//InputMappingContext
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> BattleInputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_JK1.IMC_JK1'"));
+	if (nullptr != BattleInputMappingContextRef.Object)
+		BattleMappingContext = BattleInputMappingContextRef.Object;
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> UIInputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_UI.IMC_UI'"));
+	if (nullptr != UIInputMappingContextRef.Object)
+		UIMappingContext = UIInputMappingContextRef.Object;
 
+
+	// InputAction
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionMoveRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_Move.IA_Move'"));
 	if (nullptr != InputActionMoveRef.Object)
 		MoveAction = InputActionMoveRef.Object;
-	
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionJumpRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_Jump.IA_Jump'"));
 	if (nullptr != InputActionJumpRef.Object)
 		JumpAction = InputActionJumpRef.Object;
@@ -34,7 +38,6 @@ AJK1PlayerController::AJK1PlayerController()
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionLookRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_Look.IA_Look'"));
 	if (nullptr != InputActionLookRef.Object)
 		LookAction = InputActionLookRef.Object;
-
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionLockOnRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_LockOn.IA_LockOn'"));
 	if (nullptr != InputActionLockOnRef.Object)
 		LockOnAction = InputActionLockOnRef.Object;
@@ -42,10 +45,13 @@ AJK1PlayerController::AJK1PlayerController()
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionAttackRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_Attack.IA_Attack'"));
 	if (nullptr != InputActionAttackRef.Object)
 		AttackAction = InputActionAttackRef.Object;
-	
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionSkillRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_Skill.IA_Skill'"));
 	if (nullptr != InputActionSkillRef.Object)
 		SkillAction = InputActionSkillRef.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionUIRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_UI.IA_UI'"));
+	if (nullptr != InputActionUIRef.Object)
+		UIInput = InputActionUIRef.Object;
 
 
 	//Widget
@@ -68,10 +74,11 @@ void AJK1PlayerController::BeginPlay()
 
 	//FInputModeGameOnly GameOnlyInputMode;
 	//SetInputMode(GameOnlyInputMode);
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	if (Subsystem)
 	{
-		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		Subsystem->AddMappingContext(UIMappingContext, 0);
+		Subsystem->AddMappingContext(BattleMappingContext, 1);
 		//Input Priority
 	}
 
@@ -93,6 +100,7 @@ void AJK1PlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(LockOnAction, ETriggerEvent::Started, this, &AJK1PlayerController::ToggleLockOn);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::AttackAct);
 		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::SkillAct);
+		EnhancedInputComponent->BindAction(UIInput, ETriggerEvent::Triggered, this, &AJK1PlayerController::ShowUI);
 	}
 }
 
@@ -110,8 +118,11 @@ void AJK1PlayerController::PlayerTick(float DeltaTime)
 
 void AJK1PlayerController::JumpAct()
 {
-	if(AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	{
+		ControlledPlayer->ChangeStatusEffect(true, 0);
 		ControlledPlayer->Jump();
+	}
 }
 
 void AJK1PlayerController::StopJumpingAct()
@@ -165,6 +176,24 @@ void AJK1PlayerController::SkillAct(const FInputActionValue& Value)
 	}
 }
 
+void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
+{
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	{
+		int index = static_cast<int>(Value.Get<float>());
+
+		switch (index)
+		{
+		case 1:
+			UE_LOG(LogPlayerController, Log, TEXT("input ESC"));
+			break;
+		case 2:
+			UE_LOG(LogPlayerController, Log, TEXT("input Inventory"));
+			break;
+		}
+	}
+}
+
 UJK1PlayerHUD* AJK1PlayerController::GetPlayerWidget() const
 {
 	return PlayerWidget;
@@ -179,6 +208,11 @@ void AJK1PlayerController::UpdateWidget()
 		else
 			PlayerWidget->SetWidgetsStat(ControlledPlayer->CreatureStat, nullptr);
 	}
+}
+
+void AJK1PlayerController::RemoveInputSystem()
+{
+	Subsystem->RemoveMappingContext(BattleMappingContext);
 }
 
 void AJK1PlayerController::ToggleLockOn()

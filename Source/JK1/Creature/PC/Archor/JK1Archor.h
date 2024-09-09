@@ -40,9 +40,6 @@ public:
 	//Skill Function
 	virtual void SkillQ(const FInputActionValue& value) override;
 
-	UFUNCTION()
-	void CheckWeaponTrace();
-
 protected:
 	//Montage, 클래스들은 각자 기본공격 몽타주 갯수가 다르다.
 	//Archor는 활을 쏘는 모션 하나.

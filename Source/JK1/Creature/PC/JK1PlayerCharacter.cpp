@@ -161,4 +161,10 @@ void AJK1PlayerCharacter::SkillLShift(const FInputActionValue& Value)
 	UE_LOG(LogPlayerCharacter, Log, TEXT("This is Parent Class SKillLShift"));
 }
 
+void AJK1PlayerCharacter::Death()
+{
+	Super::Death();
 
+	Cast<AJK1PlayerController>(GetController())->RemoveInputSystem();
+	UE_LOG(LogPlayerCharacter, Log, TEXT("Player is Down!!"));
+}

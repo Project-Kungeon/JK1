@@ -18,19 +18,44 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void	BeginPlay() override;
 
+	/*
+	*   Member Function
+	*/
 public:	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void	Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void	SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	virtual float TakeDamage(float damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCursor) override;
-	virtual void PossessedBy(AController* NewController) override;
+	virtual float	TakeDamage(float damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCursor) override;
+	virtual void	PossessedBy(AController* NewController) override;
+	virtual void	CheckBATrace();	// BasicAttack
 
+	unsigned char	GetCurrectStatusEffect() { return statusEffect; }
+	void			ChangeStatusEffect(bool On, int status);
+	void			ApplyStatusEffect();
+
+	void			ApplyDamageToTarget(TArray<FHitResult> HitResults, float damage);
+	UFUNCTION()
+	virtual void Death();
+
+	/*
+	*  Member Variable
+	*/ 
 public:
+	UPROPERTY(BlueprintReadWrite)
+	bool bBAActive;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Stat)
 	TObjectPtr<class UJK1CreatureStatComponent> CreatureStat;
+
+	UPROPERTY()
+	TSet<AActor*> BasicAttackTargets;
+
+private:
+	// 0000|0000 : 은신, 기절, 이속감소, 면역
+	unsigned char statusEffect;
 };

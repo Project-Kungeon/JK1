@@ -43,7 +43,8 @@ public:
 	virtual void SkillQ(const FInputActionValue& value) override;
 
 	UFUNCTION()
-	void CheckWeaponTrace();
+	virtual void CheckBATrace() override;
+
 
 	/*
 	*  Member Variable

@@ -33,16 +33,20 @@ protected:
 	void AttackAct();
 	void SkillAct(const FInputActionValue& Value);
 
+	void ShowUI(const FInputActionValue& Value);
+
 public:
 	class UJK1PlayerHUD* GetPlayerWidget() const;
 	void UpdateWidget();
 
+	// InputSystem
+	void RemoveInputSystem();
+
+	// Lock On
 	UFUNCTION(BlueprintCallable)
 	void ToggleLockOn();
-
 	UFUNCTION(BlueprintCallable)
 	void EngagedLockOn();
-
 	UFUNCTION(BlueprintCallable)
 	void DisengagedLockOn();
 
@@ -54,8 +58,11 @@ protected:
 	ACharacter* ControlledCharacter;
 
 	//InputMappingContext
+	TObjectPtr <class UEnhancedInputLocalPlayerSubsystem> Subsystem;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
+	TObjectPtr<class UInputMappingContext> BattleMappingContext;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputMappingContext> UIMappingContext;
 
 	//Actions
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
@@ -70,6 +77,9 @@ protected:
 	TObjectPtr<class UInputAction> AttackAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> SkillAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> UIInput;
 
 	// Widget
 	UPROPERTY()

@@ -28,6 +28,8 @@ void UJK1CreatureStatComponent::BeginPlay()
 
 void UJK1CreatureStatComponent::InitializeComponent()
 {
+	IsImmunity = false;
+
 	// initialize stat
 	BasicStatData = nullptr;
 	CurrentHP = 0;
@@ -66,7 +68,6 @@ void UJK1CreatureStatComponent::LoadData()
 
 void UJK1CreatureStatComponent::SetCurrentHP(float NewHP)
 {
-	
 	CurrentHP = NewHP;
 	UE_LOG(LogSystem, Log, TEXT("Remain HP : %f"), CurrentHP);
 	OnHPChanged.Broadcast();
@@ -79,7 +80,10 @@ void UJK1CreatureStatComponent::SetCurrentHP(float NewHP)
 		// TEMP CODE
 		if (!DamageInstigator.IsEmpty())
 		{
-			for (AController* instigator : DamageInstigator)
+			TArray<AController*> temp;
+			DamageInstigator.GetKeys(temp);
+
+			for (AController* instigator : temp)
 			{
 				if(auto player = Cast<AJK1PlayerController>(instigator))
 					if (auto Character = Cast<AJK1CreatureBase>(player->GetPawn()))
@@ -140,15 +144,33 @@ void UJK1CreatureStatComponent::LevelUP(int level)
 	CurrentStat[1] += 10;
 }
 
-void UJK1CreatureStatComponent::HitDamage(float NewDamage, AController* instigator)
+bool UJK1CreatureStatComponent::HitDamage(float NewDamage, AController* instigator)
 {
+	if (IsImmunity)
+		return false;
+
 	check(BasicStatData != nullptr);
-	
-	// 서버와 의논
-	DamageInstigator.AddUnique(instigator);
+	DamageInstigator.Add(instigator, NewDamage);
 	
 	SetCurrentHP(FMath::Clamp<float>(CurrentHP - NewDamage/CurrentStat[1], 0.f, BasicStatData->MaxHP));
 	UE_LOG(LogSystem, Log, TEXT("Hit Damage: %f"), NewDamage);
+
+	return true;
+}
+
+float UJK1CreatureStatComponent::TotalDamageBy(AController* instigator)
+{
+	if (!DamageInstigator.Contains(instigator))
+		return -1;
+	
+	float total = 0;
+	for (auto it : DamageInstigator)
+	{
+		if (it.Key == instigator)
+			total += it.Value;
+	}
+
+	return total;
 }
 
 FName UJK1CreatureStatComponent::GetCharacterName()
