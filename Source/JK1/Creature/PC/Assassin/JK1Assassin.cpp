@@ -26,7 +26,7 @@
 
 AJK1Assassin::AJK1Assassin()
 {
-	//Timeline 선언
+	//Timeline ����
 	MyTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("<MyTimeline"));
 	
 	//FloatCurve
@@ -54,13 +54,13 @@ AJK1Assassin::AJK1Assassin()
 		CloakMaterial = CloakMaterialRef.Object;
 	}
 	CreatureStat->SetOwner(true, FName("Assassin"));
-	SpawnLocation = FVector(-10.f, 0.f, 50.f); // 캐릭터 앞의 위치
-	ThrowDirection = FVector(1.f, 0.f, 0.f); // 앞으로 던지기
-	ThrowForce = 1000.f; // 던지기 힘
+	SpawnLocation = FVector(-10.f, 0.f, 50.f); // ĳ���� ���� ��ġ
+	ThrowDirection = FVector(1.f, 0.f, 0.f); // ������ ������
+	ThrowForce = 1000.f; // ������ ��
 
-	// Skill Q 쿨 타임
+	// Skill Q �� Ÿ��
 	SkillQCoolDownTime = 3.0f;
-	//Timeline 변수 초기화.
+	//Timeline ���� �ʱ�ȭ.
 	TimelineValue = 0.0f;
 		
 }
@@ -76,7 +76,7 @@ void AJK1Assassin::BeginPlay()
 		ProgressFunction.BindUFunction(this, FName("TimelineProgress"));
 		MyTimeline->AddInterpFloat(FloatCurve, ProgressFunction);
 
-		// Timeline 재생 설정
+		// Timeline ��� ����
 		MyTimeline->SetLooping(false);
 		MyTimeline->SetIgnoreTimeDilation(true);
 	}
@@ -182,7 +182,7 @@ void AJK1Assassin::SkillQTrace()
 {
 
 	FVector Start = GetActorLocation()+ SpawnLocation;
-	FVector End = Start + (GetActorForwardVector() * 1000.f); // 1000 유닛 앞까지 트레이스
+	FVector End = Start + (GetActorForwardVector() * 1000.f); // 1000 ���� �ձ��� Ʈ���̽�
 
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
@@ -197,6 +197,7 @@ void AJK1Assassin::SkillQTrace()
 	);
 	if (bHit)
 	{
+		OnAssassinQ_Hit(HitResult);
 		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 3, 0, 3);
 		UE_LOG(LogTemp, Warning, TEXT("Pawn Hit: %s"), *HitResult.GetActor()->GetName());
 	}
@@ -218,7 +219,7 @@ void AJK1Assassin::OnHit(AActor* Actor, FHitResult& HitResult)
 		{
 			if (HitEffect)
 			{
-				//TODO : 데미지 증가
+				//TODO : ������ ����
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
 			}		
 		}
@@ -236,7 +237,7 @@ void AJK1Assassin::SkillR(const FInputActionValue& Value)
 	
 	Super::SkillR(Value);
 	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
-	//TODO: Forward & RightValue가 0ㅇ이 아니라면 바로 몽타주 종료.,
+	//TODO: Forward & RightValue�� 0���� �ƴ϶�� �ٷ� ��Ÿ�� ����.,
 
 	PlayAnimMontage(SkillRMontage, 1.5f);
 
@@ -266,7 +267,7 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 	
 	if(!IsCloaking)
 	{
-		//은신 진입
+		//���� ����
 		IsCloakingProcess = true;
 		ChangeStatusEffect(true, 3);
 		USkeletalMeshComponent* MeshComponent = GetMesh();
@@ -286,7 +287,7 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 	}
 	else
 	{
-		//은신 해제
+		//���� ����
 		IsCloakingProcess = true;
 		ChangeStatusEffect(false, 3);
 		MyTimeline->Reverse();
@@ -302,9 +303,15 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 		GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	}
 
+void AJK1Assassin::OnAttackHit(TArray<FHitResult> hits)
+{
 }
 
-void AJK1Assassin::CheckBATrace()
+void AJK1Assassin::OnAssassinQ_Hit(FHitResult hit)
+{
+}
+
+void AJK1Assassin::CheckWeaponTrace()
 {
 	if (!bBAActive)
 		return;
@@ -368,21 +375,23 @@ void AJK1Assassin::CheckBATrace()
 	);
 
 #endif
+	if (!ValidHitResults.IsEmpty()) OnAttackHit(ValidHitResults);
+
 }
 
 void AJK1Assassin::GetAndStoreMaterials()
 {
-	// 캐릭터의 Mesh Component 가져오기
+	// ĳ������ Mesh Component ��������
 	USkeletalMeshComponent* MeshComponent = GetMesh();
 	if (MeshComponent)
 	{
-		// Material 개수 가져오기
+		// Material ���� ��������
 		int32 MaterialCount = MeshComponent->GetNumMaterials();
 
-		// 배열 초기화
+		// �迭 �ʱ�ȭ
 		StoredMaterials.Empty();
 
-		// Material들을 배열에 저장하기
+		// Material���� �迭�� �����ϱ�
 		for (int32 Index = 0; Index < MaterialCount; ++Index)
 		{
 			UMaterialInterface* Material = MeshComponent->GetMaterial(Index);
@@ -397,7 +406,7 @@ void AJK1Assassin::GetAndStoreMaterials()
 
 void AJK1Assassin::TimelineProgress(float Value)
 {
-	TimelineValue = Value; // TimelineValue 변수 업데이트
+	TimelineValue = Value; // TimelineValue ���� ������Ʈ
 	UE_LOG(LogAssassin, Log, TEXT("Timeline Value: %f"), TimelineValue);
 	if (DynamicMaterial)
 	{

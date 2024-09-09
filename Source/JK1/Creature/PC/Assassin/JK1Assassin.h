@@ -55,6 +55,16 @@ public:
 	void CheckCharacterMovement();
 	virtual void SkillLShift(const FInputActionValue& Value) override;
 
+	virtual void AssassinQ(FVector SpawnPoint, FRotator SpawnRotation);
+	virtual void AssassinE(FVector HitLocation);	// 평타 강화
+	virtual void AssassinR();
+	virtual void AssassinLSOn();
+	virtual void AssassinLSOff();
+
+	virtual void OnAttackHit(TArray<FHitResult> hits);
+	virtual void OnAssassinQ_Hit(FHitResult hit);
+
+
 	UFUNCTION()
 	virtual void CheckBATrace() override; 
 	
