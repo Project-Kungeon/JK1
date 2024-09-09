@@ -26,7 +26,7 @@
 
 AJK1Assassin::AJK1Assassin()
 {
-	//Timeline ¼±¾ğ
+	//Timeline ì„ ì–¸
 	MyTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("<MyTimeline"));
 	
 	//FloatCurve
@@ -54,13 +54,13 @@ AJK1Assassin::AJK1Assassin()
 		CloakMaterial = CloakMaterialRef.Object;
 	}
 	CreatureStat->SetOwner(true, FName("Assassin"));
-	SpawnLocation = FVector(-10.f, 0.f, 50.f); // Ä³¸¯ÅÍ ¾ÕÀÇ À§Ä¡
-	ThrowDirection = FVector(1.f, 0.f, 0.f); // ¾ÕÀ¸·Î ´øÁö±â
-	ThrowForce = 1000.f; // ´øÁö±â Èû
+	SpawnLocation = FVector(-10.f, 0.f, 50.f); // ìºë¦­í„° ì•ì˜ ìœ„ì¹˜
+	ThrowDirection = FVector(1.f, 0.f, 0.f); // ì•ìœ¼ë¡œ ë˜ì§€ê¸°
+	ThrowForce = 1000.f; // ë˜ì§€ê¸° í˜
 
-	// Skill Q Äğ Å¸ÀÓ
+	// Skill Q ì¿¨ íƒ€ì„
 	SkillQCoolDownTime = 3.0f;
-	//Timeline º¯¼ö ÃÊ±âÈ­.
+	//Timeline ë³€ìˆ˜ ì´ˆê¸°í™”.
 	TimelineValue = 0.0f;
 		
 }
@@ -76,7 +76,7 @@ void AJK1Assassin::BeginPlay()
 		ProgressFunction.BindUFunction(this, FName("TimelineProgress"));
 		MyTimeline->AddInterpFloat(FloatCurve, ProgressFunction);
 
-		// Timeline Àç»ı ¼³Á¤
+		// Timeline ì¬ìƒ ì„¤ì •
 		MyTimeline->SetLooping(false);
 		MyTimeline->SetIgnoreTimeDilation(true);
 	}
@@ -86,9 +86,6 @@ void AJK1Assassin::BeginPlay()
 void AJK1Assassin::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (bWeaponActive)
-		CheckWeaponTrace();
 
 	if (MyTimeline)
 		MyTimeline->TickComponent(DeltaTime, ELevelTick::LEVELTICK_TimeOnly, nullptr);
@@ -185,7 +182,7 @@ void AJK1Assassin::SkillQTrace()
 {
 
 	FVector Start = GetActorLocation()+ SpawnLocation;
-	FVector End = Start + (GetActorForwardVector() * 1000.f); // 1000 À¯´Ö ¾Õ±îÁö Æ®·¹ÀÌ½º
+	FVector End = Start + (GetActorForwardVector() * 1000.f); // 1000 ìœ ë‹› ì•ê¹Œì§€ íŠ¸ë ˆì´ìŠ¤
 
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
@@ -221,7 +218,7 @@ void AJK1Assassin::OnHit(AActor* Actor, FHitResult& HitResult)
 		{
 			if (HitEffect)
 			{
-				//TODO : µ¥¹ÌÁö Áõ°¡
+				//TODO : ë°ë¯¸ì§€ ì¦ê°€
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
 			}		
 		}
@@ -239,7 +236,7 @@ void AJK1Assassin::SkillR(const FInputActionValue& Value)
 	
 	Super::SkillR(Value);
 	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
-	//TODO: Forward & RightValue°¡ 0¤·ÀÌ ¾Æ´Ï¶ó¸é ¹Ù·Î ¸ùÅ¸ÁÖ Á¾·á.,
+	//TODO: Forward & RightValueê°€ 0ã…‡ì´ ì•„ë‹ˆë¼ë©´ ë°”ë¡œ ëª½íƒ€ì£¼ ì¢…ë£Œ.,
 
 	PlayAnimMontage(SkillRMontage, 1.5f);
 
@@ -269,8 +266,9 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 	
 	if(!IsCloaking)
 	{
-		//Àº½Å ÁøÀÔ
+		//ì€ì‹  ì§„ì…
 		IsCloakingProcess = true;
+		ChangeStatusEffect(true, 3);
 		USkeletalMeshComponent* MeshComponent = GetMesh();
 
 		if (MeshComponent)
@@ -288,8 +286,9 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 	}
 	else
 	{
-		//Àº½Å ÇØÁ¦
+		//ì€ì‹  í•´ì œ
 		IsCloakingProcess = true;
+		ChangeStatusEffect(false, 3);
 		MyTimeline->Reverse();
 		USkeletalMeshComponent* MeshComponent = GetMesh();
 		if (MeshComponent)
@@ -305,66 +304,45 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 
 }
 
-void AJK1Assassin::CheckWeaponTrace()
+void AJK1Assassin::CheckBATrace()
 {
-	if (!bWeaponActive)
+	if (!bBAActive)
 		return;
 
+	
+	float AttackRadius = 20.f;
+	if (CurrentCombo == 3)
+	{
+		AttackRadius = 30.f;
+	}
+	bool IsRight = (CurrentCombo != 2) ? true : false;
 	FVector StartL = GetMesh()->GetSocketLocation(FName(TEXT("sword_base_l")));
-	FVector StartR = GetMesh()->GetSocketLocation(FName(TEXT("sword_base_r")));
 	FVector EndL = GetMesh()->GetSocketLocation(FName(TEXT("sword_tip_l")));
+
+	FVector StartR = GetMesh()->GetSocketLocation(FName(TEXT("sword_base_r")));
 	FVector EndR = GetMesh()->GetSocketLocation(FName(TEXT("sword_tip_r")));
+
 	FVector ExtendL = EndL - StartL;
 	FVector ExtendR = EndR - StartR;
-	const float AttackRadius = 20.f;
+	//const float AttackRadius = 20.f;
 
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
 
-	bool bSuccessL = GetWorld()->SweepMultiByChannel(
+	bool bSuccess = GetWorld()->SweepMultiByChannel(
 		HitResults,
-		StartL,
-		EndL,
+		IsRight ? StartR : StartL,
+		IsRight ? EndR : EndL,
 		FQuat::Identity,
 		CCHANNEL_JK1ACTION,
-		FCollisionShape::MakeCapsule(ExtendL),
+		FCollisionShape::MakeCapsule(IsRight ? ExtendR : ExtendL),
 		Params
 	);
 
-	bool bSuccessR = GetWorld()->SweepMultiByChannel(
-		HitResults,
-		StartR,
-		EndR,
-		FQuat::Identity,
-		CCHANNEL_JK1ACTION,
-		FCollisionShape::MakeCapsule(ExtendR),
-		Params
-	);
-
-	if (bSuccessL || bSuccessR)
-	{
-		// FDamageEvent DamageEvent;
-
-		for (FHitResult& HitResult : HitResults)
-		{
-			AActor* Actor = HitResult.GetActor();
-
-			
-
-			if (Actor == nullptr)
-				continue;
-
-			if (WeaponAttackTargets.Contains(Actor) == false)
-			{
-				WeaponAttackTargets.Add(Actor);
-				OnHit(Actor, HitResult);
-				// TODO HitDamage
-				UE_LOG(LogTemp, Log, TEXT("HitDamage: %s"), *Actor->GetName());
-
-			}
-		}
-	}
+	if (bSuccess)
+		ApplyDamageToTarget(HitResults, 1.0f);
+	
 #if ENABLE_DRAW_DEBUG
 	FVector DirectionL = EndL - StartL;
 	FVector DirectionR = EndR - StartR;
@@ -372,28 +350,17 @@ void AJK1Assassin::CheckWeaponTrace()
 	float CapsuleHalfHeightR = DirectionR.Size() / 2.f;
 	FVector CapsuleOriginL = StartL + (EndL - StartL) / 2.f;
 	FVector CapsuleOriginR = StartR + (EndR - StartR) / 2.f;
-	FColor DrawColor = bSuccessL || bSuccessR ? FColor::Green : FColor::Red;
+	FColor DrawColor = bSuccess ? FColor::Green : FColor::Red;
 	FQuat QuatRotationL = FQuat::FindBetweenNormals(FVector::UpVector, DirectionL.GetSafeNormal());
 	FQuat QuatRotationR = FQuat::FindBetweenNormals(FVector::UpVector, DirectionR.GetSafeNormal());
 
-	DrawDebugCapsule(
-		GetWorld(),
-		CapsuleOriginL,
-		CapsuleHalfHeightL,
-		AttackRadius,
-		QuatRotationL,
-		DrawColor,
-		false,
-		1.f,
-		0
-	);
 
 	DrawDebugCapsule(
 		GetWorld(),
-		CapsuleOriginR,
-		CapsuleHalfHeightR,
+		IsRight ? CapsuleOriginR : CapsuleOriginL,
+		IsRight ? CapsuleHalfHeightR : CapsuleHalfHeightL,
 		AttackRadius,
-		QuatRotationR,
+		IsRight ? QuatRotationR : QuatRotationL,
 		DrawColor,
 		false,
 		1.f,
@@ -405,17 +372,17 @@ void AJK1Assassin::CheckWeaponTrace()
 
 void AJK1Assassin::GetAndStoreMaterials()
 {
-	// Ä³¸¯ÅÍÀÇ Mesh Component °¡Á®¿À±â
+	// ìºë¦­í„°ì˜ Mesh Component ê°€ì ¸ì˜¤ê¸°
 	USkeletalMeshComponent* MeshComponent = GetMesh();
 	if (MeshComponent)
 	{
-		// Material °³¼ö °¡Á®¿À±â
+		// Material ê°œìˆ˜ ê°€ì ¸ì˜¤ê¸°
 		int32 MaterialCount = MeshComponent->GetNumMaterials();
 
-		// ¹è¿­ ÃÊ±âÈ­
+		// ë°°ì—´ ì´ˆê¸°í™”
 		StoredMaterials.Empty();
 
-		// MaterialµéÀ» ¹è¿­¿¡ ÀúÀåÇÏ±â
+		// Materialë“¤ì„ ë°°ì—´ì— ì €ì¥í•˜ê¸°
 		for (int32 Index = 0; Index < MaterialCount; ++Index)
 		{
 			UMaterialInterface* Material = MeshComponent->GetMaterial(Index);
@@ -430,7 +397,7 @@ void AJK1Assassin::GetAndStoreMaterials()
 
 void AJK1Assassin::TimelineProgress(float Value)
 {
-	TimelineValue = Value; // TimelineValue º¯¼ö ¾÷µ¥ÀÌÆ®
+	TimelineValue = Value; // TimelineValue ë³€ìˆ˜ ì—…ë°ì´íŠ¸
 	UE_LOG(LogAssassin, Log, TEXT("Timeline Value: %f"), TimelineValue);
 	if (DynamicMaterial)
 	{
