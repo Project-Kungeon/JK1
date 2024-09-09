@@ -52,7 +52,6 @@ public:
 public:
 	FTimerHandle AnimHandle;
 
-	int CurrentCombo;
 	bool FistType;
 
 	// Montage

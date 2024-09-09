@@ -73,16 +73,13 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bWeaponActive;
 
-	/* Å¸ÀÌ¹Ö¿¡ ¸Â°Ô ÀÔ·ÂÇÏ´Â ÆĞ¸µÀ¸·Î ¼öÁ¤ */
+	/* íƒ€ì´ë°ì— ë§ê²Œ ì…ë ¥í•˜ëŠ” íŒ¨ë§ìœ¼ë¡œ ìˆ˜ì • */
 	UPROPERTY(BlueprintReadWrite)
 	bool bParryActive = false;
 
 	UPROPERTY()
 	TSet<AActor*> WeaponAttackTargets;
 
-	// combo == 0 not start 
-	// combo >= 1 -> Combo Start
-	int32 CurrentCombo = 0;
 	uint8 IsAttacking : 1;
 	uint8 SaveAttacking : 1;
 	int32 MaxCombo;

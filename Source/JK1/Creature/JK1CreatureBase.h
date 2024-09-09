@@ -46,6 +46,10 @@ public:
 	*  Member Variable
 	*/ 
 public:
+	// combo == 0 not start 
+	// combo >= 1 -> Combo Start
+	int32 CurrentCombo = 0;
+
 	UPROPERTY(BlueprintReadWrite)
 	bool bBAActive;
 
