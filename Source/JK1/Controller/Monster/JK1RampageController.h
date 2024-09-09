@@ -17,10 +17,13 @@ class JK1_API AJK1RampageController : public AAIController
 public:
 	AJK1RampageController();
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
 
 	static const FName HomePosKey;
 	static const FName PatrolPosKey;
-	static const FName TargetKey;
+	static const FName CloseTargetKey;
+	static const FName AggroTargetKey;
+	static const FName PatternTypeKey;
 
 private:
 	UPROPERTY()

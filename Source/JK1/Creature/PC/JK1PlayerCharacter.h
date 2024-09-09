@@ -55,6 +55,8 @@ public:
 	virtual void SkillR(const FInputActionValue& Value);
 	virtual void SkillLShift(const FInputActionValue& Value);
 
+	virtual void Death() override;
+
 	/*
 	* Member Variable
 	*/
@@ -68,11 +70,6 @@ protected:
 	class AJK1PlayerController* PlayerController;
 
 public:
-	UPROPERTY(BlueprintReadWrite)
-	bool bWeaponActive;
-
-	UPROPERTY()
-	TSet<AActor*> WeaponAttackTargets;
 	FName path;
 
 	// combo == 0 not start 
@@ -81,5 +78,4 @@ public:
 	uint8 IsAttacking : 1;
 	uint8 SaveAttacking : 1;
 	int32 MaxCombo;
-	
 };

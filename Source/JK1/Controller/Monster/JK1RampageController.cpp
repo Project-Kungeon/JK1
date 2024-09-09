@@ -9,7 +9,9 @@
 
 const FName AJK1RampageController::HomePosKey(TEXT("HomePos"));
 const FName AJK1RampageController::PatrolPosKey(TEXT("PatrolPos"));
-const FName AJK1RampageController::TargetKey(TEXT("Target"));
+const FName AJK1RampageController::CloseTargetKey(TEXT("CloseTarget"));
+const FName AJK1RampageController::AggroTargetKey(TEXT("AggroTarget"));
+const FName AJK1RampageController::PatternTypeKey(TEXT("PatternType"));
 
 AJK1RampageController::AJK1RampageController()
 {
@@ -39,4 +41,10 @@ void AJK1RampageController::OnPossess(APawn* InPawn)
 			UE_LOG(LogMonster, Warning, TEXT("AIController couldn't run behavior tree!"));
 		}
 	}
+}
+
+void AJK1RampageController::OnUnPossess()
+{
+	Super::OnUnPossess();
+
 }

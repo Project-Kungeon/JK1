@@ -40,8 +40,6 @@ void AJK1Archor::BeginPlay()
 void AJK1Archor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (bWeaponActive)
-		CheckWeaponTrace();
 }
 
 void AJK1Archor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -170,8 +168,4 @@ void AJK1Archor::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
 	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
-}
-
-void AJK1Archor::CheckWeaponTrace()
-{
 }

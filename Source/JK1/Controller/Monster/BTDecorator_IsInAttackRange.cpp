@@ -9,7 +9,7 @@
 UBTDecorator_IsInAttackRange::UBTDecorator_IsInAttackRange()
 {
 	NodeName = TEXT("CanAttack");
-	AttackRange = 200.0f;
+	AttackRange = 500.0f;
 }
 
 bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
@@ -20,7 +20,7 @@ bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeCompo
 	if (ControllingPawn == nullptr)
 		return false;
 
-	auto Target = Cast<AJK1PlayerCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AJK1RampageController::TargetKey));
+	auto Target = Cast<AJK1PlayerCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AJK1RampageController::CloseTargetKey));
 	if (Target == nullptr)
 		return false;
 

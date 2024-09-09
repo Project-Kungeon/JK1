@@ -31,8 +31,6 @@ void AJK1Warrior::BeginPlay()
 void AJK1Warrior::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (bWeaponActive)
-		CheckWeaponTrace();
 }
 
 void AJK1Warrior::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -100,9 +98,11 @@ void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 	Super::SkillLShift(value);
 }
 
-void AJK1Warrior::CheckWeaponTrace()
+void AJK1Warrior::CheckBATrace()
 {
-	if (!bWeaponActive)
+	Super::CheckBATrace();
+
+	if (!bBAActive)
 		return;
 
 	FVector Start = GetMesh()->GetSocketLocation(FName(TEXT("FX_Sword_Bottom")));
@@ -127,30 +127,8 @@ void AJK1Warrior::CheckWeaponTrace()
 	);
 
 	if (bSuccess)
-	{
-		FDamageEvent DamageEvent;
+		ApplyDamageToTarget(HitResults, 1.f);
 
-		for (FHitResult& HitResult : HitResults)
-		{
-			AActor* Actor = HitResult.GetActor();
-			if (Actor == nullptr)
-				continue;
-
-			if (WeaponAttackTargets.Contains(Actor) == false)
-			{
-				WeaponAttackTargets.Add(Actor);
-
-				if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(Actor))
-				{
-					// Server Code need
-					HitPawn->CreatureStat->HitDamage(1.0f, Controller);
-					UE_LOG(LogWarrior, Log, TEXT("Hit target: %s"), *Actor->GetName());
-				}
-
-			}
-		}
-
-	}
 
 #if ENABLE_DRAW_DEBUG
 	FVector Direction = End - Start;

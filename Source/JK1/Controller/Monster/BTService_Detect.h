@@ -6,6 +6,7 @@
 #include "BehaviorTree/BTService.h"
 #include "BTService_Detect.generated.h"
 
+class AJK1PlayerCharacter;
 /**
  * 
  */
@@ -19,5 +20,6 @@ public:
 
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-	
+
+	void DetectTarget();
 };

@@ -6,6 +6,9 @@
 #include "Creature/Monster/JK1MonsterBase.h"
 #include "JK1Rampage.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnGimmicEndDelegate);
+
 /**
  * 
  */
@@ -27,5 +30,44 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
+	// Attack Pattern
+	void GiveStatusEffect(int type);
+	void BasicAttack();
+	void Roar();
+	void EarthQuake();
+	void GroundSmash();
+	void ThrowAway();
+	void EnhancedAttack();
+
+	UFUNCTION()
+	virtual void CheckBATrace() override;
+	void CheckFistTrace();
+
+	virtual void Death() override;
+
+	/*
+	*  Member Variable
+	*/
+public:
+	FTimerHandle AnimHandle;
+
+	int CurrentCombo;
+	bool FistType;
+
+	// Montage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> ComboActionMontage1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> ComboActionMontage2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> ComboActionMontage3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> RoarMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> EnhancedAttackMontage;
+
+	FOnAttackEndDelegate OnAttackEnd;
+	FOnGimmicEndDelegate OnGimmicEnd;
 };

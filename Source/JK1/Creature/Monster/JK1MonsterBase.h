@@ -7,6 +7,7 @@
 #include "JK1/Interface/MonsterInterface.h"
 #include "JK1MonsterBase.generated.h"
 
+class AJK1PlayerCharacter;
 /**
  * 
  */
@@ -29,9 +30,20 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/*
+	*  Member Function
+	*/
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
+	virtual void Death() override;
 
+
+	void GiveStatusEffect(int type);
+
+
+	/*
+	*  Member Variable
+	*/
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UWidgetComponent> MonsterWidget;
@@ -42,4 +54,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 	bool bHighlighted = false;
 	
+public:
+	TArray<AJK1PlayerCharacter*> DetectTargets;
+	bool DoGimmic;
 };

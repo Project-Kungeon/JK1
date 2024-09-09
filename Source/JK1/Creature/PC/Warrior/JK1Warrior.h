@@ -49,11 +49,10 @@ public:
 
 	//refactoring
 	UFUNCTION()
-	void CheckWeaponTrace();
+	virtual void CheckBATrace() override;
 	void PlayParticleSystem();
 	void CheckSkillRTrace();
 	void StopParticleSystem();
-
 
 	/*
 	*  Member Variable
