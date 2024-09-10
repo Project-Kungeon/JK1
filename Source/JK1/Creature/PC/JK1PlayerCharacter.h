@@ -76,13 +76,13 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bWeaponActive;
 
-	/* Ÿ�ֿ̹� �°� �Է��ϴ� �и����� ���� */
+
+	/* 타이밍에 맞게 입력하는 패링으로 수정 */
 	UPROPERTY(BlueprintReadWrite)
 	bool bParryActive = false;
 
 	UPROPERTY()
 	TSet<AActor*> WeaponAttackTargets;
-
 
 	uint8 IsAttacking : 1;
 	uint8 SaveAttacking : 1;

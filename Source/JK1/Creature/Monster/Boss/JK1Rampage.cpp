@@ -55,16 +55,14 @@ void AJK1Rampage::BasicAttack()
 	switch (CurrentCombo)
 	{
 	case 0:
-		CurrentCombo = 1;
 		PlayAnimMontage(ComboActionMontage1, 1.f);	
 		break;
 	case 1:
-		CurrentCombo = 2;
 		PlayAnimMontage(ComboActionMontage2, 1.f);
 		break;
 	case 2:
+		PlayAnimMontage(ComboActionMontage3, 1.f);
 		CurrentCombo = 0;
-		PlayAnimMontage(ComboActionMontage3, 1.f);	
 		break;
 	}
 
@@ -112,7 +110,7 @@ void AJK1Rampage::CheckBATrace()
 	if (!bBAActive)
 		return; 
 
-	bool IsRight = (CurrentCombo != 2 ) ? true : false;
+	bool IsRight = (CurrentCombo % 2 == 0 ) ? true : false;
 
 	FVector StartL = GetMesh()->GetSocketLocation(FName(TEXT("lowerarm_lSocket")));
 	FVector EndL = GetMesh()->GetSocketLocation(FName(TEXT("FX_Trail_L_01")));

@@ -67,32 +67,18 @@ void AJK1Warrior::ComboActionBegin()
 void AJK1Warrior::DoCombo()
 {
 	Super::DoCombo();
-	if (AnimInstance && AnimInstance->Montage_IsPlaying(SkillEMontage_Intro))
+
+	switch (CurrentCombo)
 	{
-		
-		IsAttacking = false;
-		SaveAttacking = false;
-		CurrentCombo = 0;
-		return;
-	}
-	else
-	{
-		switch (CurrentCombo)
-		{
-		case 0:
-			CurrentMontage = ComboActionMontage1;
-			PlayAnimMontage(ComboActionMontage1, 1.4f);
-			break;
-		case 1:
-			CurrentMontage = ComboActionMontage2;
-			PlayAnimMontage(ComboActionMontage2, 1.4f);
-			break;
-		case 2:
-			CurrentMontage = ComboActionMontage3;
-			PlayAnimMontage(ComboActionMontage3, 1.4f);
-			break;
-		}
-		
+	case 0:
+		PlayAnimMontage(ComboActionMontage1, 1.4f);
+		break;
+	case 1:
+		PlayAnimMontage(ComboActionMontage2, 1.4f);
+		break;
+	case 2:
+		PlayAnimMontage(ComboActionMontage3, 1.4f);
+		break;
 	}
 }
 

@@ -111,28 +111,27 @@ void AJK1Assassin::Attack()
 
 void AJK1Assassin::ComboActionBegin()
 {
-	Super::ComboActionBegin();
-	
+	Super::ComboActionBegin();	
 }
 
 void AJK1Assassin::DoCombo()
 {
 	Super::DoCombo();
-	switch (CurrentCombo)
-	{
-	case 0:
-		CurrentCombo = 1;
-		PlayAnimMontage(ComboActionMontage1, 1.f);
-		break;
-	case 1:
-		CurrentCombo = 2;
-		PlayAnimMontage(ComboActionMontage2, 1.f);
-		break;
-	case 2:
-		CurrentCombo = 3;
-		PlayAnimMontage(ComboActionMontage3, 1.f);
-		break;
-	}
+
+
+		switch (CurrentCombo)
+		{
+		case 0:
+			PlayAnimMontage(ComboActionMontage1, 1.f);
+			break;
+		case 1:
+			PlayAnimMontage(ComboActionMontage2, 1.f);
+			break;
+		case 2:
+			PlayAnimMontage(ComboActionMontage3, 1.f);
+			break;
+		}
+	
 	
 }
 
@@ -349,8 +348,8 @@ void AJK1Assassin::CheckBATrace()
 {
 	if (!bBAActive)
 		return;
+	bool IsRight = (CurrentCombo % 2 == 0) ? true : false;
 
-	bool IsRight = (CurrentCombo != 2) ? true : false;
 	FVector StartL = GetMesh()->GetSocketLocation(FName(TEXT("sword_base_l")));
 	FVector EndL = GetMesh()->GetSocketLocation(FName(TEXT("sword_tip_l")));
 
