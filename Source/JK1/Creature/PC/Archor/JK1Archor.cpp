@@ -80,35 +80,23 @@ void AJK1Archor::Attack()
 	
 }
 
-void AJK1Archor::Shoot()
+void AJK1Archor::OnBasicAttackHit(TArray<FHitResult> HitResults)
+{
+}
+
+void AJK1Archor::Shoot(FVector StartLoc, FVector EndLoc)
 {
 	ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *ArrowBP.ToString()));
 
-	FHitResult HitResult;
+	FHitResult HitResult;	// 히트 대상
 	FVector EndLocation;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
-	//Camera Info 가져오기.
-	if (GetWorld())
-	{
-		APlayerCameraManager* CameraManager = Cast<APlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
-		if (CameraManager)
-		{
-			CrosshairWorldLocation = CameraManager->GetCameraLocation();
-			//카메라의 전방 벡터 가져오기.
-			EndLocation = CameraManager->GetActorForwardVector();
-			//scaling forward vector by 15,000, 추적의 끝 부분, Multifly Vector Size 15000
-			EndLocation.X *= 15000;
-			EndLocation.Y *= 15000;
-			EndLocation.Z *= 15000;
-			//탐지하고자 하는 끝부분, Impact Target Point
-			ImpactPoint = CrosshairWorldLocation + EndLocation;
-		}
-	}
+	ImpactPoint = StartLoc + EndLoc;
 
 	bool bSuccess = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
-		CrosshairWorldLocation,
+		StartLoc,
 		ImpactPoint,
 		CCHANNEL_JK1ACTION,
 		Params
@@ -120,20 +108,27 @@ void AJK1Archor::Shoot()
 		{
 			ImpactPoint = HitResult.ImpactPoint;
 			UE_LOG(LogArchor, Log, TEXT("%d, %d, %d"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
+			TArray<FHitResult> HitResults;
+			HitResults.Add(HitResult);
+			OnBasicAttackHit(HitResults);
 		}
-
 		if (IsLShift)
 		{
 			CurrentTime = MaxTime;
-			GetWorldTimerManager().SetTimer(ArrowHandler, this, &AJK1Archor::SpawnArrowCheck, 0.1f, true);
+			GetWorldTimerManager().SetTimer(ArrowHandler, [this, StartLoc, EndLoc]()
+				{
+					this->SpawnArrowCheck(StartLoc, EndLoc);
+				}, 0.1f, true);
 			//TODO : 데미지 5
 		}
-		else 
+		else
 		{
-			SpawnArrow();
+			SpawnArrow(StartLoc, EndLoc);
 			//TODO : 데미지 1
 		}
 	}
+	
+
 #if ENABLE_DRAW_DEBUG
 	FVector Direction = ImpactPoint - CrosshairWorldLocation;
 	FColor DrawColor = bSuccess ? FColor::Green : FColor::Red;
@@ -141,7 +136,7 @@ void AJK1Archor::Shoot()
 
 	DrawDebugLine(
 		GetWorld(),
-		CrosshairWorldLocation,
+		StartLoc,
 		ImpactPoint,
 		DrawColor,
 		false,
@@ -152,7 +147,56 @@ void AJK1Archor::Shoot()
 #endif
 }
 
-void AJK1Archor::SpawnArrow()
+void AJK1Archor::ShootQ(FVector StartLoc, FVector EndLoc)
+{
+	PlayAnimMontage(SkillQMonatge_Recovery);
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *ArrowBP.ToString()));
+
+	FHitResult HitResult;	// 히트 대상
+	FVector EndLocation;
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
+
+	ImpactPoint = StartLoc + EndLoc;
+
+	bool bSuccess = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		StartLoc,
+		ImpactPoint,
+		CCHANNEL_JK1ACTION,
+		Params
+	);
+
+	if (bSuccess)
+	{
+		if (HitResult.bBlockingHit)
+		{
+			ImpactPoint = HitResult.ImpactPoint;
+			UE_LOG(LogArchor, Log, TEXT("%d, %d, %d"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
+			OnArchorQ_Hit(HitResult);
+		}
+		SpawnArrow(StartLoc, EndLoc);
+	}
+#if ENABLE_DRAW_DEBUG
+	FVector Direction = ImpactPoint - CrosshairWorldLocation;
+	FColor DrawColor = bSuccess ? FColor::Green : FColor::Red;
+	FQuat QuatRotation = FQuat::FindBetweenNormals(FVector::UpVector, Direction.GetSafeNormal());
+
+	DrawDebugLine(
+		GetWorld(),
+		StartLoc,
+		ImpactPoint,
+		DrawColor,
+		false,
+		3.f,
+		0,
+		3.f
+	);
+#endif
+}
+
+void AJK1Archor::SpawnArrow(FVector StartLoc, FVector EndLoc)
 {
 	AJK1Arrow* Arrow = nullptr;
 	//LShift 상태면 랜덤한 스타팅 포인트에서 화살 발사
@@ -161,7 +205,8 @@ void AJK1Archor::SpawnArrow()
 		float Radius = 50.0f; // 원하는 반지름 크기
 		FVector RandomDirection = UKismetMathLibrary::RandomUnitVector();
 		FVector Offset = RandomDirection * Radius;
-		ArrowStartLocation = CrosshairWorldLocation + Offset;
+		ArrowStartLocation = StartLoc + Offset;
+		ImpactPoint = StartLoc + EndLoc;
 		ArrowSpawnRotation = (ImpactPoint - ArrowStartLocation).Rotation();
 
 		Arrow = GetWorld()->SpawnActor<AJK1Arrow>(ObjectToSpawn->GeneratedClass,
@@ -180,10 +225,10 @@ void AJK1Archor::SpawnArrow()
 	}
 	else //아니라면 CameraForward Vector방향으로 발사
 	{
-		ArrowSpawnRotation = (ImpactPoint - CrosshairWorldLocation).Rotation();
+		ArrowSpawnRotation = (ImpactPoint - StartLoc).Rotation();
 
 		Arrow = GetWorld()->SpawnActor<AJK1Arrow>(ObjectToSpawn->GeneratedClass,
-			CrosshairWorldLocation, ArrowSpawnRotation, SpawnParams);
+			StartLoc, ArrowSpawnRotation, SpawnParams);
 	}
 	
 	//Arrow가 Channel 제외한 다른 액터와 판정 안되게 하는 구문
@@ -202,12 +247,12 @@ void AJK1Archor::SpawnArrow()
 	}
 }
 
-void AJK1Archor::SpawnArrowCheck()
+void AJK1Archor::SpawnArrowCheck(FVector StartLoc, FVector EndLoc)
 {
 	if (CurrentTime > 0)
 	{
 		CurrentTime--;
-		SpawnArrow();
+		SpawnArrow(StartLoc, EndLoc);
 	}
 	else
 	{
@@ -229,8 +274,14 @@ void AJK1Archor::DoCombo()
 	{
 	case 0:
 		CurrentCombo = 1;
-		PlayAnimMontage(ComboActionMontage, ComboActionMontagePlayRate);
-		Shoot();
+		if (GetWorld())
+		{
+			APlayerCameraManager* CameraManager = Cast<APlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
+			FVector ArrowStartLoc = GetStartArrowLoc(CameraManager);
+			FVector ArrowEndLoc = GetEndArrowLoc(CameraManager);
+			ArchorAttack(ArrowStartLoc, ArrowEndLoc);
+		}
+		
 		break;
 	}
 }
@@ -245,14 +296,7 @@ void AJK1Archor::SkillQ(const FInputActionValue& value)
 	Super::SkillQ(value);
 	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
 
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance)
-	{
-		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-		PlayAnimMontage(SkillQMonatge_Charge, SkillRChargePlayRate);
-		FTimerHandle ChargeHandler;
-		GetWorldTimerManager().SetTimer(ChargeHandler, this, &AJK1Archor::ShootNRecovery, SkillQMontagePlayRate, false);
-	}
+	ArchorQ_Charging();
 }
 
 void AJK1Archor::SkillE(const FInputActionValue& value)
@@ -260,23 +304,14 @@ void AJK1Archor::SkillE(const FInputActionValue& value)
 	Super::SkillE(value);
 	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
 	
-	//89.56f
-	SkillELocation = FVector(CalculateDamageLocation().X,CalculateDamageLocation().Y, 0.f);
-
-	PlayAnimMontage(SkillEMontage);
-	StartDamage();
-	PlayParticleSystem();
+	ArchorE(CalculateDamageLocation());
 }
 
 void AJK1Archor::SkillR(const FInputActionValue& value)
 {
 	Super::SkillR(value);
 	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
-	{
-		ComboActionMontagePlayRate = 2.0f;
-		SkillQMontagePlayRate = 0.2f;
-		SkillRChargePlayRate = 5.0f;
-	}
+	ArchorR();
 }
 
 void AJK1Archor::SkillLShift(const FInputActionValue& value)
@@ -284,19 +319,112 @@ void AJK1Archor::SkillLShift(const FInputActionValue& value)
 	Super::SkillLShift(value);
 	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
 
+	ArchorLS();
+
+}
+
+void AJK1Archor::ArchorAttack(FVector StartPoint, FVector EndPoint)
+{
+	AsyncTask(ENamedThreads::GameThread, [this, StartPoint, EndPoint]() {
+
+		PlayAnimMontage(ComboActionMontage, ComboActionMontagePlayRate);
+		Shoot(StartPoint, EndPoint);
+		});
+
+	
+}
+
+void AJK1Archor::ArchorQ_Charging()
+{
+
+	AsyncTask(ENamedThreads::GameThread, [this]() {
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance)
+		{
+			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+			PlayAnimMontage(SkillQMonatge_Charge, SkillRChargePlayRate);
+			FTimerHandle ChargeHandler;
+			GetWorldTimerManager().SetTimer(ChargeHandler, this, &AJK1Archor::ShootNRecovery, SkillQMontagePlayRate, false);
+		}
+		});
+
+	
+}
+
+void AJK1Archor::ArchorQ_Shot(FVector StartPoint, FVector EndPoint)
+{
+	ShootQ(StartPoint, EndPoint);
+}
+
+void AJK1Archor::ArchorE(FVector Point)
+{
+	//89.56f
+	//SkillELocation = FVector(CalculateDamageLocation().X, CalculateDamageLocation().Y, 0.f);
+
+	AsyncTask(ENamedThreads::GameThread, [this, Point]() {
+		SkillELocation = FVector(Point.X, Point.Y, 0.f);
+
+		PlayAnimMontage(SkillEMontage);
+		StartDamage();
+		PlayParticleSystem();
+		});
+
+	
+}
+
+void AJK1Archor::ArchorR()
+{
+	{
+		ComboActionMontagePlayRate = 2.0f;
+		SkillQMontagePlayRate = 0.2f;
+		SkillRChargePlayRate = 5.0f;
+	}
+}
+
+void AJK1Archor::ArchorLS()
+{
 	IsLShift = true;
 
-	FTimerHandle LShiftTimerHandler;
+	//FTimerHandle LShiftTimerHandler;
 
-	GetWorldTimerManager().SetTimer(LShiftTimerHandler, this,&AJK1Archor::BIsLShift, 5.0f, false);
+	//GetWorldTimerManager().SetTimer(LShiftTimerHandler, this, &AJK1Archor::BIsLShift, 5.0f, false);
+}
 
+FVector AJK1Archor::GetStartArrowLoc(APlayerCameraManager* CameraManager)
+{
+	return CameraManager->GetCameraLocation();
+}
+
+FVector AJK1Archor::GetEndArrowLoc(APlayerCameraManager* CameraManager)
+{
+	FVector EndLoc = CameraManager->GetActorForwardVector();
+	EndLoc.X *= 15000;
+	EndLoc.Y *= 15000;
+	EndLoc.Z *= 15000;
+
+	return EndLoc;
+}
+
+void AJK1Archor::OnArrowHit(FHitResult hit)
+{
+
+}
+
+void AJK1Archor::OnArchorQ_Hit(FHitResult hit)
+{
+}
+
+void AJK1Archor::OnArchorE_Hit(TArray<FHitResult> hits)
+{
 }
 
 void AJK1Archor::ShootNRecovery()
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	Shoot();
-	PlayAnimMontage(SkillQMonatge_Recovery);
+	if (GetWorld())
+	{
+		APlayerCameraManager* CameraManager = Cast<APlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
+		ShootQ(GetStartArrowLoc(CameraManager), GetEndArrowLoc(CameraManager));
+	}
 }
 
 void AJK1Archor::EndSkillR()
@@ -372,7 +500,8 @@ void AJK1Archor::CheckSkillETrace()
 
 	if (bHasHit)
 	{
-		for (FHitResult result : OverlappingActors)
+		OnArchorE_Hit(OverlappingActors);
+		for (FHitResult& result : OverlappingActors)
 		{
 			UE_LOG(LogArchor, Log, TEXT("%s"), *result.GetActor()->GetName());
 			AActor* SweepActor = result.GetActor();

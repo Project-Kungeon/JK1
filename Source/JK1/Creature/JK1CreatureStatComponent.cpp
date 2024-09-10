@@ -15,6 +15,8 @@ UJK1CreatureStatComponent::UJK1CreatureStatComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
+
+	CreatureInfo = new message::CreatureInfo();
 }
 
 
@@ -72,28 +74,28 @@ void UJK1CreatureStatComponent::SetCurrentHP(float NewHP)
 	UE_LOG(LogSystem, Log, TEXT("Remain HP : %f"), CurrentHP);
 	OnHPChanged.Broadcast();
 
-	if (CurrentHP <= KINDA_SMALL_NUMBER)
-	{
-		CurrentHP = 0.f;
-		OnHPIsZero.Broadcast();
+	//if (CurrentHP <= KINDA_SMALL_NUMBER)
+	//{
+	//	CurrentHP = 0.f;
+	//	OnHPIsZero.Broadcast();
 
-		// TEMP CODE
-		if (!DamageInstigator.IsEmpty())
-		{
-			TArray<AController*> temp;
-			DamageInstigator.GetKeys(temp);
+	//	// TEMP CODE
+	//	if (!DamageInstigator.IsEmpty())
+	//	{
+	//		TArray<AActor*> temp;
+	//		DamageInstigator.GetKeys(temp);
 
-			for (AController* instigator : temp)
-			{
-				if(auto player = Cast<AJK1PlayerController>(instigator))
-					if (auto Character = Cast<AJK1CreatureBase>(player->GetPawn()))
-					{
-						Character->CreatureStat->PlusExp(BasicStatData->Exp);
-						Cast<AJK1PlayerController>(Character->GetController())->DisengagedLockOn();
-					}
-			}
-		}
-	}
+	//		for (AActor* instigator : temp)
+	//		{
+	//			if(auto player = Cast<AJK1PlayerController>(instigator))
+	//				if (auto Character = Cast<AJK1CreatureBase>(player->GetPawn()))
+	//				{
+	//					Character->CreatureStat->PlusExp(BasicStatData->Exp);
+	//					Cast<AJK1PlayerController>(Character->GetController())->DisengagedLockOn();
+	//				}
+	//		}
+	//	}
+	//}
 }
 
 void UJK1CreatureStatComponent::SetStat(int index, float value)
@@ -144,7 +146,7 @@ void UJK1CreatureStatComponent::LevelUP(int level)
 	CurrentStat[1] += 10;
 }
 
-bool UJK1CreatureStatComponent::HitDamage(float NewDamage, AController* instigator)
+bool UJK1CreatureStatComponent::HitDamage(float NewDamage, AActor* instigator)
 {
 	if (IsImmunity)
 		return false;
@@ -158,7 +160,7 @@ bool UJK1CreatureStatComponent::HitDamage(float NewDamage, AController* instigat
 	return true;
 }
 
-float UJK1CreatureStatComponent::TotalDamageBy(AController* instigator)
+float UJK1CreatureStatComponent::TotalDamageBy(AActor* instigator)
 {
 	if (!DamageInstigator.Contains(instigator))
 		return -1;
@@ -197,6 +199,13 @@ float UJK1CreatureStatComponent::GetHPRatio()
 {
 	check(BasicStatData != nullptr);
 	return (BasicStatData->MaxHP < KINDA_SMALL_NUMBER) ? 0.f : (CurrentHP / BasicStatData->MaxHP);
+}
+
+void UJK1CreatureStatComponent::SetCreatureInfo(message::CreatureInfo Info)
+{
+	if (CreatureInfo->object_info().object_id() != 0)
+		return;
+	CreatureInfo->CopyFrom(Info);
 }
 
 float UJK1CreatureStatComponent::GetExpRatio()

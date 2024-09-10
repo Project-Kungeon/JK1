@@ -42,18 +42,28 @@ protected:
 	virtual void ComboActionEnd() override;
 
 public:
+	virtual void	OnBasicAttackHit(TArray<FHitResult> HitResults);
 	//Skill Function
 	virtual void SkillQ(const FInputActionValue& value) override;
-	void SpawnDagger();
-	void SkillQTrace();
+	void SpawnDagger(FVector SpawnPoint, FRotator SpawnRotation);
+	virtual void SkillQTrace();
 	UFUNCTION()
 
 	//Check Back Attack Fukction
-	virtual void OnHit(AActor* Actor, FHitResult& HitResult);
+	virtual bool IsBackAttack(AActor* Actor, FHitResult& HitResult);
 	void SpawnHitEffect(const FVector& Location);
 	virtual void SkillR(const FInputActionValue& Value) override;
 	void CheckCharacterMovement();
 	virtual void SkillLShift(const FInputActionValue& Value) override;
+
+	void AssassinQ(FVector SpawnPoint, FRotator SpawnRotation);
+	void AssassinE(FVector HitLocation);	// 평타 강화
+	void AssassinR();
+	void AssassinLSOn();
+	void AssassinLSOff();
+
+	virtual void OnAssassinQ_Hit(FHitResult hit);
+
 
 	UFUNCTION()
 	virtual void CheckBATrace() override; 

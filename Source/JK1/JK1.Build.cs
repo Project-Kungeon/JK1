@@ -6,12 +6,22 @@ public class JK1 : ModuleRules
 {
 	public JK1(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        bEnableExceptions = true;
+
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "NavigationSystem", "AIModule", "GameplayTasks" });
 
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PrivateDependencyModuleNames.AddRange(new string[] { "ThirdParty" });
+
+		PrivateIncludePaths.AddRange(new string[]
+        {
+            "JK1/",
+            "JK1/Network/",
+            "JK1/Network/PacketHandler",
+            "JK1/System/"
+        });
 
 		PrivateIncludePaths.AddRange(new string[]
 		{

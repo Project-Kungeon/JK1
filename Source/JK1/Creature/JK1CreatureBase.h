@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "JK1.h"
 #include "../JK1LogChannels.h"
 #include "JK1CreatureBase.generated.h"
 
@@ -33,6 +34,7 @@ public:
 	virtual float	TakeDamage(float damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCursor) override;
 	virtual void	PossessedBy(AController* NewController) override;
 	virtual void	CheckBATrace();	// BasicAttack
+	virtual void	OnBasicAttackHit(TArray<FHitResult> HitResults);
 
 	unsigned char	GetCurrectStatusEffect() { return statusEffect; }
 	void			ChangeStatusEffect(bool On, int status);

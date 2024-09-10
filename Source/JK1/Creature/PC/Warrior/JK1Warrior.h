@@ -34,6 +34,7 @@ public:
 protected:
 	//Attack Funciton
 	virtual void Attack() override;
+	virtual void	OnBasicAttackHit(TArray<FHitResult> HitResults);
 
 	//ComboAction
 	virtual void ComboActionBegin() override;
@@ -47,13 +48,20 @@ public:
 	virtual void SkillR(const FInputActionValue& value) override;
 	virtual void SkillLShift(const FInputActionValue& value) override;
 
+	// Warrior
+	virtual void WarriorQ();
+	virtual void WarriorE();
+	virtual void WarriorR();
+	virtual void WarriorLShift();
+
+
 	//refactoring
 	UFUNCTION()
 	virtual void CheckBATrace() override;
 	void PlayParticleSystem();
-	void DealDamageOverTime();
-	void StartROverTime();
-	void CheckSkillRTrace();
+	virtual void DealDamageOverTime();
+	virtual void StartROverTime();
+	TArray<FOverlapResult> CheckSkillRTrace();
 	void StopParticleSystem();
 	void ResetSkillCooldown();
 	//void ResetSkillLShift();

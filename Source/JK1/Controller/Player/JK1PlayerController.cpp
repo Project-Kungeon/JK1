@@ -111,14 +111,14 @@ void AJK1PlayerController::PlayerTick(float DeltaTime)
 
 	if (bShouldRotate && TargetActor)
 	{
-		FRotator Rotation = UKismetMathLibrary::FindLookAtRotation(ControlledCharacter->GetActorLocation(), TargetActor->GetActorLocation());
+		FRotator Rotation = UKismetMathLibrary::FindLookAtRotation(GetCharacter()->GetActorLocation(), TargetActor->GetActorLocation());
 		SetControlRotation(Rotation);
 	}
 }
 
 void AJK1PlayerController::JumpAct()
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
 	{
 		ControlledPlayer->ChangeStatusEffect(true, 0);
 		ControlledPlayer->Jump();
@@ -127,19 +127,19 @@ void AJK1PlayerController::JumpAct()
 
 void AJK1PlayerController::StopJumpingAct()
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
 		ControlledPlayer->StopJumping();
 }
 
 void AJK1PlayerController::LookAct(const FInputActionValue& Value)
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
 		ControlledPlayer->Look(Value);
 }
 
 void AJK1PlayerController::MoveAct(const FInputActionValue& Value)
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
 	{
 		ControlledPlayer->Move(Value);
 		UE_LOG(LogPlayerCharacter, Log, TEXT("%s"), *Value.ToString());
@@ -157,13 +157,13 @@ void AJK1PlayerController::StopAct(const FInputActionValue& Value)
 
 void AJK1PlayerController::AttackAct()
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
 		ControlledPlayer->Attack();
 }
 
 void AJK1PlayerController::SkillAct(const FInputActionValue& Value)
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
 	{
 		int index = static_cast<int>(Value.Get<float>());
 
@@ -187,7 +187,7 @@ void AJK1PlayerController::SkillAct(const FInputActionValue& Value)
 
 void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
 	{
 		int index = static_cast<int>(Value.Get<float>());
 
@@ -210,7 +210,7 @@ UJK1PlayerHUD* AJK1PlayerController::GetPlayerWidget() const
 
 void AJK1PlayerController::UpdateWidget()
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
 	{
 		if (AJK1MonsterBase* TargetMonster = Cast<AJK1MonsterBase>(TargetActor))
 			PlayerWidget->SetWidgetsStat(ControlledPlayer->CreatureStat, TargetMonster->CreatureStat);
@@ -243,14 +243,14 @@ void AJK1PlayerController::EngagedLockOn()
 
 	// 감지 무시할 액터들 집어넣기
 	TArray<AActor*> Ignore;
-	Ignore.Add(ControlledCharacter);
+	Ignore.Add(GetCharacter());
 
 	// TODO
 	// 특정 클래스가 감지되지 않도록 or 특정 클래스만 감지하도록
 	bool bSuccess = UKismetSystemLibrary::SphereTraceMultiForObjects(
 		this,
-		ControlledCharacter->GetActorLocation(),
-		ControlledCharacter->GetActorLocation(),
+		GetCharacter()->GetActorLocation(),
+		GetCharacter()->GetActorLocation(),
 		LockOnDistance,
 		ObjectTypes,
 		false,
@@ -279,7 +279,7 @@ void AJK1PlayerController::EngagedLockOn()
 
 	for (AActor* LockOnTarget : LockOnTargets)
 	{
-		float Distance = FVector::Distance(ControlledCharacter->GetActorLocation(), LockOnTarget->GetActorLocation());
+		float Distance = FVector::Distance(GetCharacter()->GetActorLocation(), LockOnTarget->GetActorLocation());
 		if (Distance < ClosestDistance)
 		{
 			ClosestDistance = Distance;
@@ -293,8 +293,8 @@ void AJK1PlayerController::EngagedLockOn()
 		bLockOnEngaged = true;
 		bShouldRotate = true;
 		SetIgnoreLookInput(true);
-		ControlledCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
-		ControlledCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = true;
+		GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacter()->GetCharacterMovement()->bUseControllerDesiredRotation = true;
 		
 		UE_LOG(LogPlayerController, Log, TEXT("Lock On to %s"), *(TargetActor->GetName()));
 	}
@@ -310,8 +310,8 @@ void AJK1PlayerController::DisengagedLockOn()
 	bLockOnEngaged = false;
 	bShouldRotate = false;
 	ResetIgnoreLookInput();
-	ControlledCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
-	ControlledCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacter()->GetCharacterMovement()->bUseControllerDesiredRotation = false;
 
 	TargetActor = nullptr;
 	

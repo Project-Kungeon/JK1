@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "JK1.h"
 #include "JK1CreatureStatComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
@@ -45,8 +46,8 @@ public:
 	void SetStat(int index, float value);
 	void PlusExp(float Exp);
 	void LevelUP(int level);
-	bool HitDamage(float NewDamage, AController* instigator);
-	float TotalDamageBy(AController* instigator);
+	bool HitDamage(float NewDamage, AActor* instigator);
+	float TotalDamageBy(AActor* instigator);
 
 	// For Widget
 	UFUNCTION(BlueprintCallable)
@@ -62,6 +63,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetExpRatio();
 	
+
+	/*
+	 * Network Function 
+	 */
+public:
+	void SetCreatureInfo(message::CreatureInfo Info);
+	message::CreatureInfo* GetCreatureInfo() { return this->CreatureInfo; }
+
+public:
+	float GetHP() { return this->CurrentHP; }
 
 	/*
 	*  Member Variable
@@ -83,6 +94,9 @@ private:
 	
 	// Stat Data
 	struct FJK1CreatureData* BasicStatData;
+
+	message::CreatureInfo* CreatureInfo;
+
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	FName Name;
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
@@ -95,5 +109,5 @@ private:
 	float CurrentStat[2];
 
 	// 데미지 입힌 대상
-	TMultiMap<AController*, float> DamageInstigator;
+	TMultiMap<AActor*, float> DamageInstigator;
 };

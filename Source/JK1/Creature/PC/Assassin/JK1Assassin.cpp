@@ -25,8 +25,9 @@
 
 
 AJK1Assassin::AJK1Assassin()
+	: Super()
 {
-	//Timeline 선언
+	//Timeline ����
 	MyTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("<MyTimeline"));
 	
 	//FloatCurve
@@ -54,13 +55,13 @@ AJK1Assassin::AJK1Assassin()
 		CloakMaterial = CloakMaterialRef.Object;
 	}
 	CreatureStat->SetOwner(true, FName("Assassin"));
-	SpawnLocation = FVector(-10.f, 0.f, 50.f); // 캐릭터 앞의 위치
-	ThrowDirection = FVector(1.f, 0.f, 0.f); // 앞으로 던지기
-	ThrowForce = 1000.f; // 던지기 힘
+	SpawnLocation = FVector(-10.f, 0.f, 50.f); // ĳ���� ���� ��ġ
+	ThrowDirection = FVector(1.f, 0.f, 0.f); // ������ ������
+	ThrowForce = 1000.f; // ������ ��
 
-	// Skill Q 쿨 타임
+	// Skill Q �� Ÿ��
 	SkillQCoolDownTime = 3.0f;
-	//Timeline 변수 초기화.
+	//Timeline ���� �ʱ�ȭ.
 	TimelineValue = 0.0f;
 		
 }
@@ -76,7 +77,7 @@ void AJK1Assassin::BeginPlay()
 		ProgressFunction.BindUFunction(this, FName("TimelineProgress"));
 		MyTimeline->AddInterpFloat(FloatCurve, ProgressFunction);
 
-		// Timeline 재생 설정
+		// Timeline ��� ����
 		MyTimeline->SetLooping(false);
 		MyTimeline->SetIgnoreTimeDilation(true);
 	}
@@ -139,27 +140,23 @@ void AJK1Assassin::ComboActionEnd()
 	Super::ComboActionEnd();
 }
 
+void AJK1Assassin::OnBasicAttackHit(TArray<FHitResult> HitResults)
+{
+}
+
 void AJK1Assassin::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
-	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
-
-	float ForwardValue = value.Get<float>();
-	float RightValue = value.Get<float>();
-
-	UE_LOG(LogAssassin, Log, TEXT("%f %f"), ForwardValue, RightValue);
-
-	SpawnDagger();
-	PlayAnimMontage(SkillQMontage, 1.5f);
-	SkillQTrace();	
+	FVector SpawnPoint = GetActorLocation() + SpawnLocation;
+	FRotator SpawnRotation = GetActorRotation();
+	AssassinQ(SpawnPoint, SpawnRotation);
 }
 
-void AJK1Assassin::SpawnDagger()
+void AJK1Assassin::SpawnDagger(FVector SpawnPoint, FRotator SpawnRotation)
 {
 	if (DaggerActor)
 	{
-		FVector SpawnPoint = GetActorLocation() + SpawnLocation;
-		FRotator SpawnRotation = GetActorRotation();
+		
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = GetInstigator();
@@ -181,7 +178,7 @@ void AJK1Assassin::SkillQTrace()
 {
 
 	FVector Start = GetActorLocation()+ SpawnLocation;
-	FVector End = Start + (GetActorForwardVector() * 1000.f); // 1000 유닛 앞까지 트레이스
+	FVector End = Start + (GetActorForwardVector() * 1000.f); // 1000 ���� �ձ��� Ʈ���̽�
 
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
@@ -196,6 +193,7 @@ void AJK1Assassin::SkillQTrace()
 	);
 	if (bHit)
 	{
+		OnAssassinQ_Hit(HitResult);
 		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 3, 0, 3);
 		UE_LOG(LogTemp, Warning, TEXT("Pawn Hit: %s"), *HitResult.GetActor()->GetName());
 	}
@@ -205,23 +203,25 @@ void AJK1Assassin::SkillQTrace()
 	}
 }
 
-void AJK1Assassin::OnHit(AActor* Actor, FHitResult& HitResult)
+bool AJK1Assassin::IsBackAttack(AActor* Actor, FHitResult& HitResult)
 {
 	if (Actor)
 	{
-		FVector HitLocation = HitResult.ImpactPoint;
 		FVector ForwardVector = GetActorForwardVector();
 		FVector OtherForwardVector = Actor->GetActorForwardVector();
 
 		if (FVector::DotProduct(ForwardVector, OtherForwardVector) > 0)
 		{
-			if (HitEffect)
-			{
-				//TODO : 데미지 증가
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
-			}		
+			return true;
+			//if (HitEffect)
+			//{
+			//	//TODO : 데미지 증가
+			//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
+			//	
+			//}		
 		}
 	} 
+	return false;
 }
 
 void AJK1Assassin::SpawnHitEffect(const FVector& Location)
@@ -232,13 +232,8 @@ void AJK1Assassin::SpawnHitEffect(const FVector& Location)
 
 void AJK1Assassin::SkillR(const FInputActionValue& Value)
 {
-	
-	Super::SkillR(Value);
-	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
-	//TODO: Forward & RightValue가 0ㅇ이 아니라면 바로 몽타주 종료.,
-
-	PlayAnimMontage(SkillRMontage, 1.5f);
-
+	//TODO : 난무 에셋이 어떤건지 잘 모르겠어
+	AssassinR();
 }
 
 void AJK1Assassin::CheckCharacterMovement()
@@ -257,15 +252,59 @@ void AJK1Assassin::CheckCharacterMovement()
 void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 {
 	UE_LOG(LogAssassin, Log, TEXT("This is Assassin Skill LShift"));
+	if (IsCloaking)
+	{
+		AssassinLSOff();
+	}
+	else
+	{
+		AssassinLSOn();
+	}
+}
+
+void AJK1Assassin::AssassinQ(FVector SpawnPoint, FRotator SpawnRotation)
+{
+	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
+
+	//FVector SpawnPoint = GetActorLocation() + SpawnLocation;
+	//FRotator SpawnRotation = GetActorRotation();
+
+
+	AsyncTask(ENamedThreads::GameThread, [this, SpawnPoint, SpawnRotation]() {
+		SpawnDagger(SpawnPoint, SpawnRotation);
+		PlayAnimMontage(SkillQMontage, 1.5f);
+		SkillQTrace();
+		});
+	
+}
+
+// 백어택 이펙트용 호출
+void AJK1Assassin::AssassinE(FVector HitLocation)
+{
+	if (HitEffect)
+	{
+		AsyncTask(ENamedThreads::GameThread, [this, HitLocation]() {
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
+		});
+			
+	}
+}
+
+void AJK1Assassin::AssassinR()
+{
+	PlayAnimMontage(SkillRMontage, 1.5f);
+}
+
+void AJK1Assassin::AssassinLSOn()
+{
 	if (IsCloakingProcess)
 	{
 		UE_LOG(LogAssassin, Log, TEXT("InCloakingProcess"));
 		return;
 	}
-	
-	if(!IsCloaking)
+	if (!IsCloaking)
 	{
-		//은신 진입
+		// 은신 진입
 		IsCloakingProcess = true;
 		ChangeStatusEffect(true, 3);
 		USkeletalMeshComponent* MeshComponent = GetMesh();
@@ -283,34 +322,34 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 		IsCloaking = true;
 		GetCharacterMovement()->MaxWalkSpeed = 700.f;
 	}
-	else
-	{
-		//은신 해제
-		IsCloakingProcess = true;
-		ChangeStatusEffect(false, 3);
-		MyTimeline->Reverse();
-		USkeletalMeshComponent* MeshComponent = GetMesh();
-		if (MeshComponent)
-		{
-			int32 MaterialCount = MeshComponent->GetNumMaterials();
-			for (int32 i = 0; i < MaterialCount; i++)
-				MeshComponent->SetMaterial(i, StoredMaterials[i]);
-		}
-		IsCloakingProcess = false;
-		IsCloaking = false;
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
-	}
+}
 
+void AJK1Assassin::AssassinLSOff()
+{
+	IsCloakingProcess = true;
+	MyTimeline->Reverse();
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	if (MeshComponent)
+	{
+		int32 MaterialCount = MeshComponent->GetNumMaterials();
+		for (int32 i = 0; i < MaterialCount; i++)
+			MeshComponent->SetMaterial(i, StoredMaterials[i]);
+	}
+	IsCloakingProcess = false;
+	IsCloaking = false;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+}
+
+void AJK1Assassin::OnAssassinQ_Hit(FHitResult hit)
+{
 }
 
 void AJK1Assassin::CheckBATrace()
 {
 	if (!bBAActive)
 		return;
-
 	bool IsRight = (CurrentCombo % 2 == 0) ? true : false;
 
-	
 	FVector StartL = GetMesh()->GetSocketLocation(FName(TEXT("sword_base_l")));
 	FVector EndL = GetMesh()->GetSocketLocation(FName(TEXT("sword_tip_l")));
 
@@ -336,7 +375,10 @@ void AJK1Assassin::CheckBATrace()
 	);
 
 	if (bSuccess)
+	{
 		ApplyDamageToTarget(HitResults, 1.0f);
+	}
+		
 	
 #if ENABLE_DRAW_DEBUG
 	FVector DirectionL = EndL - StartL;
@@ -363,21 +405,22 @@ void AJK1Assassin::CheckBATrace()
 	);
 
 #endif
+
 }
 
 void AJK1Assassin::GetAndStoreMaterials()
 {
-	// 캐릭터의 Mesh Component 가져오기
+	// ĳ������ Mesh Component ��������
 	USkeletalMeshComponent* MeshComponent = GetMesh();
 	if (MeshComponent)
 	{
-		// Material 개수 가져오기
+		// Material ���� ��������
 		int32 MaterialCount = MeshComponent->GetNumMaterials();
 
-		// 배열 초기화
+		// �迭 �ʱ�ȭ
 		StoredMaterials.Empty();
 
-		// Material들을 배열에 저장하기
+		// Material���� �迭�� �����ϱ�
 		for (int32 Index = 0; Index < MaterialCount; ++Index)
 		{
 			UMaterialInterface* Material = MeshComponent->GetMaterial(Index);
@@ -392,7 +435,7 @@ void AJK1Assassin::GetAndStoreMaterials()
 
 void AJK1Assassin::TimelineProgress(float Value)
 {
-	TimelineValue = Value; // TimelineValue 변수 업데이트
+	TimelineValue = Value; // TimelineValue ���� ������Ʈ
 	UE_LOG(LogAssassin, Log, TEXT("Timeline Value: %f"), TimelineValue);
 	if (DynamicMaterial)
 	{
