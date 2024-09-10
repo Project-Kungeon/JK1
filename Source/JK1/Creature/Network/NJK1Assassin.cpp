@@ -25,68 +25,7 @@ void ANJK1Assassin::BeginPlay()
 
 void ANJK1Assassin::Tick(float DeltaTime)
 {
-	AJK1PlayerCharacter::Tick(DeltaTime);
-	TArray<FHitResult> attackHits;
-	if (bWeaponActive)
-		attackHits = CheckWeaponTrace();
-	if (MyTimeline)
-		MyTimeline->TickComponent(DeltaTime, ELevelTick::LEVELTICK_TimeOnly, nullptr);
-
-	if (!attackHits.IsEmpty())
-	{
-		message::C_Attack pkt;
-		uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
-		pkt.set_object_id(my_id);
-
-		for (FHitResult& hit : attackHits)
-		{
-			
-			AActor* actor = hit.GetActor();
-			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
-			{
-				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
-				
-		//			SEND_PACKET(message::HEADER::ASSASSIN_E_REQ, ePkt);
-		//			continue;
-		//		}
-		//		else
-		//		{
-		//			pkt.set_damage(13.f);
-		//		}
-
-				if (IsBackAttack(actor, hit))
-				{
-					// 백어택 데미지
-					message::C_Attack backAttackPkt;
-					backAttackPkt.set_object_id(my_id);
-					backAttackPkt.set_damage(21.f);
-					backAttackPkt.add_target_ids(target_id);
-					//SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, backAttackPkt);
-				}
-				if (IsBackAttack(actor, hit))
-				{
-					// 백어택 이펙트
-					FVector HitLocation = hit.ImpactPoint;
-					skill::C_Assassin_E ePkt;
-					ePkt.set_object_id(my_id);
-					ePkt.set_x(HitLocation.X);
-					ePkt.set_y(HitLocation.Y);
-					ePkt.set_z(HitLocation.Z);
-
-					SEND_PACKET(message::HEADER::ASSASSIN_E_REQ, ePkt);
-					continue;
-				}
-				else
-				{
-					pkt.set_damage(13.f);
-				}
-
-				pkt.add_target_ids(target_id);
-			}
-		}
-		SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
-	}
-
+	Super::Tick(DeltaTime);
 }
 
 void ANJK1Assassin::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -114,6 +53,54 @@ void ANJK1Assassin::Attack()
 
 		SEND_PACKET(message::HEADER::ASSASSIN_ATTACK_REQ, attackPkt);
 	}
+}
+
+void ANJK1Assassin::OnBasicAttackHit(TArray<FHitResult> HitResults)
+{
+	message::C_Attack pkt;
+	uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+	pkt.set_object_id(my_id);
+
+	for (FHitResult& hit : HitResults)
+	{
+
+		AActor* actor = hit.GetActor();
+		if (auto* Actor = Cast<AJK1CreatureBase>(actor))
+		{
+			uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
+
+
+			if (IsBackAttack(actor, hit))
+			{
+				// 백어택 데미지
+				message::C_Attack backAttackPkt;
+				backAttackPkt.set_object_id(my_id);
+				backAttackPkt.set_damage(21.f);
+				backAttackPkt.add_target_ids(target_id);
+				//SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, backAttackPkt);
+			}
+			if (IsBackAttack(actor, hit))
+			{
+				// 백어택 이펙트
+				FVector HitLocation = hit.ImpactPoint;
+				skill::C_Assassin_E ePkt;
+				ePkt.set_object_id(my_id);
+				ePkt.set_x(HitLocation.X);
+				ePkt.set_y(HitLocation.Y);
+				ePkt.set_z(HitLocation.Z);
+
+				SEND_PACKET(message::HEADER::ASSASSIN_E_REQ, ePkt);
+				continue;
+			}
+			else
+			{
+				pkt.set_damage(13.f);
+			}
+
+			pkt.add_target_ids(target_id);
+		}
+	}
+	SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
 }
 
 void ANJK1Assassin::SkillQ(const FInputActionValue& value)
@@ -232,53 +219,6 @@ void ANJK1Assassin::SkillLShift(const FInputActionValue& Value)
 	}
 }
 
-void ANJK1Assassin::OnAttackHit(TArray<FHitResult> attackHits)
-{
-	message::C_Attack pkt;
-	uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
-	pkt.set_object_id(my_id);
-
-	for (FHitResult& hit : attackHits)
-	{
-
-		AActor* actor = hit.GetActor();
-		if (auto* Actor = Cast<AJK1CreatureBase>(actor))
-		{
-			uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
-
-
-			if (IsBackAttack(actor, hit))
-			{
-				// 백어택 데미지
-				message::C_Attack backAttackPkt;
-				backAttackPkt.set_object_id(my_id);
-				backAttackPkt.set_damage(21.f);
-				backAttackPkt.add_target_ids(target_id);
-				//SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, backAttackPkt);
-			}
-			if (IsBackAttack(actor, hit))
-			{
-				// 백어택 이펙트
-				FVector HitLocation = hit.ImpactPoint;
-				skill::C_Assassin_E ePkt;
-				ePkt.set_object_id(my_id);
-				ePkt.set_x(HitLocation.X);
-				ePkt.set_y(HitLocation.Y);
-				ePkt.set_z(HitLocation.Z);
-
-				SEND_PACKET(message::HEADER::ASSASSIN_E_REQ, ePkt);
-				continue;
-			}
-			else
-			{
-				pkt.set_damage(13.f);
-			}
-
-			pkt.add_target_ids(target_id);
-		}
-	}
-	SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
-}
 
 void ANJK1Assassin::OnAssassinQ_Hit(FHitResult hit)
 {

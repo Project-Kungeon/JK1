@@ -50,6 +50,7 @@ public:
 	virtual void DoCombo();
 	UFUNCTION(BlueprintCallable)
 	virtual void ComboActionEnd();
+	virtual void	OnBasicAttackHit(TArray<FHitResult> HitResults);
 
 	//Skill 
 	virtual void SkillQ(const FInputActionValue& Value);
@@ -82,9 +83,7 @@ public:
 	UPROPERTY()
 	TSet<AActor*> WeaponAttackTargets;
 
-	// combo == 0 not start 
-	// combo >= 1 -> Combo Start
-	int32 CurrentCombo = 0;
+
 	uint8 IsAttacking : 1;
 	uint8 SaveAttacking : 1;
 	int32 MaxCombo;

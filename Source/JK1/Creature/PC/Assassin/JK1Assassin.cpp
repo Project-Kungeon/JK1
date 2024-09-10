@@ -141,6 +141,10 @@ void AJK1Assassin::ComboActionEnd()
 	Super::ComboActionEnd();
 }
 
+void AJK1Assassin::OnBasicAttackHit(TArray<FHitResult> HitResults)
+{
+}
+
 void AJK1Assassin::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
@@ -279,12 +283,12 @@ void AJK1Assassin::AssassinQ(FVector SpawnPoint, FRotator SpawnRotation)
 void AJK1Assassin::AssassinE(FVector HitLocation)
 {
 	if (HitEffect)
-		{
-			AsyncTask(ENamedThreads::GameThread, [this, HitLocation]() {
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
-			});
+	{
+		AsyncTask(ENamedThreads::GameThread, [this, HitLocation]() {
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, HitLocation);
+		});
 			
-		}		
+	}
 }
 
 void AJK1Assassin::AssassinR()
@@ -299,26 +303,26 @@ void AJK1Assassin::AssassinLSOn()
 		UE_LOG(LogAssassin, Log, TEXT("InCloakingProcess"));
 		return;
 	}
-	
-	if(!IsCloaking)
+	if (!IsCloaking)
 	{
 		// 은신 진입
 		IsCloakingProcess = true;
 		ChangeStatusEffect(true, 3);
 		USkeletalMeshComponent* MeshComponent = GetMesh();
 
-	if (MeshComponent)
-	{
-		int32 MaterialCount = MeshComponent->GetNumMaterials();
-		for (int32 i = 0; i < MaterialCount; i++)
-			MeshComponent->SetMaterial(i, DynamicMaterial);
-	}
+		if (MeshComponent)
+		{
+			int32 MaterialCount = MeshComponent->GetNumMaterials();
+			for (int32 i = 0; i < MaterialCount; i++)
+				MeshComponent->SetMaterial(i, DynamicMaterial);
+		}
 
-	MyTimeline->PlayFromStart();
-	UE_LOG(LogTemp, Log, TEXT("%f"), TimelineValue);
-	IsCloakingProcess = false;
-	IsCloaking = true;
-	GetCharacterMovement()->MaxWalkSpeed = 700.f;
+		MyTimeline->PlayFromStart();
+		UE_LOG(LogTemp, Log, TEXT("%f"), TimelineValue);
+		IsCloakingProcess = false;
+		IsCloaking = true;
+		GetCharacterMovement()->MaxWalkSpeed = 700.f;
+	}
 }
 
 void AJK1Assassin::AssassinLSOff()
@@ -336,33 +340,6 @@ void AJK1Assassin::AssassinLSOff()
 	IsCloaking = false;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 }
-		MyTimeline->PlayFromStart();
-		UE_LOG(LogTemp, Log, TEXT("%f"), TimelineValue);
-		IsCloakingProcess = false;
-		IsCloaking = true;
-		GetCharacterMovement()->MaxWalkSpeed = 700.f;
-	}
-	else
-	{
-		// 은신 작업
-		IsCloakingProcess = true;
-		ChangeStatusEffect(false, 3);
-		MyTimeline->Reverse();
-		USkeletalMeshComponent* MeshComponent = GetMesh();
-		if (MeshComponent)
-		{
-			int32 MaterialCount = MeshComponent->GetNumMaterials();
-			for (int32 i = 0; i < MaterialCount; i++)
-				MeshComponent->SetMaterial(i, StoredMaterials[i]);
-		}
-		IsCloakingProcess = false;
-		IsCloaking = false;
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
-	}
-
-void AJK1Assassin::OnAttackHit(TArray<FHitResult> hits)
-{
-}
 
 void AJK1Assassin::OnAssassinQ_Hit(FHitResult hit)
 {
@@ -371,14 +348,8 @@ void AJK1Assassin::OnAssassinQ_Hit(FHitResult hit)
 void AJK1Assassin::CheckBATrace()
 {
 	if (!bBAActive)
-		return ValidHitResults;
+		return;
 
-	
-	float AttackRadius = 20.f;
-	if (CurrentCombo == 3)
-	{
-		AttackRadius = 30.f;
-	}
 	bool IsRight = (CurrentCombo != 2) ? true : false;
 	FVector StartL = GetMesh()->GetSocketLocation(FName(TEXT("sword_base_l")));
 	FVector EndL = GetMesh()->GetSocketLocation(FName(TEXT("sword_tip_l")));
@@ -388,7 +359,7 @@ void AJK1Assassin::CheckBATrace()
 
 	FVector ExtendL = EndL - StartL;
 	FVector ExtendR = EndR - StartR;
-	//const float AttackRadius = 20.f;
+	const float AttackRadius = 20.f;
 
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
@@ -404,42 +375,11 @@ void AJK1Assassin::CheckBATrace()
 		Params
 	);
 
-	bool bSuccessR = GetWorld()->SweepMultiByChannel(
-		HitResults,
-		StartR,
-		EndR,
-		FQuat::Identity,
-		CCHANNEL_JK1ACTION,
-		FCollisionShape::MakeCapsule(ExtendR),
-		Params
-	);
-
-	if (bSuccessL || bSuccessR)
-	{
-		// FDamageEvent DamageEvent;
-
-		for (FHitResult& HitResult : HitResults)
-		{
-			AActor* Actor = HitResult.GetActor();
-
-			
-
-			if (Actor == nullptr)
-				continue;
-
-			if (WeaponAttackTargets.Contains(Actor) == false)
-			{
-				WeaponAttackTargets.Add(Actor);
-				//OnHit(Actor, HitResult);
-				ValidHitResults.Add(HitResult);
-				// TODO HitDamage
-				UE_LOG(LogTemp, Log, TEXT("HitDamage: %s"), *Actor->GetName());
-
-			}
-		}
-	}
 	if (bSuccess)
+	{
 		ApplyDamageToTarget(HitResults, 1.0f);
+	}
+		
 	
 #if ENABLE_DRAW_DEBUG
 	FVector DirectionL = EndL - StartL;
@@ -466,7 +406,6 @@ void AJK1Assassin::CheckBATrace()
 	);
 
 #endif
-	if (!ValidHitResults.IsEmpty()) OnAttackHit(ValidHitResults);
 
 }
 

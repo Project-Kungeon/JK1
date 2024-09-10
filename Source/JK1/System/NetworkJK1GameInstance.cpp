@@ -3,6 +3,7 @@
 
 #include "System/NetworkJK1GameInstance.h"
 #include "Creature/PC/JK1PlayerCharacter.h"
+#include "Controller/Player/JK1PlayerController.h"
 #include "Creature/PC/Warrior/JK1Warrior.h"
 #include "Creature/PC/Assassin/JK1Assassin.h"
 #include "Creature/PC/Archor/JK1Archor.h"
@@ -122,7 +123,7 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::PlayerInfo& info, bool 
 				if (Player == nullptr)
 					return;
 				//auto* Player = Cast<AJK1PlayerCharacter>(PC->GetPawn());
-
+				
 				PC->Possess(Player);
 				Player->isMyPlayer = true;
 				
@@ -214,7 +215,7 @@ void UNetworkJK1GameInstance::HandleAttack(const message::S_Attack& attackPkt)
 		{
 			auto** FindActor = Players.Find(victimId);
 			auto* Victim = (*FindActor);
-			Victim->CreatureStat->HitDamage(damage);
+			Victim->CreatureStat->HitDamage(damage, *FindAttacker);
 
 			UE_LOG(LogTemp, Log, TEXT("%lld attacked by %lld Damage: %f"), victimId, objectId, damage);
 		}

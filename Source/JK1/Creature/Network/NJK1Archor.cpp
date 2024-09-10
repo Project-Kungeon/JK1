@@ -67,6 +67,37 @@ void ANJK1Archor::DoCombo()
 	}
 }
 
+void ANJK1Archor::OnBasicAttackHit(TArray<FHitResult> HitResults)
+{
+	if (isMyPlayer)
+	{
+		// Create Attack Pkt
+		message::C_Attack pkt;
+		uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+		pkt.set_object_id(my_id);
+
+		for (auto& hit : HitResults)
+		{
+			AActor* actor = hit.GetActor();
+			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
+			{
+				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
+				pkt.add_target_ids(target_id);
+			}
+		}
+		if (IsLShift)
+		{
+			pkt.set_damage(10);
+		}
+		else
+		{
+			pkt.set_damage(5);
+		}
+
+		SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+	}
+}
+
 void ANJK1Archor::SkillQ(const FInputActionValue& value)
 {
 	if (isMyPlayer)
@@ -112,34 +143,6 @@ void ANJK1Archor::SkillLShift(const FInputActionValue& value)
 		skillPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
 
 		SEND_PACKET(message::HEADER::ARCHOR_LS_REQ, skillPkt);
-	}
-}
-
-void ANJK1Archor::OnArrowHit(FHitResult hit)
-{
-	if (isMyPlayer)
-	{
-		// Create Attack Pkt
-		message::C_Attack pkt;
-		uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
-		pkt.set_object_id(my_id);
-		AActor* actor = hit.GetActor();
-		if (auto* Actor = Cast<AJK1CreatureBase>(actor))
-		{
-			uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
-			pkt.add_target_ids(target_id);
-		}
-
-		if (IsLShift)
-		{
-			pkt.set_damage(10);
-		}
-		else
-		{
-			pkt.set_damage(5);
-		}
-
-		SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
 	}
 }
 

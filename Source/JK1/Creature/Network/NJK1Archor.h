@@ -28,13 +28,13 @@ public:
 
 public:
 	virtual void DoCombo() override;
+	virtual void	OnBasicAttackHit(TArray<FHitResult> HitResults);
 
 	virtual void SkillQ(const FInputActionValue& value) override;
 	virtual void SkillE(const FInputActionValue& value) override;
 	virtual void SkillR(const FInputActionValue& value) override;
 	virtual void SkillLShift(const FInputActionValue& value) override;
 
-	virtual void OnArrowHit(FHitResult hit) override;
 	virtual void OnArchorQ_Hit(FHitResult hit) override;
 	virtual void OnArchorE_Hit(TArray<FHitResult> hits) override;
 

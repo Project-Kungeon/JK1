@@ -29,6 +29,7 @@ public:
 protected:
 	//Attack Funciton
 	void Attack();
+	virtual void	OnBasicAttackHit(TArray<FHitResult> HitResults);
 	void Shoot(FVector StartLoc, FVector EndLoc);
 	void ShootQ(FVector StartLoc, FVector EndLoc);
 	void SpawnArrow(FVector StartLoc, FVector EndLoc);

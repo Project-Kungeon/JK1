@@ -29,7 +29,7 @@ public:
 
 public:
 	virtual void Attack() override;
-
+	virtual void	OnBasicAttackHit(TArray<FHitResult> HitResults);
 	//Skill Function
 	virtual void SkillQ(const FInputActionValue& value) override;
 	void SpawnDagger(FVector SpawnPoint, FRotator SpawnRotation);
@@ -41,6 +41,5 @@ public:
 	virtual void SkillR(const FInputActionValue& Value) override;
 	virtual void SkillLShift(const FInputActionValue& Value) override;
 
-	virtual void OnAttackHit(TArray<FHitResult> hits);
 	virtual void OnAssassinQ_Hit(FHitResult hit);
 };

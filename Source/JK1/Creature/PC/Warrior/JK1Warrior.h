@@ -34,6 +34,7 @@ public:
 protected:
 	//Attack Funciton
 	virtual void Attack() override;
+	virtual void	OnBasicAttackHit(TArray<FHitResult> HitResults);
 
 	//ComboAction
 	virtual void ComboActionBegin() override;

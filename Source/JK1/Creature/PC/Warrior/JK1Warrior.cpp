@@ -56,6 +56,10 @@ void AJK1Warrior::Attack()
 	Super::Attack();
 }
 
+void AJK1Warrior::OnBasicAttackHit(TArray<FHitResult> HitResults)
+{
+}
+
 void AJK1Warrior::ComboActionBegin()
 {
 	Super::ComboActionBegin();
@@ -76,17 +80,14 @@ void AJK1Warrior::DoCombo()
 		switch (CurrentCombo)
 		{
 		case 0:
-			CurrentCombo = 1;
 			CurrentMontage = ComboActionMontage1;
 			PlayAnimMontage(ComboActionMontage1, 1.4f);
 			break;
 		case 1:
-			CurrentCombo = 2;
 			CurrentMontage = ComboActionMontage2;
 			PlayAnimMontage(ComboActionMontage2, 1.4f);
 			break;
 		case 2:
-			CurrentCombo = 3;
 			CurrentMontage = ComboActionMontage3;
 			PlayAnimMontage(ComboActionMontage3, 1.4f);
 			break;
@@ -211,7 +212,7 @@ void AJK1Warrior::CheckBATrace()
 	const float AttackRadius = 20.f;
 
 	
-	//FHitResult HitResult;
+	TArray<FHitResult> HitResults;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
 
 	/*  sweep / multi / ByChannel */
@@ -250,7 +251,6 @@ void AJK1Warrior::CheckBATrace()
 	);
 
 #endif
-	return ValidHitResults;
 }
 
 void AJK1Warrior::PlayParticleSystem()

@@ -34,6 +34,7 @@ public:
 	virtual float	TakeDamage(float damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCursor) override;
 	virtual void	PossessedBy(AController* NewController) override;
 	virtual void	CheckBATrace();	// BasicAttack
+	virtual void	OnBasicAttackHit(TArray<FHitResult> HitResults);
 
 	unsigned char	GetCurrectStatusEffect() { return statusEffect; }
 	void			ChangeStatusEffect(bool On, int status);
@@ -47,6 +48,10 @@ public:
 	*  Member Variable
 	*/ 
 public:
+	// combo == 0 not start 
+	// combo >= 1 -> Combo Start
+	int32 CurrentCombo = 0;
+
 	UPROPERTY(BlueprintReadWrite)
 	bool bBAActive;
 

@@ -40,64 +40,7 @@ void ANJK1Warrior::BeginPlay()
 
 void ANJK1Warrior::Tick(float DeltaTime)
 {
-	AJK1PlayerCharacter::Tick(DeltaTime);
-	TArray<FHitResult> attackHits;
-	TArray<FHitResult> parryHits;
-	if (bWeaponActive)
-		attackHits = CheckWeaponTrace();
-	if (bParryActive && AnimInstance->Montage_IsPlaying(SkillEMontage_Intro))
-		CheckParry();
-	if (bWeaponActive && bParryActive)
-		parryHits = CheckParryHit();
-
-	if (!attackHits.IsEmpty())
-	{
-		message::C_Attack pkt;
-		for (FHitResult& hit : attackHits)
-		{
-			AActor* actor = hit.GetActor();
-			uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
-			pkt.set_object_id(my_id);
-			pkt.set_damage(10.f);
-
-			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
-			{
-				
-				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
-				pkt.add_target_ids(target_id);
-				SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
-			}
-		}
-	}
-	if (!parryHits.IsEmpty())
-	{
-		for (FHitResult& hit : parryHits)
-		{
-			AActor* actor = hit.GetActor();
-			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
-			{
-				uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
-				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
-
-				message::C_Attack pkt;
-				pkt.set_object_id(my_id);
-				pkt.add_target_ids(target_id);
-				pkt.set_damage(20.f);
-
-				SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
-			}
-		}
-	}
-
-	if (isMyPlayer)
-	{
-		/*----- 다른 방안 알아보기 -----*/
-		if (!DashVelocity.IsZero())
-		{
-			FVector NewLocation = GetActorLocation() + (DashVelocity * DeltaTime);
-			SetActorLocation(NewLocation);
-		}
-	}
+	Super::Tick(DeltaTime);
 }
 
 void ANJK1Warrior::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -136,6 +79,47 @@ void ANJK1Warrior::Attack()
 		SEND_PACKET(message::HEADER::WARRIOR_ATTACK_REQ, attcakPkt);
 	}
 	
+}
+
+void ANJK1Warrior::OnBasicAttackHit(TArray<FHitResult> HitResults)
+{
+	if (!HitResults.IsEmpty())
+	{
+		message::C_Attack pkt;
+		for (FHitResult& hit : HitResults)
+		{
+			AActor* actor = hit.GetActor();
+			uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+			pkt.set_object_id(my_id);
+			pkt.set_damage(10.f);
+
+			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
+			{
+				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
+				pkt.add_target_ids(target_id);
+				SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+			}
+		}
+	}
+	/*if (!parryHits.IsEmpty())
+	{
+		for (FHitResult& hit : parryHits)
+		{
+			AActor* actor = hit.GetActor();
+			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
+			{
+				uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
+
+				message::C_Attack pkt;
+				pkt.set_object_id(my_id);
+				pkt.add_target_ids(target_id);
+				pkt.set_damage(20.f);
+
+				SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+			}
+		}
+	}*/
 }
 
 void ANJK1Warrior::ComboActionBegin()

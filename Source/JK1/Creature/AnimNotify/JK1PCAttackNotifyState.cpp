@@ -24,6 +24,7 @@ void UJK1PCAttackNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 	{
 		Creature->bBAActive = false;
 		Creature->BasicAttackTargets.Empty();
+		Creature->CurrentCombo++;
 	}
 }
 

@@ -37,6 +37,7 @@ public:
 
 	//Attack Function
 	virtual void Attack();
+	virtual void	OnBasicAttackHit(TArray<FHitResult> HitResults);
 
 	virtual void ComboActionBegin() override;
 	virtual void DoCombo() override;

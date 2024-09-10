@@ -277,6 +277,10 @@ void AJK1PlayerCharacter::ComboActionEnd()
 	IsAttacking = false;
 }
 
+void AJK1PlayerCharacter::OnBasicAttackHit(TArray<FHitResult> HitResults)
+{
+}
+
 void AJK1PlayerCharacter::SkillQ(const FInputActionValue& Value)
 {
 	UE_LOG(LogPlayerCharacter, Log, TEXT("This is Parent Class SKillQ"));

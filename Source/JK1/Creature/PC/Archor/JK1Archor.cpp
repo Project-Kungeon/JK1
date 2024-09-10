@@ -80,6 +80,10 @@ void AJK1Archor::Attack()
 	
 }
 
+void AJK1Archor::OnBasicAttackHit(TArray<FHitResult> HitResults)
+{
+}
+
 void AJK1Archor::Shoot(FVector StartLoc, FVector EndLoc)
 {
 	ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *ArrowBP.ToString()));
@@ -104,7 +108,9 @@ void AJK1Archor::Shoot(FVector StartLoc, FVector EndLoc)
 		{
 			ImpactPoint = HitResult.ImpactPoint;
 			UE_LOG(LogArchor, Log, TEXT("%d, %d, %d"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
-			OnArrowHit(HitResult);
+			TArray<FHitResult> HitResults;
+			HitResults.Add(HitResult);
+			OnBasicAttackHit(HitResults);
 		}
 		if (IsLShift)
 		{

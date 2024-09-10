@@ -73,6 +73,10 @@ void AJK1CreatureBase::CheckBATrace()
 {
 }
 
+void AJK1CreatureBase::OnBasicAttackHit(TArray<FHitResult> HitResults)
+{
+}
+
 void AJK1CreatureBase::ChangeStatusEffect(bool On, int status)
 {
 	if (On)
@@ -111,6 +115,7 @@ void AJK1CreatureBase::ApplyStatusEffect()
 
 void AJK1CreatureBase::ApplyDamageToTarget(TArray<FHitResult> HitResults, float damage)
 {
+	TArray<FHitResult> ValidHits;
 	for (FHitResult& HitResult : HitResults)
 	{
 		AActor* Actor = HitResult.GetActor();
@@ -124,15 +129,17 @@ void AJK1CreatureBase::ApplyDamageToTarget(TArray<FHitResult> HitResults, float 
 			if (AJK1CreatureBase* HitPawn = Cast<AJK1CreatureBase>(Actor))
 			{
 				// Server Code need
-				if (HitPawn->CreatureStat->HitDamage(damage, Controller))
+				/*if (HitPawn->CreatureStat->HitDamage(damage, Controller))
 				{
 					UE_LOG(LogSystem, Log, TEXT("Hit target: %s"), *Actor->GetName());
 				}
 				else
-					UE_LOG(LogSystem, Log, TEXT("%s is immunity"), *Actor->GetName());
+					UE_LOG(LogSystem, Log, TEXT("%s is immunity"), *Actor->GetName());*/
+				ValidHits.Add(HitResult);
 			}
 		}
 	}
+	if (!ValidHits.IsEmpty()) OnBasicAttackHit(ValidHits);
 }
 
 void AJK1CreatureBase::Death()
