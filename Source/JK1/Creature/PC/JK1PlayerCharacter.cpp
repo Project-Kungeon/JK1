@@ -170,3 +170,19 @@ void AJK1PlayerCharacter::Death()
 	Cast<AJK1PlayerController>(GetController())->RemoveInputSystem();
 	UE_LOG(LogPlayerCharacter, Log, TEXT("Player is Down!!"));
 }
+
+void AJK1PlayerCharacter::StartQTimer()
+{
+}
+
+void AJK1PlayerCharacter::StartETimer()
+{
+}
+
+void AJK1PlayerCharacter::StartRTimer()
+{
+}
+
+void AJK1PlayerCharacter::StartLSTimer()
+{
+}

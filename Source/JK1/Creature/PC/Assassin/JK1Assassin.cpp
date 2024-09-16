@@ -21,6 +21,7 @@
 #include "Materials/MaterialInterface.h"
 #include "Components/TimelineComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Blueprint/UserWidget.h"
 
 
 
@@ -58,16 +59,29 @@ AJK1Assassin::AJK1Assassin()
 	ThrowDirection = FVector(1.f, 0.f, 0.f); // 앞으로 던지기
 	ThrowForce = 1000.f; // 던지기 힘
 
-	// Skill Q 쿨 타임
-	SkillQCoolDownTime = 3.0f;
 	//Timeline 변수 초기화.
 	TimelineValue = 0.0f;
+
+	{
+		SetQ(AssassinQCT);
+		SetR(AssassinRCT);
+		SetLS(AssassinLSCT);
+	}
 		
 }
 
 void AJK1Assassin::BeginPlay()
 {
 	Super::BeginPlay();
+	if (WidgetClass)
+	{
+		CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
+		if (CurrentWidget)
+		{
+			CurrentWidget->AddToViewport();
+		}
+	}
+
 	DynamicMaterial = UMaterialInstanceDynamic::Create(CloakMaterial, this);
 
 	if (FloatCurve)
@@ -151,7 +165,9 @@ void AJK1Assassin::SkillQ(const FInputActionValue& value)
 
 	SpawnDagger();
 	PlayAnimMontage(SkillQMontage, 1.5f);
-	SkillQTrace();	
+	SkillQTrace();
+	SetQ(0.f);
+	GetWorldTimerManager().SetTimer(Qhandler, this, &AJK1Assassin::StartQTimer, 0.1f, true);
 }
 
 void AJK1Assassin::SpawnDagger()
@@ -238,6 +254,8 @@ void AJK1Assassin::SkillR(const FInputActionValue& Value)
 	//TODO: Forward & RightValue가 0ㅇ이 아니라면 바로 몽타주 종료.,
 
 	PlayAnimMontage(SkillRMontage, 1.5f);
+	SetR(0.f);
+	GetWorldTimerManager().SetTimer(Rhandler, this, &AJK1Assassin::StartRTimer, 0.1f, true);
 
 }
 
@@ -282,6 +300,8 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 		IsCloakingProcess = false;
 		IsCloaking = true;
 		GetCharacterMovement()->MaxWalkSpeed = 700.f;
+		SetLS(0.f);
+		GetWorldTimerManager().SetTimer(LShandler, this, &AJK1Assassin::StartLSTimer, 0.1f, true);
 	}
 	else
 	{
@@ -300,6 +320,9 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 		IsCloaking = false;
 		GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	}
+	/*
+	
+	*/
 
 }
 
@@ -336,7 +359,14 @@ void AJK1Assassin::CheckBATrace()
 	);
 
 	if (bSuccess)
+	{
+		for (FHitResult result : HitResults)
+		{
+			OnHit(result.GetActor(), result);
+		}
 		ApplyDamageToTarget(HitResults, 1.0f);
+	}
+		
 	
 #if ENABLE_DRAW_DEBUG
 	FVector DirectionL = EndL - StartL;
@@ -397,5 +427,50 @@ void AJK1Assassin::TimelineProgress(float Value)
 	if (DynamicMaterial)
 	{
 		DynamicMaterial->SetScalarParameterValue(FName(TEXT("Opacity")), TimelineValue);
+	}
+}
+
+void AJK1Assassin::StartQTimer()
+{
+	Super::StartQTimer();
+	if (GetQ() < 1.f)
+	{
+		SetQ(GetQ() + 0.1f / AssassinQCT);
+
+		if (GetQ() >= 1.f)
+		{
+			SetQ(1.f);
+			GetWorldTimerManager().ClearTimer(Qhandler);
+		}
+	}
+}
+
+void AJK1Assassin::StartRTimer()
+{
+	Super::StartRTimer();
+	if (GetR() < 1.f)
+	{
+		SetR(GetR() + 0.1f / AssassinRCT);
+
+		if (GetR() >= 1.f)
+		{
+			SetR(1.f);
+			GetWorldTimerManager().ClearTimer(Rhandler);
+		}
+	}
+}
+
+void AJK1Assassin::StartLSTimer()
+{
+	Super::StartLSTimer();
+	if (GetLS() < 1.f)
+	{
+		SetLS(GetLS() + 0.1f / AssassinLSCT);
+
+		if (GetLS() >= 1.f)
+		{
+			SetLS(1.f);
+			GetWorldTimerManager().ClearTimer(LShandler);
+		}
 	}
 }

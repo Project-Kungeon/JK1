@@ -57,9 +57,28 @@ public:
 
 	virtual void Death() override;
 
+	//Temp Code
+	//Skill Cooldown Time Getter Setter func
+	float GetQ() { return SkillQCool; }
+	float GetE() { return SkillECool; }
+	float GetR() { return SkillRCool; }
+	float GetLS() { return SkillLSCool; }
+
+	void SetQ(float Q) { SkillQCool = Q; }
+	void SetE(float E) { SkillECool = E; }
+	void SetR(float R) { SkillRCool = R; }
+	void SetLS(float LS) { SkillLSCool = LS; }
+
+	virtual void StartQTimer();
+	virtual void StartETimer();
+	virtual void StartRTimer();
+	virtual void StartLSTimer();
+
+
 	/*
 	* Member Variable
 	*/
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	TObjectPtr<class USpringArmComponent> CameraBoom;
@@ -68,6 +87,22 @@ protected:
 	TObjectPtr<class UCameraComponent> FollowCamera;
 
 	class AJK1PlayerController* PlayerController;
+
+	//Cooldown Timer handle
+	FTimerHandle Qhandler;
+	FTimerHandle Ehandler;
+	FTimerHandle Rhandler;
+	FTimerHandle LShandler;
+
+	UPROPERTY(BlueprintReadOnly)
+	float SkillQCool;
+	UPROPERTY(BlueprintReadOnly)
+	float SkillECool;
+	UPROPERTY(BlueprintReadOnly)
+	float SkillRCool;
+	UPROPERTY(BlueprintReadOnly)
+	float SkillLSCool;
+
 
 public:
 	UPROPERTY(BlueprintReadWrite)

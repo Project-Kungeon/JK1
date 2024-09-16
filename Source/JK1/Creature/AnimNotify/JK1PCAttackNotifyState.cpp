@@ -3,6 +3,7 @@
 
 #include "JK1PCAttackNotifyState.h"
 #include "../JK1CreatureBase.h"
+#include "Creature/PC/JK1PlayerCharacter.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(JK1PCAttackNotifyState)
 
