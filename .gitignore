@@ -41,6 +41,9 @@
 *.VC.db
 *.VC.opendb
 
+# Config
+Config/DefaultEngine.ini
+
 # Precompiled Assets
 SourceArt/**/*.png
 SourceArt/**/*.tga
@@ -53,6 +56,8 @@ Content/ParagonTerra
 Content/DualSword
 Content/LUSH_StylizedEnvironmentSet
 Content/DreamscapeSeries
+Content/Maps
+
 
 # Binary Files
 Binaries/*

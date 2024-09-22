@@ -73,7 +73,6 @@ void AJK1PlayerCharacter::BeginPlay()
 	}
 
 	DemoRaidState = Cast<AJK1DemoRaidState>(GetWorld()->GetGameState());
-	check(nullptr != DemoRaidState);
 }
 
 void AJK1PlayerCharacter::Tick(float DeltaTime)
