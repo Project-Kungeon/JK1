@@ -20,6 +20,7 @@
 #include "TimerManager.h"
 #include "Containers/Array.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Blueprint/UserWidget.h"
 
 AJK1Archor::AJK1Archor()
 {
@@ -57,11 +58,27 @@ AJK1Archor::AJK1Archor()
 	CameraBoom->SocketOffset = FVector(0.f, 120.f, 75.f);
 	
 	CreatureStat->SetOwner(true, FName("Archor"));
+
+	{
+		SetQ(ArchorQCT);
+		SetE(ArchorECT);
+		SetR(ArchorRCT);
+		SetLS(ArchorLSCT);
+	}
 }
 
 void AJK1Archor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (WidgetClass)
+	{
+		CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
+		if (CurrentWidget)
+		{
+			CurrentWidget->AddToViewport();
+		}
+	}
 }
 
 void AJK1Archor::Tick(float DeltaTime)
@@ -252,6 +269,8 @@ void AJK1Archor::SkillQ(const FInputActionValue& value)
 		PlayAnimMontage(SkillQMonatge_Charge, SkillRChargePlayRate);
 		FTimerHandle ChargeHandler;
 		GetWorldTimerManager().SetTimer(ChargeHandler, this, &AJK1Archor::ShootNRecovery, SkillQMontagePlayRate, false);
+		SetQ(0);
+		GetWorldTimerManager().SetTimer(Qhandler, this, &AJK1Archor::StartQTimer, 0.1f, true);
 	}
 }
 
@@ -266,6 +285,8 @@ void AJK1Archor::SkillE(const FInputActionValue& value)
 	PlayAnimMontage(SkillEMontage);
 	StartDamage();
 	PlayParticleSystem();
+	SetE(0);
+	GetWorldTimerManager().SetTimer(Ehandler, this, &AJK1Archor::StartETimer, 0.1f, true);
 }
 
 void AJK1Archor::SkillR(const FInputActionValue& value)
@@ -277,6 +298,8 @@ void AJK1Archor::SkillR(const FInputActionValue& value)
 		SkillQMontagePlayRate = 0.2f;
 		SkillRChargePlayRate = 5.0f;
 	}
+	SetR(0);
+	GetWorldTimerManager().SetTimer(Rhandler, this, &AJK1Archor::StartRTimer, 0.1f, true);
 }
 
 void AJK1Archor::SkillLShift(const FInputActionValue& value)
@@ -289,6 +312,8 @@ void AJK1Archor::SkillLShift(const FInputActionValue& value)
 	FTimerHandle LShiftTimerHandler;
 
 	GetWorldTimerManager().SetTimer(LShiftTimerHandler, this,&AJK1Archor::BIsLShift, 5.0f, false);
+	SetLS(0);
+	GetWorldTimerManager().SetTimer(LShandler, this, &AJK1Archor::StartLSTimer, 0.1f, true);
 
 }
 
@@ -431,6 +456,66 @@ void AJK1Archor::StopParticleSystem()
 	{
 		SkillEDamageEffectComponent->Deactivate();
 		SkillEDamageEffectComponent->DestroyComponent();
+	}
+}
+
+void AJK1Archor::StartQTimer()
+{
+	Super::StartQTimer();
+	if (GetQ() < 1.f)
+	{
+		SetQ(GetQ() + 0.1f/ArchorQCT);
+		
+		if (GetQ() >=1.f)
+		{
+			SetQ(1.f);
+			GetWorldTimerManager().ClearTimer(Qhandler);
+		}
+	}
+}
+
+void AJK1Archor::StartETimer()
+{
+	Super::StartETimer();
+	if (GetE() < 1.f)
+	{
+		SetE(GetE() + 0.1f/ArchorECT);
+
+		if (GetE() >= 1.f)
+		{
+			SetE(1.0f);
+			GetWorldTimerManager().ClearTimer(Ehandler);
+		}
+	}
+}
+
+void AJK1Archor::StartRTimer()
+{
+	Super::StartRTimer();
+	if (GetR() < 1.f)
+	{
+		SetR(GetR() + 0.1f/ArchorRCT);
+
+		if (GetR() >= 1.f)
+		{
+			SetR(1.0f);
+			GetWorldTimerManager().ClearTimer(Qhandler);
+		}
+	}
+}
+
+void AJK1Archor::StartLSTimer()
+{
+	Super::StartLSTimer();
+	if (GetLS() < 1.f)
+	{
+		SetLS(GetLS() + 0.1f / ArchorLSCT);
+
+		if (GetLS() >= 1.f)
+		{
+			SetLS(5.0f);
+			GetWorldTimerManager().ClearTimer(Qhandler);
+		}
 	}
 }
 

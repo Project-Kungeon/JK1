@@ -47,6 +47,7 @@ public:
 	virtual void SkillR(const FInputActionValue& value) override;
 	virtual void SkillLShift(const FInputActionValue& value) override;
 
+	void CheckDamagedInParry();
 	//refactoring
 	UFUNCTION()
 	virtual void CheckBATrace() override;
@@ -56,13 +57,15 @@ public:
 	void CheckSkillRTrace();
 	void StopParticleSystem();
 	void ResetSkillCooldown();
-	//void ResetSkillLShift();
-	//void bCanUseSkillActive() { bCanUseSkill = true; };
-	//삭제해야하는 테스트용 함수.
-	void SetParryActiveTrue() { bParryActive = true; };
-	void SetParryActiveFalse() { bParryActive = false; };
 	
-	
+	//SkillCooldownFunction
+	virtual void StartQTimer() override;
+	virtual void StartETimer() override;
+	virtual void StartRTimer() override;
+	virtual void StartLSTimer() override;
+
+	bool GetbParryCount() { return bParryCount; }
+	void SetbParryCount(bool _bParryCount) { bParryCount = _bParryCount; }
 
 
 	/*
@@ -106,6 +109,8 @@ protected:
 	// Dash duration
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float DashDuration=1.f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+	TObjectPtr<class UBoxComponent> CollisionComponent;
 
 	// Timer handle for controlling dash duration
 	FTimerHandle DashTimerHandle;
@@ -113,9 +118,7 @@ protected:
 	// Current speed of the dash
 	FVector DashVelocity;
 	
-	float SkillCooldown;
-	FTimerHandle SkillCooldownTimerHandle;
-	uint32 ParryCount = 0;
+	// Check Montage AnimInstance
 	UAnimInstance* AnimInstance = nullptr;
 	// 데미지 처리 주기
 	const float DamageInterval = 0.5f;
@@ -133,4 +136,24 @@ protected:
 	// Forward movement strength when jumping
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float ForwardStrength = 1000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+	TSubclassOf<UUserWidget> WidgetClass;
+
+private:
+	//Character Widget
+	UUserWidget* CurrentWidget;
+
+	//Warrior Skill Cool Time
+	const float WarriorQCT = 3.f;
+	const float WarriorECT = 30.f;
+	const float WarriorRCT = 15.f;
+	const float WarriorLSCT = 10.f;
+
+	// Check Success Parry Count
+	uint32 ParryCount = 0;
+	//Check IS SkillQ Activate
+	bool bQActive = false;
+	//Check Already add Check Parry Count
+	bool bParryCount = false;
 };

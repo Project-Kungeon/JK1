@@ -188,3 +188,19 @@ void AJK1PlayerCharacter::Resurrection()
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	OnResurrection.Broadcast();
 }
+
+void AJK1PlayerCharacter::StartQTimer()
+{
+}
+
+void AJK1PlayerCharacter::StartETimer()
+{
+}
+
+void AJK1PlayerCharacter::StartRTimer()
+{
+}
+
+void AJK1PlayerCharacter::StartLSTimer()
+{
+}

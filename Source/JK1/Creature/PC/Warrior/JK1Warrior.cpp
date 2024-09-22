@@ -12,6 +12,7 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Engine/World.h"
+#include "Blueprint/UserWidget.h"
 
 AJK1Warrior::AJK1Warrior()
 {
@@ -23,12 +24,26 @@ AJK1Warrior::AJK1Warrior()
 
 	CreatureStat->SetOwner(true, FName("Warrior"));
 
-	SkillCooldown = 5.0f;
+	{
+		SetQ(WarriorQCT);
+		SetE(WarriorECT);
+		SetR(WarriorRCT);
+		SetLS(WarriorLSCT);
+	}
 }
 
 void AJK1Warrior::BeginPlay()
 {
 	Super::BeginPlay();
+	if (WidgetClass)
+	{
+		CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
+		if (CurrentWidget)
+		{
+			CurrentWidget->AddToViewport();
+		}
+	}
+
 	AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->Montage_Play(CurrentMontage);
 }
@@ -37,12 +52,10 @@ void AJK1Warrior::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/*----- 다른 방안 알아보기 -----*/
-	/*if (!DashVelocity.IsZero())
+	if (bParryActive)
 	{
-		FVector NewLocation = GetActorLocation() + (DashVelocity * DeltaTime);
-		SetActorLocation(NewLocation);
-	}*/
+		CheckDamagedInParry();
+	}
 }
 
 void AJK1Warrior::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -59,6 +72,7 @@ void AJK1Warrior::ComboActionBegin()
 {
 	Super::ComboActionBegin();
 }
+
 void AJK1Warrior::DoCombo()
 {
 	Super::DoCombo();
@@ -86,6 +100,9 @@ void AJK1Warrior::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
 	UE_LOG(LogWarrior, Log, TEXT("This is %s"), *this->GetName());
+	bQActive = true;
+	SetQ(0.f);
+	GetWorldTimerManager().SetTimer(Qhandler, this, &AJK1Warrior::StartQTimer, 0.1f, true);
 }
 
 void AJK1Warrior::SkillE(const FInputActionValue& value)
@@ -102,11 +119,9 @@ void AJK1Warrior::SkillE(const FInputActionValue& value)
 			SaveAttacking = false;
 			CurrentCombo = 0;
 		}
-		/*----멀티플레이 환경에서 패링이 테스트 가능해질 때 까지 코드 남겨둘 것 ----*/
-		FTimerHandle TimerHandle;
-		FTimerHandle TimerHandle2;
-		GetWorldTimerManager().SetTimer(TimerHandle, this, &AJK1Warrior::SetParryActiveTrue, 1.f, false);
-		GetWorldTimerManager().SetTimer(TimerHandle2, this, &AJK1Warrior::SetParryActiveFalse, 1.5f, false);
+		bParryCount = true;
+		SetE(0.f);
+		GetWorldTimerManager().SetTimer(Ehandler, this, &AJK1Warrior::StartETimer, 0.1f, true);
 	}
 }
 
@@ -132,6 +147,9 @@ void AJK1Warrior::SkillR(const FInputActionValue& value)
 			PlayAnimMontage(SkillRMontage);
 			PlayParticleSystem();
 			StartROverTime();
+			//Cooltime
+			SetR(0.f);
+			GetWorldTimerManager().SetTimer(Rhandler, this, &AJK1Warrior::StartRTimer, 0.1f, true);
 		}
 	}
 	
@@ -153,8 +171,34 @@ void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 		PlayAnimMontage(SkillLShiftMontage);
 
 		FVector ForwardDirection = GetActorForwardVector();
+
 		LaunchCharacter(ForwardDirection * ForwardStrength + FVector(0, 0, JumpStrength), true, true);
+
+
+
+		SetLS(0.f);
+		GetWorldTimerManager().SetTimer(LShandler, this, &AJK1Warrior::StartLSTimer, 0.1f, true);
 	} 
+}
+
+void AJK1Warrior::CheckDamagedInParry()
+{
+	UE_LOG(LogWarrior, Log, TEXT("this is CheckDamagedInParry"));
+
+	if (!bParryActive)
+		return;
+
+	if (/*Server TODO: Check Damaged?*/true && bParryCount)
+	{
+		//TODO : Get Zero Damage
+		//TODO shield attack
+		ParryCount <= 4 ? ParryCount++ : ParryCount = 5;
+
+		UE_LOG(LogWarrior, Log, TEXT("%d"), ParryCount);
+		bParryCount = false;
+
+		PlayAnimMontage(SkillEMontage_HitReact, 1.f);
+	}
 }
 
 void AJK1Warrior::CheckBATrace()
@@ -187,7 +231,16 @@ void AJK1Warrior::CheckBATrace()
 	);
 
 	if (bSuccess)
-		ApplyDamageToTarget(HitResults, 1.f);
+	{
+		if (bQActive)
+		{
+			ApplyDamageToTarget(HitResults, 1.f + 0.2f * ParryCount);
+			ParryCount = 0;
+			bQActive = false;
+		}
+		else
+			ApplyDamageToTarget(HitResults, 1.f);
+	}
 
 
 #if ENABLE_DRAW_DEBUG
@@ -336,15 +389,61 @@ void AJK1Warrior::ResetSkillCooldown()
 		CurrentCombo = 0;
 	}
 }
-//
-//void AJK1Warrior::ResetSkillLShift()
-//{
-//	bCanMove = true;
-//	// Reset the dash velocity
-//	DashVelocity = FVector::ZeroVector;
-//
-//	// Clear the timer
-//	GetWorldTimerManager().ClearTimer(DashTimerHandle);
-//}
+void AJK1Warrior::StartQTimer()
+{
+	Super::StartQTimer();
+	if (GetQ() < 1.f)
+	{
+		SetQ(GetQ() + 0.1f / WarriorQCT);
+
+		if (GetQ() >= 1.f)
+		{
+			SetQ(1.f);
+			GetWorldTimerManager().ClearTimer(Qhandler);
+		}
+	}
+}
+void AJK1Warrior::StartETimer()
+{
+	Super::StartETimer();
+	if (GetE() < 1.f)
+	{
+		SetE(GetE() + 0.1f / WarriorECT);
+
+		if (GetE() >= 1.f)
+		{
+			SetE(1.f);
+			GetWorldTimerManager().ClearTimer(Qhandler);
+		}
+	}
+}
+void AJK1Warrior::StartRTimer()
+{
+	Super::StartRTimer();
+	if (GetR() < 1.f)
+	{
+		SetR(GetR() + 0.1f / WarriorRCT);
+
+		if (GetR() >= 1.f)
+		{
+			SetR(1.f);
+			GetWorldTimerManager().ClearTimer(Qhandler);
+		}
+	}
+}
+void AJK1Warrior::StartLSTimer()
+{
+	Super::StartLSTimer();
+	if (GetLS() < 1.f)
+	{
+		SetLS(GetLS() + 0.1f / WarriorLSCT);
+
+		if (GetLS() >= 1.f)
+		{
+			SetLS(1.f);
+			GetWorldTimerManager().ClearTimer(Qhandler);
+		}
+	}
+}
 
 

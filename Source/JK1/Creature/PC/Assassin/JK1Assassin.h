@@ -63,6 +63,11 @@ public:
 	void GetAndStoreMaterials();
 	UFUNCTION()
 	void TimelineProgress(float Value);
+
+	//SkillCooldownFunction
+	virtual void StartQTimer() override;
+	virtual void StartRTimer() override;
+	virtual void StartLSTimer() override;
 	/*
 	*  Member Variable
 	*/
@@ -114,12 +119,21 @@ protected:
 	FVector ThrowDirection;
 	UPROPERTY(EditAnywhere, Category = "Spawning")
 	float ThrowForce;
-	UPROPERTY(EditAnywhere, Category = "CoolDown")
-	float SkillQCoolDownTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+	TSubclassOf<UUserWidget> WidgetClass;
+
 	bool bCanThrow = true;
 
+private:
 
-	
+	//Character Widget
+	UUserWidget* CurrentWidget;
+
+	//Assassin Skill Cool Time
+	const float AssassinQCT = 3.f;
+	const float AssassinRCT = 30.f;
+	const float AssassinLSCT = 15.f;
 
 	
 };
