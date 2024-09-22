@@ -45,8 +45,9 @@ public:
 	void SetStat(int index, float value);
 	void PlusExp(float Exp);
 	void LevelUP(int level);
-	bool HitDamage(float NewDamage, AController* instigator);
-	float TotalDamageBy(AController* instigator);
+	void StatRecovery();
+	bool HitDamage(float NewDamage, AActor* instigator);
+	float TotalDamageBy(AActor* instigator);
 
 	// For Widget
 	UFUNCTION(BlueprintCallable)
@@ -95,5 +96,5 @@ private:
 	float CurrentStat[2];
 
 	// 데미지 입힌 대상
-	TMultiMap<AController*, float> DamageInstigator;
+	TMultiMap<AActor*, float> DamageInstigator;
 };

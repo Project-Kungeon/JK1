@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "JK1PlayerCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnResurrectionDelegate);
 /**
  * 
  */
@@ -57,6 +58,9 @@ public:
 
 	virtual void Death() override;
 
+	UFUNCTION(BlueprintCallable)
+	void Resurrection();
+
 	/*
 	* Member Variable
 	*/
@@ -68,6 +72,12 @@ protected:
 	TObjectPtr<class UCameraComponent> FollowCamera;
 
 	class AJK1PlayerController* PlayerController;
+	class AJK1DemoRaidState* DemoRaidState;
+
+public:
+	// Delegate
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnResurrectionDelegate OnResurrection;
 
 public:
 	UPROPERTY(BlueprintReadWrite)

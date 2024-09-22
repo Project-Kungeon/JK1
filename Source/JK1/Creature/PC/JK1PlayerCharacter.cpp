@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Animation/AnimMontage.h"
+#include "GameMode/DemoRaid/JK1DemoRaidState.h"
 
 AJK1PlayerCharacter::AJK1PlayerCharacter()
 {
@@ -20,7 +21,7 @@ AJK1PlayerCharacter::AJK1PlayerCharacter()
 	//Pawn
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
-	bUseControllerRotationYaw = true;
+	bUseControllerRotationYaw = false;
 
 	//Capsule (프로파일 설정)
 	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_JK1CAPSULE);
@@ -70,6 +71,9 @@ void AJK1PlayerCharacter::BeginPlay()
 	{
 		//PlayerController->GetPlayerWidget()->SetWidgetsStat(CreatureStat, nullptr);
 	}
+
+	DemoRaidState = Cast<AJK1DemoRaidState>(GetWorld()->GetGameState());
+	check(nullptr != DemoRaidState);
 }
 
 void AJK1PlayerCharacter::Tick(float DeltaTime)
@@ -169,4 +173,18 @@ void AJK1PlayerCharacter::Death()
 
 	Cast<AJK1PlayerController>(GetController())->RemoveInputSystem();
 	UE_LOG(LogPlayerCharacter, Log, TEXT("Player is Down!!"));
+
+	if(DemoRaidState->GetDeathCount() > 0)
+		Cast<AJK1PlayerController>(GetController())->ShowResurrection(true);
+}
+
+void AJK1PlayerCharacter::Resurrection()
+{
+	Cast<AJK1PlayerController>(GetController())->AttachInputSystem();
+	Cast<AJK1PlayerController>(GetController())->ShowResurrection(false);
+	
+	DemoRaidState->UseDeathCount();
+	CreatureStat->StatRecovery();
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	OnResurrection.Broadcast();
 }
