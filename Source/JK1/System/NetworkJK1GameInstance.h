@@ -12,6 +12,9 @@ class AJK1PlayerCharacter;
 class AJK1Warrior;
 class AJK1Archor;
 class AJK1Assassin;
+class AJK1Rampage;
+class AJK1CreatureBase;
+class AJK1MonsterBase;
 /**
  * 
  */
@@ -34,6 +37,7 @@ public:
 	void HandleSpawn(const message::ObjectInfo& info);
 	void HandleSpawn(const message::CreatureInfo& info);
 	void HandleSpawn(const message::PlayerInfo& info, bool isMyPlayer);
+	void HandleSpawn(const message::MonsterInfo& info);
 	// 서버로부터 스폰 요청이 들어올 경우
 	void HandleSpawn(message::S_Spawn& SpawnPkt);
 	// 게임 접속 후, 내 플레이어 스폰
@@ -65,6 +69,8 @@ public:
 	void HandleArchorLS(const skill::S_Archor_LS& pkt);
 	void HandleArchorLS_Off(const skill::S_Archor_LS_Off& pkt);
 
+	void HandleRampageRoar(const monster::pattern::S_Rampage_Roar& pkt);
+
 private:
 	PacketSessionRef GameSession;
 
@@ -82,7 +88,14 @@ public:
 
 	UPROPERTY(EditAnywhere);
 	TSubclassOf<AJK1Assassin> AssassinClass;
+
+	UPROPERTY(EditAnywhere);
+	TSubclassOf<AJK1MonsterBase> OtherMonsterClass;
+
+	UPROPERTY(EditAnywhere);
+	TSubclassOf<AJK1Rampage> RampageClass;
 	
 	TMap<uint64, AJK1PlayerCharacter*> Players;
+	TMap<uint64, AJK1CreatureBase*> Creatures;	// Excepted Players..
 	AJK1PlayerCharacter* MyPlayer;
 };

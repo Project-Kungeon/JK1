@@ -7,6 +7,7 @@
 #include "Creature/PC/Warrior/JK1Warrior.h"
 #include "Creature/PC/Assassin/JK1Assassin.h"
 #include "Creature/PC/Archor/JK1Archor.h"
+#include "Creature/Monster/Boss/JK1Rampage.h"
 #include "Creature/JK1CreatureStatComponent.h"
 
 void UNetworkJK1GameInstance::Init()
@@ -167,12 +168,55 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::PlayerInfo& info, bool 
 	}
 }
 
+void UNetworkJK1GameInstance::HandleSpawn(const message::MonsterInfo& info)
+{
+	// 월드를 못 불러오면 패스
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	const uint64 ObjectId = info.creature_info().object_info().object_id();
+
+	// 스폰시키려는 플레이어가 이미 존재하면 패스
+	if (Players.Find(ObjectId) != nullptr)
+		return;
+
+	// 스폰위치 설정(위치는 서버가 정해준다)
+	FVector SpawnLocation(
+		info.creature_info().object_info().pos_info().x(),
+		info.creature_info().object_info().pos_info().y(),
+		info.creature_info().object_info().pos_info().z());
+
+	AsyncTask(ENamedThreads::GameThread, [this, info, World, SpawnLocation]()
+		{
+			AJK1MonsterBase* monster;
+			switch (info.monster_type())
+			{
+			case message::MONSTER_TYPE_RAMPAGE:
+				monster = Cast<AJK1MonsterBase>(World->SpawnActor(RampageClass, &SpawnLocation));
+				break;
+			default:
+				monster = Cast<AJK1MonsterBase>(World->SpawnActor(OtherMonsterClass, &SpawnLocation));
+				break;
+			}
+			if (monster != nullptr)
+			{
+				monster->CreatureStat->SetCreatureInfo(info.creature_info());
+				Creatures.Add(info.creature_info().object_info().object_id(), monster);
+			}
+		});
+}
+
 // 내가 아닌 다른 개체가 스폰되었을 때 동기화해주는 함수
 void UNetworkJK1GameInstance::HandleSpawn(message::S_Spawn& SpawnPkt)
 {
 	for (auto& player : SpawnPkt.players())
 	{
 		HandleSpawn(player, false);
+	}
+	for (auto& monster : SpawnPkt.monsters())
+	{
+		HandleSpawn(monster);
 	}
 }
 
@@ -213,9 +257,17 @@ void UNetworkJK1GameInstance::HandleAttack(const message::S_Attack& attackPkt)
 	{
 		for (auto& victimId : attackPkt.target_ids())
 		{
-			auto** FindActor = Players.Find(victimId);
-			auto* Victim = (*FindActor);
-			Victim->CreatureStat->HitDamage(damage, *FindAttacker);
+			AJK1CreatureBase* Victim = nullptr;
+			if (auto** player_pointer = Players.Find(victimId))
+			{
+				Victim = (*player_pointer);
+			}
+			else if (auto** creature_pointer = Creatures.Find(victimId))
+			{
+				Victim = (*creature_pointer);
+			}
+			if (Victim) Victim->CreatureStat->HitDamage(damage, *FindAttacker);
+			
 
 			UE_LOG(LogTemp, Log, TEXT("%lld attacked by %lld Damage: %f"), victimId, objectId, damage);
 		}
@@ -425,5 +477,19 @@ void UNetworkJK1GameInstance::HandleArchorLS_Off(const skill::S_Archor_LS_Off& p
 		auto* Attacker = *(FindAttacker);
 		auto* Archor = Cast<AJK1Archor>(Attacker);
 		Archor->BIsLShift();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleRampageRoar(const monster::pattern::S_Rampage_Roar& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindRampage = Creatures.Find(objectId))
+	{
+		auto* rampage = Cast<AJK1Rampage>(*(FindRampage));
+		if (rampage != nullptr)
+		{
+			rampage->Roar();
+		}
+
 	}
 }

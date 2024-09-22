@@ -132,4 +132,11 @@ void ClientPacketHandler::Init()
         return HandlePacket<skill::S_Archor_LS_Off>(BattlePacketHandler::Handle_S_ArchorLS_Off, session, buffer, header, offset);
     };
 
+    // Monster Pattern : Rampage
+    GPacketHandler[message::HEADER::RAMPAGE_ROAR_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_Rampage_Roar Handle"));
+        return HandlePacket<monster::pattern::S_Rampage_Roar>(MonsterPatternPacketHandler::Handle_S_Rampage_Roar, session, buffer, header, offset);
+    };
+
 }

@@ -20,8 +20,8 @@ AJK1Rampage::AJK1Rampage()
 	Super::GetCapsuleComponent()->SetCapsuleHalfHeight(75.f);
 
 	// AI
-	AIControllerClass = AJK1RampageController::StaticClass();
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	// AIControllerClass = AJK1RampageController::StaticClass();
+	// AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	CreatureStat->SetOwner(false, FName("Rampage"));
 	CurrentCombo = 0;
@@ -75,7 +75,7 @@ void AJK1Rampage::Roar()
 	
 	PlayAnimMontage(RoarMontage, 0.3f);
 	
-	OnGimmicEnd.Broadcast();
+	//OnGimmicEnd.Broadcast();
 }
 
 void AJK1Rampage::EarthQuake()

@@ -9,6 +9,7 @@
 #include <boost/asio/buffer.hpp>
 #include "Message.pb.h"
 #include "Skill.pb.h"
+#include "MonsterPattern.pb.h"
 #include "Packet.h"
 
 class PacketSession;
@@ -22,6 +23,7 @@ USING_SHARED_PTR(PacketSession);
 #include "Lobby/LobbyPacketHandler.h"
 #include "Room/RoomPacketHandler.h"
 #include "Battle/BattlePacketHandler.h"
+#include "Battle/MonsterPatternPacketHandler.h"
 #include "ClientPacketHandler.h"
 
 #include "NetworkJK1GameInstance.h"
