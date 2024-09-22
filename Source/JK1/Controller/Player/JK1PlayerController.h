@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "InputActionValue.h"
+#include <stack>
 #include "JK1PlayerController.generated.h"
 
 /**
@@ -35,12 +36,15 @@ protected:
 	void SkillAct(const FInputActionValue& Value);
 
 	void ShowUI(const FInputActionValue& Value);
+	
 
 public:
+	void ShowResurrection(bool ononff);
 	class UJK1PlayerHUD* GetPlayerWidget() const;
 	void UpdateWidget();
 
 	// InputSystem
+	void AttachInputSystem();
 	void RemoveInputSystem();
 
 	// Lock On
@@ -85,10 +89,20 @@ protected:
 	// Widget
 	UPROPERTY()
 	UJK1PlayerHUD* PlayerWidget;
+	UPROPERTY()
+	UUserWidget* MenuWidget;
+	UPROPERTY()
+	UUserWidget* ResurrectionWidget;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<UJK1PlayerHUD> HUDWidgetClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<UUserWidget> MenuWidgetClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<UUserWidget> ResurrectionWidgetClass;
 
 public:
+	TArray<UUserWidget*> OpenedWidget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float LockOnDistance;
 
@@ -103,4 +117,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bShouldRotate;
+
+private:
+	FInputModeGameOnly GameInputMode;
+	FInputModeGameOnly UIInputMode;
 };

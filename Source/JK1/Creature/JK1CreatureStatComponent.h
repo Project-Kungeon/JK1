@@ -46,6 +46,7 @@ public:
 	void SetStat(int index, float value);
 	void PlusExp(float Exp);
 	void LevelUP(int level);
+	void StatRecovery();
 	bool HitDamage(float NewDamage, AActor* instigator);
 	float TotalDamageBy(AActor* instigator);
 

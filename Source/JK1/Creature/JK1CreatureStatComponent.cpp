@@ -59,9 +59,7 @@ void UJK1CreatureStatComponent::LoadData()
 
 	if (BasicStatData != nullptr)
 	{
-		SetCurrentHP(BasicStatData->MaxHP);
-		SetStat(0, BasicStatData->ATK);
-		SetStat(1, BasicStatData->DEF);
+		StatRecovery();
 		UE_LOG(LogSystem, Log, TEXT("Set (%s)'s Default Stat"), *Name.ToString());
 	}
 	else
@@ -144,6 +142,13 @@ void UJK1CreatureStatComponent::LevelUP(int level)
 	CurrentHP += 100;
 	CurrentStat[0] += 10;
 	CurrentStat[1] += 10;
+}
+
+void UJK1CreatureStatComponent::StatRecovery()
+{
+	SetCurrentHP(BasicStatData->MaxHP);
+	SetStat(0, BasicStatData->ATK);
+	SetStat(1, BasicStatData->DEF);
 }
 
 bool UJK1CreatureStatComponent::HitDamage(float NewDamage, AActor* instigator)

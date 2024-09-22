@@ -74,6 +74,13 @@ public:
 	virtual void StopParticleSystem();
 	virtual void BIsLShift() { IsLShift = false; }
 
+	//SkillCooldownFunction
+	virtual void StartQTimer() override;
+	virtual void StartETimer() override;
+	virtual void StartRTimer() override;
+	virtual void StartLSTimer() override;
+
+
 
 protected:
 	//Montage, 클래스들은 각자 기본공격 몽타주 갯수가 다르다.
@@ -116,7 +123,10 @@ protected:
 	// 총 데미지 지속 시간 동안 남은 시간
 	float RemainingDamageTime = 5.0f;
 
-protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+	TSubclassOf<UUserWidget> WidgetClass;
+
+private:
 	// 타격 위치 계산
 	FVector CalculateDamageLocation();
 
@@ -135,6 +145,9 @@ protected:
 	//Arrow BP
 	FName ArrowBP;
 
+	//Character Widget
+	UUserWidget* CurrentWidget;
+
 	/*
 	* Arrow Spawn에 필요한 Parameter 변수들
 	*/
@@ -147,5 +160,10 @@ protected:
 	int32 CurrentTime = 0;
 	FVector ArrowStartLocation;
 	FVector ImpactPoint;
+
+	const float ArchorQCT = 5.f;
+	const float ArchorECT = 12.f;
+	const float ArchorRCT = 20.f;
+	const float ArchorLSCT = 15.f;
 	
 };

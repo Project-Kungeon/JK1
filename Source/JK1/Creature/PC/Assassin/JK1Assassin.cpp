@@ -21,6 +21,7 @@
 #include "Materials/MaterialInterface.h"
 #include "Components/TimelineComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Blueprint/UserWidget.h"
 
 
 
@@ -55,20 +56,33 @@ AJK1Assassin::AJK1Assassin()
 		CloakMaterial = CloakMaterialRef.Object;
 	}
 	CreatureStat->SetOwner(true, FName("Assassin"));
-	SpawnLocation = FVector(-10.f, 0.f, 50.f); // ĳ���� ���� ��ġ
-	ThrowDirection = FVector(1.f, 0.f, 0.f); // ������ ������
-	ThrowForce = 1000.f; // ������ ��
+	SpawnLocation = FVector(-10.f, 0.f, 50.f); // 캐릭터 앞의 위치
+	ThrowDirection = FVector(1.f, 0.f, 0.f); // 앞으로 던지기
+	ThrowForce = 1000.f; // 던지기 힘
 
-	// Skill Q �� Ÿ��
-	SkillQCoolDownTime = 3.0f;
-	//Timeline ���� �ʱ�ȭ.
+	//Timeline 변수 초기화.
 	TimelineValue = 0.0f;
+
+	{
+		SetQ(AssassinQCT);
+		SetR(AssassinRCT);
+		SetLS(AssassinLSCT);
+	}
 		
 }
 
 void AJK1Assassin::BeginPlay()
 {
 	Super::BeginPlay();
+	if (WidgetClass)
+	{
+		CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
+		if (CurrentWidget)
+		{
+			CurrentWidget->AddToViewport();
+		}
+	}
+
 	DynamicMaterial = UMaterialInstanceDynamic::Create(CloakMaterial, this);
 
 	if (FloatCurve)
@@ -77,7 +91,7 @@ void AJK1Assassin::BeginPlay()
 		ProgressFunction.BindUFunction(this, FName("TimelineProgress"));
 		MyTimeline->AddInterpFloat(FloatCurve, ProgressFunction);
 
-		// Timeline ��� ����
+		// Timeline 재생 설정
 		MyTimeline->SetLooping(false);
 		MyTimeline->SetIgnoreTimeDilation(true);
 	}
@@ -232,8 +246,15 @@ void AJK1Assassin::SpawnHitEffect(const FVector& Location)
 
 void AJK1Assassin::SkillR(const FInputActionValue& Value)
 {
-	//TODO : 난무 에셋이 어떤건지 잘 모르겠어
-	AssassinR();
+	
+	Super::SkillR(Value);
+	UE_LOG(LogAssassin, Log, TEXT("This is %s"), *this->GetName());
+	//TODO: Forward & RightValue가 0ㅇ이 아니라면 바로 몽타주 종료.,
+
+	PlayAnimMontage(SkillRMontage, 1.5f);
+	SetR(0.f);
+	GetWorldTimerManager().SetTimer(Rhandler, this, &AJK1Assassin::StartRTimer, 0.1f, true);
+
 }
 
 void AJK1Assassin::CheckCharacterMovement()
@@ -274,6 +295,8 @@ void AJK1Assassin::AssassinQ(FVector SpawnPoint, FRotator SpawnRotation)
 		SpawnDagger(SpawnPoint, SpawnRotation);
 		PlayAnimMontage(SkillQMontage, 1.5f);
 		SkillQTrace();
+		SetQ(0.f);
+		GetWorldTimerManager().SetTimer(Qhandler, this, &AJK1Assassin::StartQTimer, 0.1f, true);
 		});
 	
 }
@@ -321,12 +344,15 @@ void AJK1Assassin::AssassinLSOn()
 		IsCloakingProcess = false;
 		IsCloaking = true;
 		GetCharacterMovement()->MaxWalkSpeed = 700.f;
+		SetLS(0.f);
+		GetWorldTimerManager().SetTimer(LShandler, this, &AJK1Assassin::StartLSTimer, 0.1f, true);
 	}
 }
 
 void AJK1Assassin::AssassinLSOff()
 {
 	IsCloakingProcess = true;
+	ChangeStatusEffect(false, 3);
 	MyTimeline->Reverse();
 	USkeletalMeshComponent* MeshComponent = GetMesh();
 	if (MeshComponent)
@@ -410,17 +436,17 @@ void AJK1Assassin::CheckBATrace()
 
 void AJK1Assassin::GetAndStoreMaterials()
 {
-	// ĳ������ Mesh Component ��������
+	// 캐릭터의 Mesh Component 가져오기
 	USkeletalMeshComponent* MeshComponent = GetMesh();
 	if (MeshComponent)
 	{
-		// Material ���� ��������
+		// Material 개수 가져오기
 		int32 MaterialCount = MeshComponent->GetNumMaterials();
 
-		// �迭 �ʱ�ȭ
+		// 배열 초기화
 		StoredMaterials.Empty();
 
-		// Material���� �迭�� �����ϱ�
+		// Material들을 배열에 저장하기
 		for (int32 Index = 0; Index < MaterialCount; ++Index)
 		{
 			UMaterialInterface* Material = MeshComponent->GetMaterial(Index);
@@ -435,10 +461,55 @@ void AJK1Assassin::GetAndStoreMaterials()
 
 void AJK1Assassin::TimelineProgress(float Value)
 {
-	TimelineValue = Value; // TimelineValue ���� ������Ʈ
+	TimelineValue = Value; // TimelineValue 변수 업데이트
 	UE_LOG(LogAssassin, Log, TEXT("Timeline Value: %f"), TimelineValue);
 	if (DynamicMaterial)
 	{
 		DynamicMaterial->SetScalarParameterValue(FName(TEXT("Opacity")), TimelineValue);
+	}
+}
+
+void AJK1Assassin::StartQTimer()
+{
+	Super::StartQTimer();
+	if (GetQ() < 1.f)
+	{
+		SetQ(GetQ() + 0.1f / AssassinQCT);
+
+		if (GetQ() >= 1.f)
+		{
+			SetQ(1.f);
+			GetWorldTimerManager().ClearTimer(Qhandler);
+		}
+	}
+}
+
+void AJK1Assassin::StartRTimer()
+{
+	Super::StartRTimer();
+	if (GetR() < 1.f)
+	{
+		SetR(GetR() + 0.1f / AssassinRCT);
+
+		if (GetR() >= 1.f)
+		{
+			SetR(1.f);
+			GetWorldTimerManager().ClearTimer(Rhandler);
+		}
+	}
+}
+
+void AJK1Assassin::StartLSTimer()
+{
+	Super::StartLSTimer();
+	if (GetLS() < 1.f)
+	{
+		SetLS(GetLS() + 0.1f / AssassinLSCT);
+
+		if (GetLS() >= 1.f)
+		{
+			SetLS(1.f);
+			GetWorldTimerManager().ClearTimer(LShandler);
+		}
 	}
 }

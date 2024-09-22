@@ -43,7 +43,6 @@ public:
 	void			ApplyDamageToTarget(TArray<FHitResult> HitResults, float damage);
 	UFUNCTION()
 	virtual void Death();
-
 	/*
 	*  Member Variable
 	*/ 
@@ -64,4 +63,6 @@ public:
 private:
 	// 0000|0000 : 은신, 기절, 이속감소, 면역
 	unsigned char statusEffect;
+
+	
 };
