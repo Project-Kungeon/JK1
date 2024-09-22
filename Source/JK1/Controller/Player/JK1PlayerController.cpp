@@ -14,6 +14,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Widget/JK1PlayerHUD.h"
+#include "Blueprint/UserWidget.h"
 
 
 AJK1PlayerController::AJK1PlayerController()
@@ -60,6 +61,16 @@ AJK1PlayerController::AJK1PlayerController()
 	{
 		HUDWidgetClass = Player_UI.Class;
 	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> Menu_UI(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/Widget/Basic/WBP_Menu.WBP_Menu_C'"));
+	if (Menu_UI.Class)
+	{
+		MenuWidgetClass = Menu_UI.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> Resurrection_UI(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/Widget/Battle/WBP_Resurrection.WBP_Resurrection_C'"));
+	if (Resurrection_UI.Class)
+	{
+		ResurrectionWidgetClass = Resurrection_UI.Class;
+	}
 
 	LockOnDistance = 750.f;
 }
@@ -71,9 +82,8 @@ void AJK1PlayerController::BeginPlay()
 
 	ControlledCharacter = GetCharacter();
 	check(ControlledCharacter != nullptr);
-
-	//FInputModeGameOnly GameOnlyInputMode;
-	//SetInputMode(GameOnlyInputMode);
+	SetInputMode(GameInputMode);
+	
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	if (Subsystem)
 	{
@@ -82,6 +92,8 @@ void AJK1PlayerController::BeginPlay()
 		//Input Priority
 	}
 
+	MenuWidget = CreateWidget<UUserWidget>(this, MenuWidgetClass);
+	ResurrectionWidget = CreateWidget<UUserWidget>(this, ResurrectionWidgetClass);
 	PlayerWidget = CreateWidget<UJK1PlayerHUD>(this, HUDWidgetClass);
 	PlayerWidget->AddToViewport();
 	UpdateWidget();
@@ -189,17 +201,48 @@ void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 {
 	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
 	{
+		SetInputMode(UIInputMode);
+		SetShowMouseCursor(true);
 		int index = static_cast<int>(Value.Get<float>());
 
 		switch (index)
 		{
 		case 1:
+			if (!OpenedWidget.IsEmpty())
+				OpenedWidget.Pop()->RemoveFromParent();
+			else
+			{
+				MenuWidget->AddToViewport();
+				OpenedWidget.AddUnique(MenuWidget);
+			}
 			UE_LOG(LogPlayerController, Log, TEXT("input ESC"));
 			break;
 		case 2:
 			UE_LOG(LogPlayerController, Log, TEXT("input Inventory"));
 			break;
 		}
+
+		if (OpenedWidget.IsEmpty())
+		{
+			SetInputMode(GameInputMode);
+			SetShowMouseCursor(false);
+		}
+	}
+}
+
+void AJK1PlayerController::ShowResurrection(bool ononff)
+{
+	if (ononff)
+	{
+		SetInputMode(UIInputMode);
+		SetShowMouseCursor(true);
+		ResurrectionWidget->AddToViewport();
+	}
+	else
+	{
+		SetInputMode(GameInputMode);
+		SetShowMouseCursor(false);
+		ResurrectionWidget->RemoveFromParent();
 	}
 }
 
@@ -217,6 +260,11 @@ void AJK1PlayerController::UpdateWidget()
 		else
 			PlayerWidget->SetWidgetsStat(ControlledPlayer->CreatureStat, nullptr);
 	}
+}
+
+void AJK1PlayerController::AttachInputSystem()
+{
+	Subsystem->AddMappingContext(BattleMappingContext, 1);
 }
 
 void AJK1PlayerController::RemoveInputSystem()

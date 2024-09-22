@@ -13,8 +13,10 @@ UCLASS()
 class JK1_API AJK1DemoRaidMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
-private:
-	int deathCount;
+public:
+	AJK1DemoRaidMode();
+
+public:
+	void RaidClear();
 
 };
