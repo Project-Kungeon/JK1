@@ -45,7 +45,6 @@ public:
 	virtual void SkillR(const FInputActionValue& value) override;
 	virtual void SkillLShift(const FInputActionValue& value) override;
 
-	void ShootNRecovery();
 	void EndSkillR();
 	void DealDamage();
 	void StartDamage();
@@ -53,7 +52,6 @@ public:
 	void CheckSkillETrace();
 	void PlayParticleSystem();
 	void StopParticleSystem();
-	void BIsLShift() { IsLShift = false; }
 
 	//SkillCooldownFunction
 	virtual void StartQTimer() override;
@@ -104,9 +102,6 @@ protected:
 	// 총 데미지 지속 시간 동안 남은 시간
 	float RemainingDamageTime = 5.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
-	TSubclassOf<UUserWidget> WidgetClass;
-
 private:
 	// 타격 위치 계산
 	FVector CalculateDamageLocation();
@@ -126,9 +121,6 @@ private:
 	//Arrow BP
 	FName ArrowBP;
 
-	//Character Widget
-	UUserWidget* CurrentWidget;
-
 	/*
 	* Arrow Spawn에 필요한 Parameter 변수들
 	*/
@@ -146,5 +138,9 @@ private:
 	const float ArchorECT = 12.f;
 	const float ArchorRCT = 20.f;
 	const float ArchorLSCT = 15.f;
+
+	//Archor Buff Time
+	const float RBuffTime = 10.f;
+	const float LSBuffTime = 5.f;
 	
 };

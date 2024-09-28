@@ -30,11 +30,11 @@ AJK1Assassin::AJK1Assassin()
 	//Timeline 선언
 	MyTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("<MyTimeline"));
 	
-	//FloatCurve
+	//CloakCurve
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> CurveRef(TEXT("/Game/Blueprints/Creature/PC/Assassin/CloakCurve.CloakCurve"));
 	if (CurveRef.Succeeded())
 	{
-		FloatCurve = CurveRef.Object;
+		CloakCurve = CurveRef.Object;
 	}
 	//Character Skeletal Mesh
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> DefaultMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonKallari/Characters/Heroes/Kallari/Skins/Rogue/Meshes/Kallari_Rogue.Kallari_Rogue'"));
@@ -73,22 +73,14 @@ AJK1Assassin::AJK1Assassin()
 void AJK1Assassin::BeginPlay()
 {
 	Super::BeginPlay();
-	if (WidgetClass)
-	{
-		CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
-		if (CurrentWidget)
-		{
-			CurrentWidget->AddToViewport();
-		}
-	}
 
 	DynamicMaterial = UMaterialInstanceDynamic::Create(CloakMaterial, this);
 
-	if (FloatCurve)
+	if (CloakCurve)
 	{
 		FOnTimelineFloat ProgressFunction{};
 		ProgressFunction.BindUFunction(this, FName("TimelineProgress"));
-		MyTimeline->AddInterpFloat(FloatCurve, ProgressFunction);
+		MyTimeline->AddInterpFloat(CloakCurve, ProgressFunction);
 
 		// Timeline 재생 설정
 		MyTimeline->SetLooping(false);
@@ -167,7 +159,7 @@ void AJK1Assassin::SkillQ(const FInputActionValue& value)
 	PlayAnimMontage(SkillQMontage, 1.5f);
 	SkillQTrace();
 	SetQ(0.f);
-	GetWorldTimerManager().SetTimer(Qhandler, this, &AJK1Assassin::StartQTimer, 0.1f, true);
+	StartQTimer();
 }
 
 void AJK1Assassin::SpawnDagger()
@@ -255,7 +247,7 @@ void AJK1Assassin::SkillR(const FInputActionValue& Value)
 
 	PlayAnimMontage(SkillRMontage, 1.5f);
 	SetR(0.f);
-	GetWorldTimerManager().SetTimer(Rhandler, this, &AJK1Assassin::StartRTimer, 0.1f, true);
+	StartRTimer();
 
 }
 
@@ -280,50 +272,47 @@ void AJK1Assassin::SkillLShift(const FInputActionValue& Value)
 		UE_LOG(LogAssassin, Log, TEXT("InCloakingProcess"));
 		return;
 	}
-	
 	if(!IsCloaking)
+		InCloaking();
+}
+
+void AJK1Assassin::InCloaking()
+{
+	IsCloakingProcess = true;
+	ChangeStatusEffect(true, 3);
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+
+	if (MeshComponent)
 	{
-		//은신 진입
-		IsCloakingProcess = true;
-		ChangeStatusEffect(true, 3);
-		USkeletalMeshComponent* MeshComponent = GetMesh();
-
-		if (MeshComponent)
-		{
-			int32 MaterialCount = MeshComponent->GetNumMaterials();
-			for (int32 i = 0; i < MaterialCount; i++)
-				MeshComponent->SetMaterial(i, DynamicMaterial);
-		}
-
-		MyTimeline->PlayFromStart();
-		UE_LOG(LogTemp, Log, TEXT("%f"), TimelineValue);
-		IsCloakingProcess = false;
-		IsCloaking = true;
-		GetCharacterMovement()->MaxWalkSpeed = 700.f;
-		SetLS(0.f);
-		GetWorldTimerManager().SetTimer(LShandler, this, &AJK1Assassin::StartLSTimer, 0.1f, true);
+		int32 MaterialCount = MeshComponent->GetNumMaterials();
+		for (int32 i = 0; i < MaterialCount; i++)
+			MeshComponent->SetMaterial(i, DynamicMaterial);
 	}
-	else
+
+	MyTimeline->PlayFromStart();
+	IsCloakingProcess = false;
+	IsCloaking = true;
+	GetCharacterMovement()->MaxWalkSpeed = 700.f;
+	SetLS(0.f);
+	StartLSTimer();
+}
+
+void AJK1Assassin::OutCloaking()
+{
+	//은신 해제
+	IsCloakingProcess = true;
+	ChangeStatusEffect(false, 3);
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	if (MeshComponent)
 	{
-		//은신 해제
-		IsCloakingProcess = true;
-		ChangeStatusEffect(false, 3);
-		MyTimeline->Reverse();
-		USkeletalMeshComponent* MeshComponent = GetMesh();
-		if (MeshComponent)
-		{
-			int32 MaterialCount = MeshComponent->GetNumMaterials();
-			for (int32 i = 0; i < MaterialCount; i++)
-				MeshComponent->SetMaterial(i, StoredMaterials[i]);
-		}
-		IsCloakingProcess = false;
-		IsCloaking = false;
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+		int32 MaterialCount = MeshComponent->GetNumMaterials();
+		for (int32 i = 0; i < MaterialCount; i++)
+			MeshComponent->SetMaterial(i, StoredMaterials[i]);
 	}
-	/*
-	
-	*/
-
+	MyTimeline->ReverseFromEnd();
+	IsCloakingProcess = false;
+	IsCloaking = false;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 }
 
 void AJK1Assassin::CheckBATrace()
@@ -433,44 +422,77 @@ void AJK1Assassin::TimelineProgress(float Value)
 void AJK1Assassin::StartQTimer()
 {
 	Super::StartQTimer();
-	if (GetQ() < 1.f)
-	{
-		SetQ(GetQ() + 0.1f / AssassinQCT);
 
-		if (GetQ() >= 1.f)
+	GetWorldTimerManager().SetTimer(Qhandler, [this]()
 		{
-			SetQ(1.f);
-			GetWorldTimerManager().ClearTimer(Qhandler);
+			if (GetQ() < 1.f)
+			{
+				SetQ(GetQ() + 0.1f / AssassinQCT);
+
+				if (GetQ() >= 1.f)
+				{
+					SetQ(1.f);
+					GetWorldTimerManager().ClearTimer(Qhandler);
+				}
+			}
+
 		}
-	}
+	, 0.1f, true);
 }
 
 void AJK1Assassin::StartRTimer()
 {
 	Super::StartRTimer();
-	if (GetR() < 1.f)
-	{
-		SetR(GetR() + 0.1f / AssassinRCT);
 
-		if (GetR() >= 1.f)
+	GetWorldTimerManager().SetTimer(Rhandler, [this]()
 		{
-			SetR(1.f);
-			GetWorldTimerManager().ClearTimer(Rhandler);
+			if (GetR() < 1.f)
+			{
+				SetR(GetR() + 0.1f / AssassinRCT);
+
+				if (GetR() >= 1.f)
+				{
+					SetR(1.f);
+					GetWorldTimerManager().ClearTimer(Rhandler);
+				}
+			}
+
 		}
-	}
+	, 0.1f, true);
 }
 
 void AJK1Assassin::StartLSTimer()
 {
 	Super::StartLSTimer();
-	if (GetLS() < 1.f)
-	{
-		SetLS(GetLS() + 0.1f / AssassinLSCT);
 
-		if (GetLS() >= 1.f)
+	GetWorldTimerManager().SetTimer(LShandler, [this]()
 		{
-			SetLS(1.f);
-			GetWorldTimerManager().ClearTimer(LShandler);
+			if (GetLS() < 1.f)
+			{
+				SetLS(GetLS() + 0.1f / AssassinLSCT);
+
+				if (GetLS() >= 1.f)
+				{
+					SetLS(1.f);
+					GetWorldTimerManager().ClearTimer(LShandler);
+				}
+			}
 		}
-	}
+	, 0.1f, true);
+
+	//Buff CoolTime Timer
+	LSLeftTime = 1.f;
+
+	GetWorldTimerManager().SetTimer(LSBuffHandler, [this]()
+		{
+			LSLeftTime -= 0.1f / LSBuffTime;
+
+			if (LSLeftTime <= 0)
+			{
+				LSLeftTime = 0.f;
+				GetWorldTimerManager().ClearTimer(LSBuffHandler);
+			}
+		}
+	, 0.1f, true);
+
 }

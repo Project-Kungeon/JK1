@@ -40,6 +40,8 @@ AJK1Arrow::AJK1Arrow()
 	Box->SetRelativeRotation(FRotator(180.f, -90.f, 180.f));
 	Box->SetRelativeScale3D(FVector(0.25f, 0.25f, 0.25f));
 
+	
+
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> ArrowMeshRef(TEXT("/Script/Engine.StaticMesh'/Game/ParagonSparrow/FX/Meshes/Heroes/Sparrow/Abilities/SM_Sparrow_Arrow.SM_Sparrow_Arrow'"));
 	if (ArrowMeshRef.Object)

@@ -22,6 +22,7 @@ public:
 	void	UseDeathCount();
 
 public:
+	UPROPERTY(BlueprintAssignable, Category = "Game Events")
 	FOnDeathCountDelegate OnDeathCountChange;
 
 private:

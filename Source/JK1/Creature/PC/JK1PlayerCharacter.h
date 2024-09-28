@@ -100,10 +100,15 @@ public:
 
 	//Cooldown Timer handle
 	FTimerHandle Qhandler;
+	FTimerHandle QBuffHandler;
 	FTimerHandle Ehandler;
+	FTimerHandle EBuffHandler;
 	FTimerHandle Rhandler;
+	FTimerHandle RBuffHandler;
 	FTimerHandle LShandler;
+	FTimerHandle LSBuffHandler;
 
+	//Check Skill Cooldown Var
 	UPROPERTY(BlueprintReadOnly)
 	float SkillQCool;
 	UPROPERTY(BlueprintReadOnly)
@@ -112,6 +117,14 @@ public:
 	float SkillRCool;
 	UPROPERTY(BlueprintReadOnly)
 	float SkillLSCool;
+
+	//Check BuffCooldown Var
+	UPROPERTY(BlueprintReadOnly)
+	float QLeftTime = 0.f;
+	UPROPERTY(BlueprintReadOnly)
+	float RLeftTime = 0.f;
+	UPROPERTY(BlueprintReadOnly)
+	float LSLeftTime = 0.f;
 
 
 public:
