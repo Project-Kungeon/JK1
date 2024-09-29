@@ -70,15 +70,6 @@ AJK1Archor::AJK1Archor()
 void AJK1Archor::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (WidgetClass)
-	{
-		CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
-		if (CurrentWidget)
-		{
-			CurrentWidget->AddToViewport();
-		}
-	}
 }
 
 void AJK1Archor::Tick(float DeltaTime)
@@ -591,61 +582,111 @@ void AJK1Archor::StopParticleSystem()
 void AJK1Archor::StartQTimer()
 {
 	Super::StartQTimer();
-	if (GetQ() < 1.f)
-	{
-		SetQ(GetQ() + 0.1f/ArchorQCT);
-		
-		if (GetQ() >=1.f)
+	GetWorldTimerManager().SetTimer(Qhandler, [this]()
 		{
-			SetQ(1.f);
-			GetWorldTimerManager().ClearTimer(Qhandler);
+			if (GetQ() < 1.f)
+			{
+				SetQ(GetQ() + 0.1f / ArchorQCT);
+
+				if (GetQ() >= 1.f)
+				{
+					SetQ(1.f);
+					GetWorldTimerManager().ClearTimer(Qhandler);
+				}
+			}
+
 		}
-	}
+	, 0.1f, true);
 }
 
 void AJK1Archor::StartETimer()
 {
 	Super::StartETimer();
-	if (GetE() < 1.f)
-	{
-		SetE(GetE() + 0.1f/ArchorECT);
-
-		if (GetE() >= 1.f)
+	GetWorldTimerManager().SetTimer(Ehandler, [this]()
 		{
-			SetE(1.0f);
-			GetWorldTimerManager().ClearTimer(Ehandler);
+			if (GetE() < 1.f)
+			{
+				SetE(GetE() + 0.1f / ArchorECT);
+
+				if (GetE() >= 1.f)
+				{
+					SetE(1.0f);
+					GetWorldTimerManager().ClearTimer(Ehandler);
+				}
+			}
 		}
-	}
+	, 0.1f, true);
 }
 
 void AJK1Archor::StartRTimer()
 {
 	Super::StartRTimer();
-	if (GetR() < 1.f)
-	{
-		SetR(GetR() + 0.1f/ArchorRCT);
-
-		if (GetR() >= 1.f)
+	GetWorldTimerManager().SetTimer(Rhandler, [this]()
 		{
-			SetR(1.0f);
-			GetWorldTimerManager().ClearTimer(Qhandler);
+			if (GetR() < 1.f)
+			{
+				SetR(GetR() + 0.1f / ArchorRCT);
+
+				if (GetR() >= 1.f)
+				{
+					SetR(1.f);
+					GetWorldTimerManager().ClearTimer(Rhandler);
+				}
+			}
+
 		}
-	}
+	, 0.1f, true);
+
+	//Buff CoolTime Timer
+	RLeftTime = 1.f;
+
+	GetWorldTimerManager().SetTimer(RBuffHandler, [this]()
+		{
+			RLeftTime -= 0.1f / RBuffTime;
+
+			if (RLeftTime <= 0)
+			{
+				RLeftTime = 0.f;
+				GetWorldTimerManager().ClearTimer(RBuffHandler);
+				EndSkillR();
+			}
+
+		}
+	, 0.1f, true);
 }
 
 void AJK1Archor::StartLSTimer()
 {
 	Super::StartLSTimer();
-	if (GetLS() < 1.f)
-	{
-		SetLS(GetLS() + 0.1f / ArchorLSCT);
-
-		if (GetLS() >= 1.f)
+	GetWorldTimerManager().SetTimer(LShandler, [this]()
 		{
-			SetLS(5.0f);
-			GetWorldTimerManager().ClearTimer(Qhandler);
+			if (GetLS() < 1.f)
+			{
+				SetLS(GetLS() + 0.1f / ArchorLSCT);
+
+				if (GetLS() >= 1.f)
+				{
+					SetLS(1.f);
+					GetWorldTimerManager().ClearTimer(LShandler);
+				}
+			}
 		}
-	}
+	, 0.1f, true);
+
+	//Buff CoolTime Timer
+	LSLeftTime = 1.f;
+
+	GetWorldTimerManager().SetTimer(LSBuffHandler, [this]()
+		{
+			LSLeftTime -= 0.1f / LSBuffTime;
+
+			if (LSLeftTime <= 0)
+			{
+				LSLeftTime = 0.f;
+				GetWorldTimerManager().ClearTimer(LSBuffHandler);
+			}
+		}
+	, 0.1f, true);
 }
 
 FVector AJK1Archor::CalculateDamageLocation()

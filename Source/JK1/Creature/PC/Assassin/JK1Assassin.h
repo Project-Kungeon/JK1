@@ -115,7 +115,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timeline")
 	float TimelineValue;
 
-	TObjectPtr<class UCurveFloat> FloatCurve;
+	TObjectPtr<class UCurveFloat> CloakCurve;
 	UPROPERTY()
 	TObjectPtr<class UTimelineComponent> MyTimeline;
 	
@@ -131,19 +131,18 @@ protected:
 	float ThrowForce;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
-	TSubclassOf<UUserWidget> WidgetClass;
 
 	bool bCanThrow = true;
 
 private:
 
-	//Character Widget
-	UUserWidget* CurrentWidget;
-
 	//Assassin Skill Cool Time
 	const float AssassinQCT = 3.f;
 	const float AssassinRCT = 30.f;
 	const float AssassinLSCT = 15.f;
+
+	//Assassin Buff Time
+	const float LSBuffTime = 5.f;
 
 	
 };

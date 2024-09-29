@@ -130,9 +130,6 @@ protected:
 	// 총 데미지 지속 시간 동안 남은 시간
 	float RemainingDamageTime = 5.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
-	TSubclassOf<UUserWidget> WidgetClass;
-
 private:
 
 	//Skill E 이펙트 컴포넌트 변수
@@ -147,9 +144,6 @@ private:
 
 	//Arrow BP
 	FName ArrowBP;
-
-	//Character Widget
-	UUserWidget* CurrentWidget;
 
 	/*
 	* Arrow Spawn에 필요한 Parameter 변수들
@@ -168,5 +162,9 @@ private:
 	const float ArchorECT = 12.f;
 	const float ArchorRCT = 20.f;
 	const float ArchorLSCT = 15.f;
+
+	//Archor Buff Time
+	const float RBuffTime = 10.f;
+	const float LSBuffTime = 5.f;
 	
 };

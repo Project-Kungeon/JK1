@@ -36,14 +36,6 @@ AJK1Warrior::AJK1Warrior()
 void AJK1Warrior::BeginPlay()
 {
 	Super::BeginPlay();
-	if (WidgetClass)
-	{
-		CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
-		if (CurrentWidget)
-		{
-			CurrentWidget->AddToViewport();
-		}
-	}
 
 	AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->Montage_Play(CurrentMontage);
@@ -108,7 +100,9 @@ void AJK1Warrior::SkillQ(const FInputActionValue& value)
 	UE_LOG(LogWarrior, Log, TEXT("This is %s"), *this->GetName());
 	bQActive = true;
 	SetQ(0.f);
-	GetWorldTimerManager().SetTimer(Qhandler, this, &AJK1Warrior::StartQTimer, 0.1f, true);
+	//GetWorldTimerManager().SetTimer(Qhandler, this, &AJK1Warrior::StartQTimer, 0.1f, true);
+	StartQTimer();
+
 }
 
 void AJK1Warrior::SkillE(const FInputActionValue& value)
@@ -159,9 +153,6 @@ void AJK1Warrior::WarriorR()
 	}
 	else
 	{
-		/*--------------------
-		SetTimer 델리게이트 사용해서 연속해서 사용되는 문제 해결
-	    --------------------*/
 		if (!bWeaponActive)
 		{
 			IsAttacking = false;
@@ -177,8 +168,9 @@ void AJK1Warrior::WarriorR()
 				}
 			);
 			//Cooltime
+
 			SetR(0.f);
-			GetWorldTimerManager().SetTimer(Rhandler, this, &AJK1Warrior::StartRTimer, 0.1f, true);
+			StartRTimer();
 		}
 	}
 }
@@ -201,10 +193,8 @@ void AJK1Warrior::WarriorLShift()
 
 		LaunchCharacter(ForwardDirection * ForwardStrength + FVector(0, 0, JumpStrength), true, true);
 
-
-
 		SetLS(0.f);
-		GetWorldTimerManager().SetTimer(LShandler, this, &AJK1Warrior::StartLSTimer, 0.1f, true);
+		StartLSTimer();
 	} 
 }
 
@@ -424,61 +414,121 @@ void AJK1Warrior::ResetSkillCooldown()
 		CurrentCombo = 0;
 	}
 }
+
+/*
+* 버프의 지속시간이 있는 스킬의 경우 
+* 스킬 쿨타임 조절, 버프 지속시간 조절용 2개의 timer 사용
+* 아닌경우 스킬 쿨타임 조절 Handler만 사용.
+*/
 void AJK1Warrior::StartQTimer()
 {
 	Super::StartQTimer();
-	if (GetQ() < 1.f)
-	{
-		SetQ(GetQ() + 0.1f / WarriorQCT);
-
-		if (GetQ() >= 1.f)
+	//Skill CoolTime Timer
+	GetWorldTimerManager().SetTimer(Qhandler, [this]()
 		{
-			SetQ(1.f);
-			GetWorldTimerManager().ClearTimer(Qhandler);
+			if (GetQ() < 1.f)
+			{
+				SetQ(GetQ() + 0.1f / WarriorQCT);
+
+				if (GetQ() >= 1.f)
+				{
+					SetQ(1.f);
+					GetWorldTimerManager().ClearTimer(Qhandler);
+				}
+			}
+
 		}
-	}
+	, 0.1f, true);
+
+	//Buff CoolTime Timer
+	QLeftTime = 1.f;
+
+	GetWorldTimerManager().SetTimer(QBuffHandler, [this]()
+		{
+			QLeftTime -= 0.1f / QBuffTime;
+
+			if (QLeftTime <= 0)
+			{
+				QLeftTime = 0.f;
+				GetWorldTimerManager().ClearTimer(QBuffHandler);
+			}
+
+		}
+	, 0.1f, true);
 }
 void AJK1Warrior::StartETimer()
 {
 	Super::StartETimer();
-	if (GetE() < 1.f)
-	{
-		SetE(GetE() + 0.1f / WarriorECT);
-
-		if (GetE() >= 1.f)
+	GetWorldTimerManager().SetTimer(Ehandler, [this]()
 		{
-			SetE(1.f);
-			GetWorldTimerManager().ClearTimer(Qhandler);
+			if (GetE() < 1.f)
+			{
+				SetE(GetE() + 0.1f / WarriorECT);
+
+				if (GetE() >= 1.f)
+				{
+					SetE(1.f);
+					GetWorldTimerManager().ClearTimer(Ehandler);
+				}
+			}
 		}
-	}
+	, 0.1f, true);
+	
 }
+
 void AJK1Warrior::StartRTimer()
 {
 	Super::StartRTimer();
-	if (GetR() < 1.f)
-	{
-		SetR(GetR() + 0.1f / WarriorRCT);
-
-		if (GetR() >= 1.f)
+	GetWorldTimerManager().SetTimer(Rhandler, [this]()
 		{
-			SetR(1.f);
-			GetWorldTimerManager().ClearTimer(Qhandler);
+			if (GetR() < 1.f)
+			{
+				SetR(GetR() + 0.1f / WarriorRCT);
+
+				if (GetR() >= 1.f)
+				{
+					SetR(1.f);
+					GetWorldTimerManager().ClearTimer(Rhandler);
+				}
+			}
+
 		}
-	}
+	, 0.1f, true);
+
+	//Buff CoolTime Timer
+	RLeftTime = 1.f;
+
+	GetWorldTimerManager().SetTimer(RBuffHandler, [this]()
+		{
+			RLeftTime -= 0.1f / RBuffTime;
+
+			if (RLeftTime <= 0)
+			{
+				RLeftTime = 0.f;
+				GetWorldTimerManager().ClearTimer(RBuffHandler);
+			}
+
+		}
+	, 0.1f, true);
+
 }
 void AJK1Warrior::StartLSTimer()
 {
 	Super::StartLSTimer();
-	if (GetLS() < 1.f)
-	{
-		SetLS(GetLS() + 0.1f / WarriorLSCT);
-
-		if (GetLS() >= 1.f)
+	GetWorldTimerManager().SetTimer(LShandler, [this]()
 		{
-			SetLS(1.f);
-			GetWorldTimerManager().ClearTimer(Qhandler);
-		}
-	}
-}
+			if (GetLS() < 1.f)
+			{
+				SetLS(GetLS() + 0.1f / WarriorLSCT);
 
+				if (GetLS() >= 1.f)
+				{
+					SetLS(1.f);
+					GetWorldTimerManager().ClearTimer(LShandler);
+				}
+			}
+
+		}
+	, 0.1f, true);
+}
 

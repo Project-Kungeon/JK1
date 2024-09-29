@@ -31,11 +31,11 @@ AJK1Assassin::AJK1Assassin()
 	//Timeline ����
 	MyTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("<MyTimeline"));
 	
-	//FloatCurve
+	//CloakCurve
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> CurveRef(TEXT("/Game/Blueprints/Creature/PC/Assassin/CloakCurve.CloakCurve"));
 	if (CurveRef.Succeeded())
 	{
-		FloatCurve = CurveRef.Object;
+		CloakCurve = CurveRef.Object;
 	}
 	//Character Skeletal Mesh
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> DefaultMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonKallari/Characters/Heroes/Kallari/Skins/Rogue/Meshes/Kallari_Rogue.Kallari_Rogue'"));
@@ -74,22 +74,14 @@ AJK1Assassin::AJK1Assassin()
 void AJK1Assassin::BeginPlay()
 {
 	Super::BeginPlay();
-	if (WidgetClass)
-	{
-		CurrentWidget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
-		if (CurrentWidget)
-		{
-			CurrentWidget->AddToViewport();
-		}
-	}
 
 	DynamicMaterial = UMaterialInstanceDynamic::Create(CloakMaterial, this);
 
-	if (FloatCurve)
+	if (CloakCurve)
 	{
 		FOnTimelineFloat ProgressFunction{};
 		ProgressFunction.BindUFunction(this, FName("TimelineProgress"));
-		MyTimeline->AddInterpFloat(FloatCurve, ProgressFunction);
+		MyTimeline->AddInterpFloat(CloakCurve, ProgressFunction);
 
 		// Timeline 재생 설정
 		MyTimeline->SetLooping(false);
@@ -192,7 +184,7 @@ void AJK1Assassin::SkillQTrace()
 {
 
 	FVector Start = GetActorLocation()+ SpawnLocation;
-	FVector End = Start + (GetActorForwardVector() * 1000.f); // 1000 ���� �ձ��� Ʈ���̽�
+	FVector End = Start + (GetActorForwardVector() * 1000.f); // 1000 유닛 앞까지 트레이스
 
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
@@ -253,7 +245,7 @@ void AJK1Assassin::SkillR(const FInputActionValue& Value)
 
 	PlayAnimMontage(SkillRMontage, 1.5f);
 	SetR(0.f);
-	GetWorldTimerManager().SetTimer(Rhandler, this, &AJK1Assassin::StartRTimer, 0.1f, true);
+	StartRTimer();
 
 }
 
@@ -332,12 +324,12 @@ void AJK1Assassin::AssassinLSOn()
 		ChangeStatusEffect(true, 3);
 		USkeletalMeshComponent* MeshComponent = GetMesh();
 
-		if (MeshComponent)
-		{
-			int32 MaterialCount = MeshComponent->GetNumMaterials();
-			for (int32 i = 0; i < MaterialCount; i++)
-				MeshComponent->SetMaterial(i, DynamicMaterial);
-		}
+	if (MeshComponent)
+	{
+		int32 MaterialCount = MeshComponent->GetNumMaterials();
+		for (int32 i = 0; i < MaterialCount; i++)
+			MeshComponent->SetMaterial(i, DynamicMaterial);
+	}
 
 		MyTimeline->PlayFromStart();
 		UE_LOG(LogTemp, Log, TEXT("%f"), TimelineValue);
@@ -472,44 +464,77 @@ void AJK1Assassin::TimelineProgress(float Value)
 void AJK1Assassin::StartQTimer()
 {
 	Super::StartQTimer();
-	if (GetQ() < 1.f)
-	{
-		SetQ(GetQ() + 0.1f / AssassinQCT);
 
-		if (GetQ() >= 1.f)
+	GetWorldTimerManager().SetTimer(Qhandler, [this]()
 		{
-			SetQ(1.f);
-			GetWorldTimerManager().ClearTimer(Qhandler);
+			if (GetQ() < 1.f)
+			{
+				SetQ(GetQ() + 0.1f / AssassinQCT);
+
+				if (GetQ() >= 1.f)
+				{
+					SetQ(1.f);
+					GetWorldTimerManager().ClearTimer(Qhandler);
+				}
+			}
+
 		}
-	}
+	, 0.1f, true);
 }
 
 void AJK1Assassin::StartRTimer()
 {
 	Super::StartRTimer();
-	if (GetR() < 1.f)
-	{
-		SetR(GetR() + 0.1f / AssassinRCT);
 
-		if (GetR() >= 1.f)
+	GetWorldTimerManager().SetTimer(Rhandler, [this]()
 		{
-			SetR(1.f);
-			GetWorldTimerManager().ClearTimer(Rhandler);
+			if (GetR() < 1.f)
+			{
+				SetR(GetR() + 0.1f / AssassinRCT);
+
+				if (GetR() >= 1.f)
+				{
+					SetR(1.f);
+					GetWorldTimerManager().ClearTimer(Rhandler);
+				}
+			}
+
 		}
-	}
+	, 0.1f, true);
 }
 
 void AJK1Assassin::StartLSTimer()
 {
 	Super::StartLSTimer();
-	if (GetLS() < 1.f)
-	{
-		SetLS(GetLS() + 0.1f / AssassinLSCT);
 
-		if (GetLS() >= 1.f)
+	GetWorldTimerManager().SetTimer(LShandler, [this]()
 		{
-			SetLS(1.f);
-			GetWorldTimerManager().ClearTimer(LShandler);
+			if (GetLS() < 1.f)
+			{
+				SetLS(GetLS() + 0.1f / AssassinLSCT);
+
+				if (GetLS() >= 1.f)
+				{
+					SetLS(1.f);
+					GetWorldTimerManager().ClearTimer(LShandler);
+				}
+			}
 		}
-	}
+	, 0.1f, true);
+
+	//Buff CoolTime Timer
+	LSLeftTime = 1.f;
+
+	GetWorldTimerManager().SetTimer(LSBuffHandler, [this]()
+		{
+			LSLeftTime -= 0.1f / LSBuffTime;
+
+			if (LSLeftTime <= 0)
+			{
+				LSLeftTime = 0.f;
+				GetWorldTimerManager().ClearTimer(LSBuffHandler);
+			}
+		}
+	, 0.1f, true);
+
 }

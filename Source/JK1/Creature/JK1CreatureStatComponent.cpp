@@ -159,7 +159,7 @@ bool UJK1CreatureStatComponent::HitDamage(float NewDamage, AActor* instigator)
 	check(BasicStatData != nullptr);
 	DamageInstigator.Add(instigator, NewDamage);
 	
-	SetCurrentHP(FMath::Clamp<float>(CurrentHP - NewDamage/CurrentStat[1], 0.f, BasicStatData->MaxHP));
+	SetCurrentHP(FMath::Clamp<float>( CurrentHP - NewDamage / CurrentStat[1], 0.f, BasicStatData->MaxHP));
 	UE_LOG(LogSystem, Log, TEXT("Hit Damage: %f"), NewDamage);
 
 	return true;

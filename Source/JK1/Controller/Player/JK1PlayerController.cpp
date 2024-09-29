@@ -14,11 +14,16 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Widget/JK1PlayerHUD.h"
+#include "Widget/JK1UserWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "Interface/InteractiveObjectInterface.h"
+#include "Item/JK1ConsumeableItem.h"
 
 
 AJK1PlayerController::AJK1PlayerController()
 {
+	SetShowMouseCursor(true);
+
 	//InputMappingContext
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> BattleInputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_JK1.IMC_JK1'"));
 	if (nullptr != BattleInputMappingContextRef.Object)
@@ -52,7 +57,11 @@ AJK1PlayerController::AJK1PlayerController()
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionUIRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_UI.IA_UI'"));
 	if (nullptr != InputActionUIRef.Object)
-		UIInput = InputActionUIRef.Object;
+		UIInputAction = InputActionUIRef.Object;
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionInterActRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_InterAct.IA_InterAct'"));
+	if (nullptr != InputActionInterActRef.Object)
+		InterAction = InputActionInterActRef.Object;
+
 
 
 	//Widget
@@ -71,7 +80,13 @@ AJK1PlayerController::AJK1PlayerController()
 	{
 		ResurrectionWidgetClass = Resurrection_UI.Class;
 	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> Inventory_UI(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/Widget/Item/Scene/WBP_SceneWidget.WBP_SceneWidget_C'"));
+	if (Inventory_UI.Class)
+	{
+		InventoryWidgetClass = Inventory_UI.Class;
+	}
 
+	InterActDistance = 500.f;
 	LockOnDistance = 750.f;
 }
 
@@ -94,6 +109,7 @@ void AJK1PlayerController::BeginPlay()
 
 	MenuWidget = CreateWidget<UUserWidget>(this, MenuWidgetClass);
 	ResurrectionWidget = CreateWidget<UUserWidget>(this, ResurrectionWidgetClass);
+	InventoryWidget = CreateWidget<UUserWidget>(this, InventoryWidgetClass);
 	PlayerWidget = CreateWidget<UJK1PlayerHUD>(this, HUDWidgetClass);
 	PlayerWidget->AddToViewport();
 	UpdateWidget();
@@ -112,7 +128,8 @@ void AJK1PlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(LockOnAction, ETriggerEvent::Started, this, &AJK1PlayerController::ToggleLockOn);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::AttackAct);
 		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::SkillAct);
-		EnhancedInputComponent->BindAction(UIInput, ETriggerEvent::Triggered, this, &AJK1PlayerController::ShowUI);
+		EnhancedInputComponent->BindAction(UIInputAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::ShowUI);
+		EnhancedInputComponent->BindAction(InterAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::InteractToObject);
 	}
 }
 
@@ -202,7 +219,6 @@ void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
 	{
 		SetInputMode(UIInputMode);
-		SetShowMouseCursor(true);
 		int index = static_cast<int>(Value.Get<float>());
 
 		switch (index)
@@ -218,14 +234,60 @@ void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 			UE_LOG(LogPlayerController, Log, TEXT("input ESC"));
 			break;
 		case 2:
+			InventoryWidget->AddToViewport();
+			OpenedWidget.AddUnique(InventoryWidget);
 			UE_LOG(LogPlayerController, Log, TEXT("input Inventory"));
 			break;
 		}
 
 		if (OpenedWidget.IsEmpty())
-		{
 			SetInputMode(GameInputMode);
-			SetShowMouseCursor(false);
+	}
+}
+
+void AJK1PlayerController::InteractToObject()
+{
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Emplace(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
+
+	TArray<FHitResult> HitResults;
+
+	// 감지 무시할 액터들 집어넣기
+	TArray<AActor*> Ignore;
+	Ignore.Add(ControlledCharacter);
+
+	bool bSuccess = UKismetSystemLibrary::SphereTraceMultiForObjects(
+		this,
+		ControlledCharacter->GetActorLocation(),
+		ControlledCharacter->GetActorLocation(),
+		InterActDistance,
+		ObjectTypes,
+		false,
+		Ignore,
+		EDrawDebugTrace::ForDuration,
+		OUT HitResults,
+		true,
+		FLinearColor::Red,
+		FLinearColor::Green,
+		1.f);
+
+	// 1단계 후보군 집어넣기
+	if (bSuccess)
+	{
+		for (FHitResult Result : HitResults)
+		{
+			if (Cast<IInteractiveObjectInterface>(Result.GetActor()))
+			{
+				auto temp = Cast<AJK1ConsumeableItem>(Result.GetActor());	
+				if (temp->CanInterAct())
+				{
+					temp->SetInterAct(false);
+					temp->InterActive();
+					temp->Destroy();
+				}
+
+			}
+			
 		}
 	}
 }
