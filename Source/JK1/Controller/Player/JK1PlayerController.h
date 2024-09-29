@@ -39,6 +39,7 @@ protected:
 	
 
 public:
+	void InteractToObject();
 	void ShowResurrection(bool ononff);
 	class UJK1PlayerHUD* GetPlayerWidget() const;
 	void UpdateWidget();
@@ -82,9 +83,12 @@ protected:
 	TObjectPtr<class UInputAction> AttackAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> SkillAction;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> UIInput;
+	TObjectPtr<class UInputAction> UIInputAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> InterAction;
 
 	// Widget
 	UPROPERTY()
@@ -93,15 +97,23 @@ protected:
 	UUserWidget* MenuWidget;
 	UPROPERTY()
 	UUserWidget* ResurrectionWidget;
+	UPROPERTY()
+	UUserWidget* InventoryWidget;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<UJK1PlayerHUD> HUDWidgetClass;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<UUserWidget> MenuWidgetClass;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<UUserWidget> ResurrectionWidgetClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<UUserWidget> InventoryWidgetClass;
 
 public:
 	TArray<UUserWidget*> OpenedWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float InterActDistance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float LockOnDistance;
@@ -120,5 +132,5 @@ public:
 
 private:
 	FInputModeGameOnly GameInputMode;
-	FInputModeGameOnly UIInputMode;
+	FInputModeGameAndUI UIInputMode;
 };
