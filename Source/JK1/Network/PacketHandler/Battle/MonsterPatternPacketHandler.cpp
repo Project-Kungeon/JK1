@@ -16,10 +16,27 @@ bool MonsterPatternPacketHandler::Handle_S_Rampage_EarthQuake(PacketSessionRef& 
 
 bool MonsterPatternPacketHandler::Handle_S_TurnToTarget(PacketSessionRef& session, monster::pattern::S_TurnToTarget& pkt)
 {
+    if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+    {
+        GameInstance->HandleRampageTurnToTarget(pkt);
+    }
     return true;
 }
 
-bool MonsterPatternPacketHandler::Handle_S_BasicAttack(PacketSessionRef& session, monster::pattern::S_Rampage_BasicAttack& pkt)
+bool MonsterPatternPacketHandler::Handle_S_Rampage_BasicAttack(PacketSessionRef& session, monster::pattern::S_Rampage_BasicAttack& pkt)
 {
+    if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+    {
+        GameInstance->HandleRampageBasicAttack(pkt);
+    }
+    return true;
+}
+
+bool MonsterPatternPacketHandler::Handle_S_Rampage_EnhancedAttack(PacketSessionRef& session, monster::pattern::S_Rampage_EnhanceAttack& pkt)
+{
+    if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+    {
+        GameInstance->HandleRampageEnhancedAttack(pkt);
+    }
     return true;
 }

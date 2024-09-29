@@ -317,6 +317,10 @@ void UNetworkJK1GameInstance::HandleWarriorR(const skill::S_Warrior_R& skillPkt)
 	}
 }
 
+void UNetworkJK1GameInstance::HandleWarriorLS(const skill::S_Warrior_LS& skillPkt)
+{
+}
+
 void UNetworkJK1GameInstance::HandleAssassinAttack(const skill::S_ASSASSIN_Attack& pkt)
 {
 	const uint64 objectId = pkt.object_id();
@@ -491,5 +495,48 @@ void UNetworkJK1GameInstance::HandleRampageRoar(const monster::pattern::S_Rampag
 			rampage->Roar();
 		}
 
+	}
+}
+
+void UNetworkJK1GameInstance::HandleRampageBasicAttack(const monster::pattern::S_Rampage_BasicAttack& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindRampage = Creatures.Find(objectId))
+	{
+		auto* rampage = Cast<AJK1Rampage>(*(FindRampage));
+		if (rampage != nullptr)
+		{
+			rampage->BasicAttack();
+		}
+
+	}
+}
+
+void UNetworkJK1GameInstance::HandleRampageTurnToTarget(const monster::pattern::S_TurnToTarget& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindRampage = Creatures.Find(objectId))
+	{
+		auto* rampage = Cast<AJK1Rampage>(*(FindRampage));
+		if (rampage != nullptr)
+		{
+
+			FRotator rotator(pkt.pitch(), pkt.yaw(), pkt.roll());
+			rampage->SetActorRotation(rotator);
+		}
+
+	}
+}
+
+void UNetworkJK1GameInstance::HandleRampageEnhancedAttack(const monster::pattern::S_Rampage_EnhanceAttack& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindRampage = Creatures.Find(objectId))
+	{
+		auto* rampage = Cast<AJK1Rampage>(*(FindRampage));
+		if (rampage != nullptr)
+		{
+			rampage->EnhancedAttack();
+		}
 	}
 }

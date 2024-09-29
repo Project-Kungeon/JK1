@@ -52,6 +52,7 @@ public:
 	void HandleWarriorAttack(const skill::S_Warrior_Attack& pkt);
 	void HandleWarriorE(const skill::S_Warrior_E& skillPkt);
 	void HandleWarriorR(const skill::S_Warrior_R& skillPkt);
+	void HandleWarriorLS(const skill::S_Warrior_LS& skillPkt);
 
 	void HandleAssassinAttack(const skill::S_ASSASSIN_Attack& pkt);
 	void HandleAssassinQ(const skill::S_ASSASSIN_Q& pkt);
@@ -70,6 +71,9 @@ public:
 	void HandleArchorLS_Off(const skill::S_Archor_LS_Off& pkt);
 
 	void HandleRampageRoar(const monster::pattern::S_Rampage_Roar& pkt);
+	void HandleRampageBasicAttack(const monster::pattern::S_Rampage_BasicAttack& pkt);
+	void HandleRampageTurnToTarget(const monster::pattern::S_TurnToTarget& pkt);
+	void HandleRampageEnhancedAttack(const monster::pattern::S_Rampage_EnhanceAttack& pkt);
 
 private:
 	PacketSessionRef GameSession;

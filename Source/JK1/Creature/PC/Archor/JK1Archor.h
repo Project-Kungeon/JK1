@@ -111,8 +111,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	float DamageDistance = 1500.0f;
 
+	// 타격 위치 계산
+	FVector CalculateDamageLocation();
+
+	//현재 LShift스킬을 사용했는지 판단하는 bool type 변수
+	bool IsLShift = false;
+
 	// 데미지 타이머 변수
 	FTimerHandle DamageTimerHandle;
+	FTimerHandle LShiftTimerHandler;
 
 	//Archor 일반공격 발사 애니메이션 재생 속도
 	float ComboActionMontagePlayRate = 1.0f;
@@ -127,8 +134,6 @@ protected:
 	TSubclassOf<UUserWidget> WidgetClass;
 
 private:
-	// 타격 위치 계산
-	FVector CalculateDamageLocation();
 
 	//Skill E 이펙트 컴포넌트 변수
 	UParticleSystemComponent* SkillEDamageEffectComponent;
@@ -136,8 +141,6 @@ private:
 	//Skill E 타격 Location
 	FVector SkillELocation;
 
-	//현재 LShift스킬을 사용했는지 판단하는 bool type 변수
-	bool IsLShift = false;
 
 	// 데미지 범위 (Sphere) 변수
 	float DamageRadius = 500.0f;

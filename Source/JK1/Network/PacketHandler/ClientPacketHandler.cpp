@@ -138,5 +138,20 @@ void ClientPacketHandler::Init()
         UE_LOG(LogTemp, Log, TEXT("S_Rampage_Roar Handle"));
         return HandlePacket<monster::pattern::S_Rampage_Roar>(MonsterPatternPacketHandler::Handle_S_Rampage_Roar, session, buffer, header, offset);
     };
+    GPacketHandler[message::HEADER::RAMPAGE_BASICATTACK_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_Rampage_BasicAttack Handle"));
+        return HandlePacket<monster::pattern::S_Rampage_BasicAttack>(MonsterPatternPacketHandler::Handle_S_Rampage_BasicAttack, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::RAMPAGE_TURNTOTARGET_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_Rampage_TurnToTarget Handle"));
+        return HandlePacket<monster::pattern::S_TurnToTarget>(MonsterPatternPacketHandler::Handle_S_TurnToTarget, session, buffer, header, offset);
+    };
+    GPacketHandler[message::HEADER::RAMPAGE_ENHANCEDATTACK_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_Rampage_EnhancedAttack Handle"));
+        return HandlePacket<monster::pattern::S_Rampage_EnhanceAttack>(MonsterPatternPacketHandler::Handle_S_Rampage_EnhancedAttack, session, buffer, header, offset);
+    };
 
 }
