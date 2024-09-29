@@ -56,8 +56,6 @@ Content/ParagonTerra
 Content/DualSword
 Content/LUSH_StylizedEnvironmentSet
 Content/DreamscapeSeries
-Content/Maps
-
 
 # Binary Files
 Binaries/*
@@ -87,3 +85,4 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 JK1.uproject
+Content/Maps/DevMap.umap

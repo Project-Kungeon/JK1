@@ -137,18 +137,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float ForwardStrength = 1000.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
-	TSubclassOf<UUserWidget> WidgetClass;
-
 private:
-	//Character Widget
-	UUserWidget* CurrentWidget;
-
+	 
 	//Warrior Skill Cool Time
 	const float WarriorQCT = 3.f;
 	const float WarriorECT = 30.f;
 	const float WarriorRCT = 15.f;
 	const float WarriorLSCT = 10.f;
+
+	//Warrior Buff Time
+	const float QBuffTime = 3.f;
+	const float RBuffTime = 5.f;
+	
 
 	// Check Success Parry Count
 	uint32 ParryCount = 0;
