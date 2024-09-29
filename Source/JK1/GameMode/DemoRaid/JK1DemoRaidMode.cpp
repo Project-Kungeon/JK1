@@ -6,6 +6,8 @@
 #include "Creature/JK1CreatureBase.h"
 #include "Creature/JK1CreatureStatComponent.h"
 #include "Creature/PC/Warrior/JK1Warrior.h"
+#include "Subsystems/SubsystemBlueprintLibrary.h"
+#include "Item/JK1InventorySubsystem.h"
 
 AJK1DemoRaidMode::AJK1DemoRaidMode()
 {
@@ -15,6 +17,17 @@ AJK1DemoRaidMode::AJK1DemoRaidMode()
 
 	PlayerControllerClass = AJK1PlayerController::StaticClass();
 	GameStateClass = AJK1DemoRaidState::StaticClass();
+}
+
+void AJK1DemoRaidMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	UJK1InventorySubsystem* Inventory = Cast<UJK1InventorySubsystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(this, UJK1InventorySubsystem::StaticClass()));
+	if (Inventory)
+	{
+		Inventory->AddNewItem(1);
+	}
 }
 
 void AJK1DemoRaidMode::RaidClear()
