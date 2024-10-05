@@ -52,7 +52,7 @@ public:
 	virtual void WarriorQ();
 	virtual void WarriorE();
 	virtual void WarriorR();
-	virtual void WarriorLShift();
+	virtual void WarriorLShift(FVector ForwardDirection);
 
 
 	void CheckDamagedInParry();

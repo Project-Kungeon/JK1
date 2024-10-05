@@ -169,34 +169,16 @@ void ANJK1Warrior::SkillR(const FInputActionValue& Value)
 void ANJK1Warrior::SkillLShift(const FInputActionValue& Value)
 {
 	//Super::SkillLShift(Value);
-}
-
-void ANJK1Warrior::WarriorQ()
-{
 	if (isMyPlayer)
 	{
-		Super::WarriorQ();
-	}
-}
+		skill::C_Warrior_LS skillPkt;
+		skillPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
+		FVector ForwardDirection = GetActorForwardVector();
+		skillPkt.set_x(ForwardDirection.X);
+		skillPkt.set_y(ForwardDirection.Y);
+		skillPkt.set_z(ForwardDirection.Z);
 
-void ANJK1Warrior::WarriorE()
-{
-	if (isMyPlayer)
-	{
-		Super::WarriorE();
-	}
-}
-
-void ANJK1Warrior::WarriorR()
-{
-	Super::WarriorR();
-}
-
-void ANJK1Warrior::WarriorLShift()
-{
-	if (isMyPlayer)
-	{
-		Super::WarriorLShift();
+		SEND_PACKET(message::HEADER::WARRIOR_LS_REQ, skillPkt);
 	}
 }
 

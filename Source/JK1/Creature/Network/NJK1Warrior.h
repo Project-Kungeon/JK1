@@ -50,10 +50,6 @@ public:
 	virtual void SkillLShift(const FInputActionValue& Value) override;
 
 	// Warrior
-	virtual void WarriorQ();
-	virtual void WarriorE();
-	virtual void WarriorR();
-	virtual void WarriorLShift();
 	virtual void DealDamageOverTime();
 	virtual void StartROverTime();
 

@@ -46,6 +46,15 @@ bool BattlePacketHandler::Handle_S_WarriorR(PacketSessionRef& session, skill::S_
 	return true;
 }
 
+bool BattlePacketHandler::Handle_S_WarriorLS(PacketSessionRef& session, skill::S_Warrior_LS& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleWarriorLS(pkt);
+	}
+	return true;
+}
+
 bool BattlePacketHandler::Handle_S_AssassinAttack(PacketSessionRef& session, skill::S_ASSASSIN_Attack& pkt)
 {
 	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))

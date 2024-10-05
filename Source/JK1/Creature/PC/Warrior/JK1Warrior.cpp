@@ -120,7 +120,8 @@ void AJK1Warrior::SkillR(const FInputActionValue& value)
 void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 {
 	Super::SkillLShift(value);
-	WarriorLShift();
+	FVector ForwardDirection = GetActorForwardVector();
+	WarriorLShift(ForwardDirection);
 }
 
 void AJK1Warrior::WarriorQ()
@@ -175,7 +176,7 @@ void AJK1Warrior::WarriorR()
 	}
 }
 
-void AJK1Warrior::WarriorLShift()
+void AJK1Warrior::WarriorLShift(FVector ForwardDirection)
 {
 	if (AnimInstance && AnimInstance->Montage_IsPlaying(CurrentMontage))
 		return;
@@ -188,8 +189,6 @@ void AJK1Warrior::WarriorLShift()
 
 		CurrentMontage = SkillLShiftMontage;
 		PlayAnimMontage(SkillLShiftMontage);
-
-		FVector ForwardDirection = GetActorForwardVector();
 
 		LaunchCharacter(ForwardDirection * ForwardStrength + FVector(0, 0, JumpStrength), true, true);
 

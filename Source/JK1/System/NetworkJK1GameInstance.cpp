@@ -319,6 +319,14 @@ void UNetworkJK1GameInstance::HandleWarriorR(const skill::S_Warrior_R& skillPkt)
 
 void UNetworkJK1GameInstance::HandleWarriorLS(const skill::S_Warrior_LS& skillPkt)
 {
+	const uint64 objectId = skillPkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Warrior = Cast<AJK1Warrior>(Attacker);
+		FVector ForwardDirection(skillPkt.x(), skillPkt.y(), skillPkt.z());
+		Warrior->WarriorLShift(ForwardDirection);
+	}
 }
 
 void UNetworkJK1GameInstance::HandleAssassinAttack(const skill::S_ASSASSIN_Attack& pkt)
