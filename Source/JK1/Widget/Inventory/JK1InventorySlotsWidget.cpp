@@ -103,8 +103,6 @@ bool UJK1InventorySlotsWidget::NativeOnDragOver(const FGeometry& InGeometry, con
 
 	PrevDragOverSlotPos = ToSlotPos;
 
-	// TODO
-
 	return false;
 }
 

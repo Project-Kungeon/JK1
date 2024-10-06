@@ -87,6 +87,7 @@ FReply UJK1InventoryEntryWidget::NativeOnMouseButtonDown(const FGeometry& InGeom
 			if (AJK1Item* Item = NewObject<AJK1Item>(ItemClass))
 			{
 				Item->UseItem(temp);
+				// inventory 도 비워주기
 				SlotsWidget->OnInventoryEntryChanged(ItemSlotPos, nullptr);
 			}
 		}

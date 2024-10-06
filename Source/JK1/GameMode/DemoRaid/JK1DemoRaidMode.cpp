@@ -23,11 +23,11 @@ void AJK1DemoRaidMode::InitGame(const FString& MapName, const FString& Options, 
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	UJK1InventorySubsystem* Inventory = Cast<UJK1InventorySubsystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(this, UJK1InventorySubsystem::StaticClass()));
-	if (Inventory)
-	{
-		Inventory->AddNewItem(1);
-	}
+	//UJK1InventorySubsystem* Inventory = Cast<UJK1InventorySubsystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(this, UJK1InventorySubsystem::StaticClass()));
+	//if (Inventory)
+	//{
+	//	Inventory->AddNewItem(1);
+	//}
 }
 
 void AJK1DemoRaidMode::RaidClear()
