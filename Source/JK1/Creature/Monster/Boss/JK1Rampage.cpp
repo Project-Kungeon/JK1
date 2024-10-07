@@ -20,8 +20,8 @@ AJK1Rampage::AJK1Rampage()
 	Super::GetCapsuleComponent()->SetCapsuleHalfHeight(75.f);
 
 	// AI
-	// AIControllerClass = AJK1RampageController::StaticClass();
-	// AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AIControllerClass = AJK1RampageController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	CreatureStat->SetOwner(false, FName("Rampage"));
 	CurrentCombo = 0;

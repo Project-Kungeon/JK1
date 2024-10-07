@@ -158,5 +158,10 @@ void ClientPacketHandler::Init()
         UE_LOG(LogTemp, Log, TEXT("S_Rampage_EnhancedAttack Handle"));
         return HandlePacket<monster::pattern::S_Rampage_EnhanceAttack>(MonsterPatternPacketHandler::Handle_S_Rampage_EnhancedAttack, session, buffer, header, offset);
     };
+    GPacketHandler[message::HEADER::MONSTER_MOVE_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+    {
+        UE_LOG(LogTemp, Log, TEXT("S_Monster_Move Handle"));
+        return HandlePacket<message::S_Move>(MonsterPatternPacketHandler::Handle_S_Monster_Move, session, buffer, header, offset);
+    };
 
 }

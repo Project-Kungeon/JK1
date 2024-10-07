@@ -40,3 +40,12 @@ bool MonsterPatternPacketHandler::Handle_S_Rampage_EnhancedAttack(PacketSessionR
     }
     return true;
 }
+
+bool MonsterPatternPacketHandler::Handle_S_Monster_Move(PacketSessionRef& session, message::S_Move& pkt)
+{
+    if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+    {
+        GameInstance->HandleMonsterMove(pkt);
+    }
+    return true;
+}

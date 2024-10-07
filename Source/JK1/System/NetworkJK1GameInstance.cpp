@@ -9,6 +9,7 @@
 #include "Creature/PC/Archor/JK1Archor.h"
 #include "Creature/Monster/Boss/JK1Rampage.h"
 #include "Creature/JK1CreatureStatComponent.h"
+#include "Controller/Monster/JK1RampageController.h"
 
 void UNetworkJK1GameInstance::Init()
 {
@@ -272,6 +273,26 @@ void UNetworkJK1GameInstance::HandleAttack(const message::S_Attack& attackPkt)
 			UE_LOG(LogTemp, Log, TEXT("%lld attacked by %lld Damage: %f"), victimId, objectId, damage);
 		}
 	}
+
+	if (auto** FindAttacker = Creatures.Find(objectId))
+	{
+		for (auto& victimId : attackPkt.target_ids())
+		{
+			AJK1CreatureBase* Victim = nullptr;
+			if (auto** player_pointer = Players.Find(victimId))
+			{
+				Victim = (*player_pointer);
+			}
+			else if (auto** creature_pointer = Creatures.Find(victimId))
+			{
+				Victim = (*creature_pointer);
+			}
+			if (Victim) Victim->CreatureStat->HitDamage(damage, *FindAttacker);
+
+
+			UE_LOG(LogTemp, Log, TEXT("%lld attacked by %lld Damage: %f"), victimId, objectId, damage);
+		}
+	}
 }
 
 void UNetworkJK1GameInstance::HandleDeath(const message::S_Death& deathPkt)
@@ -280,6 +301,7 @@ void UNetworkJK1GameInstance::HandleDeath(const message::S_Death& deathPkt)
 	if (auto** DeadCreature = Players.Find(objectId))
 	{
 		auto* Dead = *(DeadCreature);
+		Dead->Death();
 		UE_LOG(LogTemp, Log, TEXT("%d id creature dead"), objectId);
 	}
 }
@@ -546,5 +568,75 @@ void UNetworkJK1GameInstance::HandleRampageEnhancedAttack(const monster::pattern
 		{
 			rampage->EnhancedAttack();
 		}
+	}
+}
+
+void UNetworkJK1GameInstance::HandleMonsterMove(const message::S_Move& pkt)
+{
+	if (GameSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	const uint64 objectId = pkt.posinfo().object_id();
+	AJK1CreatureBase** FindActor = Creatures.Find(objectId);
+	if (FindActor == nullptr)
+		return;
+
+	AJK1CreatureBase* Creature = (*FindActor);
+
+	const message::PosInfo& info = pkt.posinfo();
+
+	if (info.state() == message::MOVE_STATE_RUN)	// 뛰는 중이라면
+	{
+		if (auto* Controller = Cast<AAIController>(Creature->GetController()))
+		{
+			FVector Dest(info.x(), info.y(), info.z());
+			
+
+			EPathFollowingRequestResult::Type Result = Controller->MoveToLocation(Dest);
+
+			switch (Result)
+			{
+			case EPathFollowingRequestResult::Failed:
+				UE_LOG(LogTemp, Warning, TEXT("MoveToLocation Failed"));
+				break;
+			case EPathFollowingRequestResult::AlreadyAtGoal:
+				UE_LOG(LogTemp, Warning, TEXT("Already At Goal"));
+				break;
+			case EPathFollowingRequestResult::RequestSuccessful:
+				UE_LOG(LogTemp, Warning, TEXT("Request Successful"));
+				break;
+			}
+		}
+
+
+		// 현재 좌표와 서버로부터 받아오는 좌표를 받아와서, 방향 벡터 계산
+		//FVector CurrentLocation = Creature->GetActorLocation();
+		//FVector TargetLocation(info.x(), info.y(), info.z());
+		//FVector DirectionVector = TargetLocation - CurrentLocation;
+
+		//// 정규화
+		//DirectionVector.Normalize();
+
+		//Creature->AddMovementInput(DirectionVector);
+		//FRotator NewRotation = DirectionVector.Rotation();
+		//Creature->SetActorRotation(NewRotation);
+		//FVector vec(DestInfo->x(), DestInfo->y(), DestInfo->z());
+		//SetActorLocation(vec);
+
+	}
+	else if (info.state() == message::MOVE_STATE_IDLE)
+	{
+
+		const FRotator YawRotation(0, info.yaw(), 0);
+
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		Creature->AddMovementInput(ForwardDirection, 0);
+		Creature->AddMovementInput(RightDirection, 0);
 	}
 }

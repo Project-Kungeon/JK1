@@ -42,7 +42,7 @@ public:
 
 	UFUNCTION()
 	virtual void CheckBATrace() override;
-	void CheckFistTrace();
+	virtual void CheckFistTrace();
 
 	virtual void Death() override;
 

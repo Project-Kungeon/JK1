@@ -59,6 +59,10 @@ void AJK1MonsterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void AJK1MonsterBase::OnBasicAttackHit(TArray<FHitResult> HitResults)
+{
+}
+
 void AJK1MonsterBase::HighlightActor()
 {
 	bHighlighted = true;

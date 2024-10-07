@@ -74,6 +74,7 @@ public:
 	void HandleRampageBasicAttack(const monster::pattern::S_Rampage_BasicAttack& pkt);
 	void HandleRampageTurnToTarget(const monster::pattern::S_TurnToTarget& pkt);
 	void HandleRampageEnhancedAttack(const monster::pattern::S_Rampage_EnhanceAttack& pkt);
+	void HandleMonsterMove(const message::S_Move& pkt);
 
 private:
 	PacketSessionRef GameSession;
