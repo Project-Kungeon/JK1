@@ -6,14 +6,15 @@
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
+#include "Creature/PC/JK1PlayerCharacter.h"
+#include "Item/JK1ItemInstance.h"
+#include "Item/JK1InventorySubsystem.h"
+#include "JK1Define.h"
 #include "JK1InventorySlotsWidget.h"
 #include "JK1InventoryEntryWidget.h"
-#include "Item/JK1ItemInstance.h"
+#include "Subsystems/SubsystemBlueprintLibrary.h"
 #include "Widget/Item/Drag/JK1DragDropOperation.h"
 #include "Widget/Item/Drag/JK1ItemDragWidget.h"
-#include "JK1Define.h"
-#include "Creature/PC/JK1PlayerCharacter.h"
-#include "Item/JK1ConsumeableItem.h"
 
 
 UJK1InventoryEntryWidget::UJK1InventoryEntryWidget(const FObjectInitializer& ObjectInitializer)
@@ -31,15 +32,15 @@ UJK1InventoryEntryWidget::UJK1InventoryEntryWidget(const FObjectInitializer& Obj
 	check(JK1ItemTable->GetRowMap().Num() > 0);
 }
 
-void UJK1InventoryEntryWidget::Init(UJK1InventorySlotsWidget* InSlotWidget, UJK1ItemInstance* InItemInstance, int32 InItemCount)
+void UJK1InventoryEntryWidget::Init(UJK1InventorySlotsWidget* InSlotWidget, AJK1ItemInstance* InItemInstance)
 {
 	SlotsWidget = InSlotWidget;
 	ItemInstance = InItemInstance;
-	ItemCount = InItemCount;
+	ItemCount = ItemInstance->GetItemCount();
 	
-	ItemClass = JK1ItemTable->FindRow<FJK1ItemData>(FName(FString::FromInt(ItemInstance->ItemID)), TEXT(""))->ItemClass;
-	Text_Count->SetText((InItemCount >= 2) ? FText::AsNumber(InItemCount) : FText::GetEmpty());
-	Image_Icon->SetBrushFromTexture(GetItemImage(InItemInstance->ItemID), true);
+	ItemClass = JK1ItemTable->FindRow<FJK1ItemData>(FName(FString::FromInt(ItemInstance->GetItemID())), TEXT(""))->ItemClass;
+	Text_Count->SetText((ItemCount >= 2) ? FText::AsNumber(ItemCount) : FText::GetEmpty());
+	Image_Icon->SetBrushFromTexture(GetItemImage(InItemInstance->GetItemID()), true);
 }
 
 void UJK1InventoryEntryWidget::NativeConstruct()
@@ -84,11 +85,19 @@ FReply UJK1InventoryEntryWidget::NativeOnMouseButtonDown(const FGeometry& InGeom
 		auto temp = Cast<AJK1PlayerCharacter>(GetOwningPlayer()->GetPawn());
 		if (temp != nullptr)
 		{
-			if (AJK1Item* Item = NewObject<AJK1Item>(ItemClass))
+			ItemInstance->UseItem(temp);
+			ItemInstance->SetItemCount(-1);
+			ItemCount--;
+			if (ItemInstance->GetItemCount() == 0)
 			{
-				Item->UseItem(temp);
+				// inventory에서 해당 item 제거
+				UJK1InventorySubsystem* Inventory = Cast<UJK1InventorySubsystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(this, UJK1InventorySubsystem::StaticClass()));
+				Inventory->RemoveItem(ItemInstance->GetItemID());
 				SlotsWidget->OnInventoryEntryChanged(ItemSlotPos, nullptr);
 			}
+			else
+				Text_Count->SetText((ItemCount >= 2) ? FText::AsNumber(ItemCount) : FText::GetEmpty());
+			
 		}
 	}
 
@@ -105,7 +114,7 @@ void UJK1InventoryEntryWidget::NativeOnDragDetected(const FGeometry& InGeometry,
 
 	UJK1ItemDragWidget* DragWidget = CreateWidget<UJK1ItemDragWidget>(GetOwningPlayer(), DragWidgetClass);
 	FVector2D EntityWidgetSize = FVector2D(1 * 50, 1 * 50);
-	DragWidget->Init(EntityWidgetSize, GetItemImage(ItemInstance->ItemID), ItemCount);
+	DragWidget->Init(EntityWidgetSize, GetItemImage(ItemInstance->GetItemID()), ItemCount);
 	
 	UJK1DragDropOperation* DragDrop = NewObject<UJK1DragDropOperation>();
 	DragDrop->DefaultDragVisual = DragWidget;

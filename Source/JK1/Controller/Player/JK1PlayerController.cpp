@@ -22,7 +22,7 @@
 
 AJK1PlayerController::AJK1PlayerController()
 {
-	SetShowMouseCursor(true);
+	SetShowMouseCursor(false);
 
 	//InputMappingContext
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> BattleInputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_JK1.IMC_JK1'"));
@@ -216,7 +216,8 @@ void AJK1PlayerController::SkillAct(const FInputActionValue& Value)
 
 void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
+	SetShowMouseCursor(true);
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
 	{
 		SetInputMode(UIInputMode);
 		int index = static_cast<int>(Value.Get<float>());

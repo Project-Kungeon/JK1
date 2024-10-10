@@ -26,7 +26,7 @@ void AJK1DemoRaidMode::InitGame(const FString& MapName, const FString& Options, 
 	UJK1InventorySubsystem* Inventory = Cast<UJK1InventorySubsystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(this, UJK1InventorySubsystem::StaticClass()));
 	if (Inventory)
 	{
-		Inventory->AddNewItem(1);
+		Inventory->AddNewItem(2);
 	}
 }
 

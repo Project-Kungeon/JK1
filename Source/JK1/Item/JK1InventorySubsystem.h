@@ -6,7 +6,7 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "JK1InventorySubsystem.generated.h"
 
-class UJK1ItemInstance;
+class AJK1ItemInstance;
 
 /**
  * 
@@ -21,14 +21,12 @@ public:
 
 	virtual void Deinitialize() override;
 
-
 	//TEMP
 	void AddNewItem(int ItemId);
-	void RemoveItem();
+	void RemoveItem(int ItemId) { Items.Remove(ItemId); }
 
-	const TArray<TObjectPtr<UJK1ItemInstance>>& GetItems() { return Items; }
+	TMultiMap<int, TObjectPtr<AJK1ItemInstance>>& GetItems() { return Items; }
 
 protected:
-	UPROPERTY()
-	TArray<TObjectPtr<UJK1ItemInstance>> Items;
+	TMultiMap<int, TObjectPtr<AJK1ItemInstance>> Items;
 };
