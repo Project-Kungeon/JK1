@@ -10,6 +10,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
 #include "Item/JK1InventorySubsystem.h"
+#include "Item/JK1ItemInstance.h"
 #include "JK1Define.h"
 
 
@@ -52,16 +53,18 @@ void UJK1InventorySlotsWidget::NativeConstruct()
 	UJK1InventorySubsystem* Inventory = Cast<UJK1InventorySubsystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(this, UJK1InventorySubsystem::StaticClass()));
 	
 	// inventory item 목록 가져오기
-	const TArray<TObjectPtr<UJK1ItemInstance>>& Items = Inventory->GetItems();
-	for (int32 i = 0; i < Items.Num(); i++)
+	int index = 0;
+	const TMultiMap<int, TObjectPtr<AJK1ItemInstance>>& Items = Inventory->GetItems();
+	for (auto it : Items)
 	{
-		const TObjectPtr<UJK1ItemInstance>& Item = Items[i];
-		FIntPoint ItemSlotPos = FIntPoint(i % X_COUNT, i / X_COUNT);
+		const TObjectPtr<AJK1ItemInstance>& Item = it.Value;
+		FIntPoint ItemSlotPos = FIntPoint(index % X_COUNT, index / X_COUNT);
 		OnInventoryEntryChanged(ItemSlotPos, Item);
+		index++;
 	}
 }
 
-void UJK1InventorySlotsWidget::OnInventoryEntryChanged(const FIntPoint& InItemSlotPos, TObjectPtr<UJK1ItemInstance> Item)
+void UJK1InventorySlotsWidget::OnInventoryEntryChanged(const FIntPoint& InItemSlotPos, TObjectPtr<AJK1ItemInstance> Item)
 {
 	int32 SlotIndex = InItemSlotPos.Y * X_COUNT + InItemSlotPos.X;
 
@@ -77,13 +80,14 @@ void UJK1InventorySlotsWidget::OnInventoryEntryChanged(const FIntPoint& InItemSl
 	{
 		EntryWidget = CreateWidget<UJK1InventoryEntryWidget>(GetOwningPlayer(), EntryWidgetClass);
 		EntryWidgets[SlotIndex] = EntryWidget;
+		
 
 		UCanvasPanelSlot* CanvasPanelSlot = CanvasPanel_Entries->AddChildToCanvas(EntryWidget);
 		CanvasPanelSlot->SetAutoSize(true);
 		CanvasPanelSlot->SetPosition(FVector2D(InItemSlotPos.X * 50, InItemSlotPos.Y * 50));
 
 		// TODO
-		EntryWidget->Init(this, Item, 1);
+		EntryWidget->Init(this, Item);
 	}
 }
 
