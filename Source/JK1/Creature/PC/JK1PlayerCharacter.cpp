@@ -346,8 +346,8 @@ void AJK1PlayerCharacter::Death()
 	Cast<AJK1PlayerController>(GetController())->RemoveInputSystem();
 	UE_LOG(LogPlayerCharacter, Log, TEXT("Player is Down!!"));
 
-	if(DemoRaidState->GetDeathCount() > 0)
-		Cast<AJK1PlayerController>(GetController())->ShowResurrection(true);
+	//if(DemoRaidState->GetDeathCount() > 0)
+	//	Cast<AJK1PlayerController>(GetController())->ShowResurrection(true);
 }
 
 void AJK1PlayerCharacter::Resurrection()
