@@ -9,6 +9,7 @@
 #include "JK1ItemInstance.generated.h"
 
 class AJK1PlayerCharacter;
+
 /**
  * 
  */
@@ -28,7 +29,7 @@ protected:
 	*	Member Function
 	*/
 public:
-	void			Init(int32 InItemID);
+	void			Init(int32 InItemID, EItemType type, EItemRarity Rarity);
 
 public:
 	virtual void	UseItem(AJK1PlayerCharacter* OwningPlayer);
@@ -47,8 +48,8 @@ protected:
 	int32			ItemCount = 0;
 
 	UPROPERTY()
-	EItemRarity		ItemRarity = EItemRarity::Junk;
+	EItemType		Itemtype = EItemType::Consumable;
 
 	UPROPERTY()
-	EItemType		type = EItemType::Consumable;
+	EItemRarity		ItemRarity = EItemRarity::Junk;
 };

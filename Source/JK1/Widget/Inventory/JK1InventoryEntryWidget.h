@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Widget/JK1ItemWidget.h"
-#include "Engine/DataTable.h"
 #include "JK1InventoryEntryWidget.generated.h"
 
 class USizeBox;
@@ -14,21 +13,6 @@ class UJK1InventorySlotsWidget;
 class UJK1ItemDragWidget;
 class AJK1ItemInstance;
 
-USTRUCT(BlueprintType)
-struct FJK1ItemData : public FTableRowBase
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Name;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTexture2D* Thumnail;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AJK1ItemInstance> ItemClass;
-};
 
 /**
  * 
