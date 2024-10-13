@@ -8,6 +8,7 @@
 #include "Creature/PC/Assassin/JK1Assassin.h"
 #include "Creature/PC/Archor/JK1Archor.h"
 #include "Creature/Monster/Boss/JK1Rampage.h"
+#include "Item/JK1ConsumeableItem.h"
 #include "Creature/JK1CreatureStatComponent.h"
 #include "Controller/Monster/JK1RampageController.h"
 
@@ -179,7 +180,7 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::MonsterInfo& info)
 	const uint64 ObjectId = info.creature_info().object_info().object_id();
 
 	// 스폰시키려는 플레이어가 이미 존재하면 패스
-	if (Players.Find(ObjectId) != nullptr)
+	if (Creatures.Find(ObjectId) != nullptr)
 		return;
 
 	// 스폰위치 설정(위치는 서버가 정해준다)
@@ -208,6 +209,45 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::MonsterInfo& info)
 		});
 }
 
+void UNetworkJK1GameInstance::HandleSpawn(const message::ItemObjectInfo& info)
+{
+	// 월드를 못 불러오면 패스
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	const uint64 ObjectId = info.object_info().object_id();
+
+	// 스폰시키려는 플레이어가 이미 존재하면 패스
+	if (Players.Find(ObjectId) != nullptr)
+		return;
+
+	// 스폰위치 설정(위치는 서버가 정해준다)
+	FVector SpawnLocation(
+		info.object_info().pos_info().x(),
+		info.object_info().pos_info().y(),
+		info.object_info().pos_info().z());
+
+	AsyncTask(ENamedThreads::GameThread, [this, info, World, SpawnLocation]()
+		{
+			AJK1ItemInstance* itemInstance;
+			switch (info.item_type())
+			{
+			case message::ItemType::Consumable:
+				itemInstance = Cast<AJK1ItemInstance>(World->SpawnActor(ConsumeableItemClass, &SpawnLocation));
+				break;
+			default:
+				itemInstance = Cast<AJK1ItemInstance>(World->SpawnActor(OtherItemClass, &SpawnLocation));
+				break;
+			}
+			if (itemInstance != nullptr)
+			{
+				//itemInstance->CreatureStat->SetCreatureInfo(info.creature_info());
+				Items.Add(info.object_info().object_id(), itemInstance);
+			}
+		});
+}
+
 // 내가 아닌 다른 개체가 스폰되었을 때 동기화해주는 함수
 void UNetworkJK1GameInstance::HandleSpawn(message::S_Spawn& SpawnPkt)
 {
@@ -218,6 +258,10 @@ void UNetworkJK1GameInstance::HandleSpawn(message::S_Spawn& SpawnPkt)
 	for (auto& monster : SpawnPkt.monsters())
 	{
 		HandleSpawn(monster);
+	}
+	for (auto& itemObject : SpawnPkt.itemobjects())
+	{
+		HandleSpawn(itemObject);
 	}
 }
 

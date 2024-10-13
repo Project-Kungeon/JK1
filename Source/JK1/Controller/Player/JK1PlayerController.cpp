@@ -255,6 +255,10 @@ void AJK1PlayerController::InteractToObject()
 
 	// 감지 무시할 액터들 집어넣기
 	TArray<AActor*> Ignore;
+	if (ControlledCharacter == NULL)
+	{
+		ControlledCharacter = GetCharacter();
+	}
 	Ignore.Add(ControlledCharacter);
 
 	bool bSuccess = UKismetSystemLibrary::SphereTraceMultiForObjects(

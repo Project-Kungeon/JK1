@@ -15,6 +15,8 @@ class AJK1Assassin;
 class AJK1Rampage;
 class AJK1CreatureBase;
 class AJK1MonsterBase;
+class AJK1ItemInstance;
+class AJK1ConsumeableItem;
 /**
  * 
  */
@@ -38,6 +40,7 @@ public:
 	void HandleSpawn(const message::CreatureInfo& info);
 	void HandleSpawn(const message::PlayerInfo& info, bool isMyPlayer);
 	void HandleSpawn(const message::MonsterInfo& info);
+	void HandleSpawn(const message::ItemObjectInfo& info);
 	// 서버로부터 스폰 요청이 들어올 경우
 	void HandleSpawn(message::S_Spawn& SpawnPkt);
 	// 게임 접속 후, 내 플레이어 스폰
@@ -99,8 +102,15 @@ public:
 
 	UPROPERTY(EditAnywhere);
 	TSubclassOf<AJK1Rampage> RampageClass;
+
+	UPROPERTY(EditAnywhere);
+	TSubclassOf<AJK1ItemInstance> OtherItemClass;
+
+	UPROPERTY(EditAnywhere);
+	TSubclassOf<AJK1ConsumeableItem> ConsumeableItemClass;
 	
 	TMap<uint64, AJK1PlayerCharacter*> Players;
 	TMap<uint64, AJK1CreatureBase*> Creatures;	// Excepted Players..
+	TMap<uint64, AJK1ItemInstance*> Items;
 	AJK1PlayerCharacter* MyPlayer;
 };
