@@ -16,7 +16,6 @@ class AJK1Rampage;
 class AJK1CreatureBase;
 class AJK1MonsterBase;
 class AJK1ItemInstance;
-class AJK1ConsumeableItem;
 /**
  * 
  */
@@ -79,6 +78,10 @@ public:
 	void HandleRampageEnhancedAttack(const monster::pattern::S_Rampage_EnhanceAttack& pkt);
 	void HandleMonsterMove(const message::S_Move& pkt);
 
+	void HandleItemPickedUp(const game::item::S_Item_PickedUp& pkt);
+	void HandleItemConsumeableUsed(const game::item::S_Item_ConsumeableUsed& pkt);
+	void HandleItemAcquisition(const game::item::S_Item_Acquisition& pkt);
+
 private:
 	PacketSessionRef GameSession;
 
@@ -107,7 +110,7 @@ public:
 	TSubclassOf<AJK1ItemInstance> OtherItemClass;
 
 	UPROPERTY(EditAnywhere);
-	TSubclassOf<AJK1ConsumeableItem> ConsumeableItemClass;
+	TSubclassOf<AJK1ItemInstance> ConsumeableItemClass;
 	
 	TMap<uint64, AJK1PlayerCharacter*> Players;
 	TMap<uint64, AJK1CreatureBase*> Creatures;	// Excepted Players..

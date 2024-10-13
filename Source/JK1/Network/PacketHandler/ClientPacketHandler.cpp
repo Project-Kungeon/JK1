@@ -164,4 +164,21 @@ void ClientPacketHandler::Init()
         return HandlePacket<message::S_Move>(MonsterPatternPacketHandler::Handle_S_Monster_Move, session, buffer, header, offset);
     };
 
+    GPacketHandler[message::HEADER::ITEM_PICKED_UP_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+        {
+            UE_LOG(LogTemp, Log, TEXT("S_Item_PickedUp Handle"));
+            return HandlePacket<game::item::S_Item_PickedUp>(InteractivePacketHandler::Handle_S_Item_PickedUp, session, buffer, header, offset);
+        };
+    GPacketHandler[message::HEADER::ITEM_CONSUMEABLE_USED_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+        {
+            UE_LOG(LogTemp, Log, TEXT("S_Item_ConsumeableUsed Handle"));
+            return HandlePacket<game::item::S_Item_ConsumeableUsed>(InteractivePacketHandler::Handle_S_Item_ConsumeableUsed, session, buffer, header, offset);
+        };
+    GPacketHandler[message::HEADER::ITEM_ACQUISITION_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+        {
+            UE_LOG(LogTemp, Log, TEXT("S_Item_Acquisition Handle"));
+            return HandlePacket<game::item::S_Item_Acquisition>(InteractivePacketHandler::Handle_S_Item_Acquisition, session, buffer, header, offset);
+        };
+
+
 }

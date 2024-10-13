@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "JK1Define.h"
+#include "JK1.h"
 #include "JK1/Interface/InteractiveObjectInterface.h"
 #include "JK1ItemInstance.generated.h"
 
@@ -30,26 +31,33 @@ protected:
 	*/
 public:
 	void			Init(int32 InItemID, EItemType type, EItemRarity Rarity);
+	void			Init(message::ItemObjectInfo itemObjectInfo);
 
 public:
-	virtual void	UseItem(AJK1PlayerCharacter* OwningPlayer);
+	//virtual void	UseItem(AJK1PlayerCharacter* OwningPlayer);
 	virtual void	InterActive() override;
+	
 
-	int32			GetItemID()				{ return ItemID; }
-	int32			GetItemCount()			{ return ItemCount; }
-	void			SetItemCount(int value) { ItemCount += value; }
+	//int32			GetItemID()				{ return ItemID; }
+	//int32			GetItemCount()			{ return ItemCount; }
+	//void			SetItemCount(int value) { ItemCount += value; }
 
 	/*
 	*	Member Variable
 	*/
 protected:
-	UPROPERTY()
-	int32			ItemID = 1;
-	int32			ItemCount = 0;
+	//UPROPERTY()
+	
+	// 월드상 존재하는 고유 아이디
+	message::ObjectInfo* _objectInfo;
+	message::ItemType _itemType;
 
-	UPROPERTY()
-	EItemType		Itemtype = EItemType::Consumable;
 
-	UPROPERTY()
-	EItemRarity		ItemRarity = EItemRarity::Junk;
+	//int32			ItemCount = 0;
+
+	//UPROPERTY()
+	//EItemType		Itemtype = EItemType::Consumable;
+
+	//UPROPERTY()
+	//EItemRarity		ItemRarity = EItemRarity::Junk;
 };

@@ -2,6 +2,7 @@
 
 
 #include "Item/JK1ConsumeableItem.h"
+#include "JK1.h"
 #include "Creature/PC/JK1PlayerCharacter.h"
 #include "Creature/JK1CreatureStatComponent.h"
 #include "JK1LogChannels.h"
@@ -10,12 +11,25 @@ AJK1ConsumeableItem::AJK1ConsumeableItem()
 {
 }
 
-void AJK1ConsumeableItem::UseItem(AJK1PlayerCharacter* OwningPlayer)
+AJK1ConsumeableItem::AJK1ConsumeableItem(TObjectPtr<AJK1PlayerCharacter> player, message::ItemInfo& itemInfo)
+	: UJK1Item(player, itemInfo)
 {
-	Super::UseItem(OwningPlayer);
+}
 
-	if (ItemID == 1)
-		OwningPlayer->CreatureStat->SetCurrentHP(OwningPlayer->CreatureStat->GetCurrentHP() + 50.f);
+bool AJK1ConsumeableItem::UseItem()
+{
+	if (auto player = _Owner.Get())
+	{
+		game::item::C_Item_ConsumeableUsed pkt;
 
-	UE_LOG(LogItem, Log, TEXT("Use Comsumeable Item"));
+		pkt.set_player_id(player->CreatureStat->GetCreatureInfo()->object_info().object_id());
+		pkt.set_used_item_id(_ItemInfo->item_id());
+
+		SEND_PACKET(message::HEADER::ITEM_CONSUMEABLE_USED_REQ, pkt);
+		return true;
+	}
+
+	return false;
+	
+	
 }

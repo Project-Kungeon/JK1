@@ -9,7 +9,7 @@
 class UJK1InventorySlotWidget;
 class UUniformGridPanel;
 class UJK1InventoryEntryWidget;
-class AJK1ItemInstance;
+class UJK1Item;
 class UCanvasPanel;
 
 /**
@@ -31,7 +31,7 @@ protected:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation);
 
 public:
-	void OnInventoryEntryChanged(const FIntPoint& InItemSlotPos, TObjectPtr<AJK1ItemInstance> Item);
+	void OnInventoryEntryChanged(const FIntPoint& InItemSlotPos, TObjectPtr<UJK1Item> Item);
 
 private:
 	void FinishDrag();

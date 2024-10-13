@@ -2,7 +2,7 @@
 
 
 #include "Item/JK1InventorySubsystem.h"
-#include "Item/JK1ItemInstance.h"
+#include "Item/JK1Item.h"
 #include "Item/JK1ConsumeableItem.h"
 
 UJK1InventorySubsystem::UJK1InventorySubsystem()
@@ -25,17 +25,17 @@ void UJK1InventorySubsystem::Deinitialize()
 
 void UJK1InventorySubsystem::AddNewItem(int ItemId)
 {
-	TObjectPtr<AJK1ConsumeableItem> Item = NewObject<AJK1ConsumeableItem>();
+	TObjectPtr<UJK1Item> Item = NewObject<UJK1Item>();
 	FJK1ItemData* ItemRow = GetItemTableRow(ItemId);
 
-	Item->Init(ItemId, ItemRow->Type, ItemRow->ItemRarity);
-	if (Items.Contains(ItemId))
-	{
-		TObjectPtr<AJK1ItemInstance> temp = *(Items.Find(ItemId));
-		temp->SetItemCount(1);	
-	}
-	else
-		Items.Add(ItemId, Item);
+	//Item->Init(ItemId, ItemRow->Type, ItemRow->ItemRarity);
+	//if (Items.Contains(ItemId))
+	//{
+	//	TObjectPtr<AJK1ItemInstance> temp = *(Items.Find(ItemId));
+	//	temp->SetItemCount(1);	
+	//}
+	//else
+	//	Items.Add(ItemId, Item);
 }
 
 FJK1ItemData* UJK1InventorySubsystem::GetItemTableRow(int ItemId)

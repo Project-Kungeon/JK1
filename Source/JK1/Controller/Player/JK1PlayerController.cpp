@@ -17,7 +17,7 @@
 #include "Widget/JK1UserWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Interface/InteractiveObjectInterface.h"
-#include "Item/JK1ConsumeableItem.h"
+#include "Item/JK1ItemInstance.h"
 
 
 AJK1PlayerController::AJK1PlayerController()
@@ -283,12 +283,12 @@ void AJK1PlayerController::InteractToObject()
 		{
 			if (Cast<IInteractiveObjectInterface>(Result.GetActor()))
 			{
-				auto temp = Cast<AJK1ConsumeableItem>(Result.GetActor());	
+				auto temp = Cast<AJK1ItemInstance>(Result.GetActor());	
 				if (temp->CanInterAct())
 				{
 					temp->SetInterAct(false);
 					temp->InterActive();
-					temp->Destroy();
+					//temp->Destroy();
 				}
 
 			}

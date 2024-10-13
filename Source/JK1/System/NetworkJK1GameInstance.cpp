@@ -8,7 +8,7 @@
 #include "Creature/PC/Assassin/JK1Assassin.h"
 #include "Creature/PC/Archor/JK1Archor.h"
 #include "Creature/Monster/Boss/JK1Rampage.h"
-#include "Item/JK1ConsumeableItem.h"
+#include "Item/JK1ItemInstance.h"
 #include "Creature/JK1CreatureStatComponent.h"
 #include "Controller/Monster/JK1RampageController.h"
 
@@ -243,6 +243,7 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::ItemObjectInfo& info)
 			if (itemInstance != nullptr)
 			{
 				//itemInstance->CreatureStat->SetCreatureInfo(info.creature_info());
+				itemInstance->Init(info);
 				Items.Add(info.object_info().object_id(), itemInstance);
 			}
 		});
@@ -683,4 +684,33 @@ void UNetworkJK1GameInstance::HandleMonsterMove(const message::S_Move& pkt)
 		Creature->AddMovementInput(ForwardDirection, 0);
 		Creature->AddMovementInput(RightDirection, 0);
 	}
+}
+
+void UNetworkJK1GameInstance::HandleItemPickedUp(const game::item::S_Item_PickedUp& pkt)
+{
+	if (GameSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	const uint64 itemObjectId = pkt.picked_object_id();
+	const uint64 playerId = pkt.player_id();
+
+	if (Items.Find(itemObjectId) != nullptr)
+	{
+		Items[itemObjectId]->Destroy();
+		Items.Remove(itemObjectId);
+	}
+}
+
+void UNetworkJK1GameInstance::HandleItemConsumeableUsed(const game::item::S_Item_ConsumeableUsed& pkt)
+{
+
+}
+
+void UNetworkJK1GameInstance::HandleItemAcquisition(const game::item::S_Item_Acquisition& pkt)
+{
+	UE_LOG(LogTemp, Log, TEXT("Item Get! %f"));
 }

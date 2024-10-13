@@ -10,7 +10,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
 #include "Item/JK1InventorySubsystem.h"
-#include "Item/JK1ItemInstance.h"
+#include "Item/JK1Item.h"
 #include "JK1Define.h"
 
 
@@ -54,17 +54,17 @@ void UJK1InventorySlotsWidget::NativeConstruct()
 	
 	// inventory item 목록 가져오기
 	int index = 0;
-	const TMultiMap<int, TObjectPtr<AJK1ItemInstance>>& Items = Inventory->GetItems();
+	const TMultiMap<int, TObjectPtr<UJK1Item>>& Items = Inventory->GetItems();
 	for (auto it : Items)
 	{
-		const TObjectPtr<AJK1ItemInstance>& Item = it.Value;
+		const TObjectPtr<UJK1Item>& Item = it.Value;
 		FIntPoint ItemSlotPos = FIntPoint(index % X_COUNT, index / X_COUNT);
 		OnInventoryEntryChanged(ItemSlotPos, Item);
 		index++;
 	}
 }
 
-void UJK1InventorySlotsWidget::OnInventoryEntryChanged(const FIntPoint& InItemSlotPos, TObjectPtr<AJK1ItemInstance> Item)
+void UJK1InventorySlotsWidget::OnInventoryEntryChanged(const FIntPoint& InItemSlotPos, TObjectPtr<UJK1Item> Item)
 {
 	int32 SlotIndex = InItemSlotPos.Y * X_COUNT + InItemSlotPos.X;
 

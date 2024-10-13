@@ -8,7 +8,7 @@
 #include "JK1Define.h"
 #include "JK1InventorySubsystem.generated.h"
 
-class AJK1ItemInstance;
+class UJK1Item;
 
 USTRUCT(BlueprintType)
 struct FJK1ItemData : public FTableRowBase
@@ -29,7 +29,7 @@ public:
 	UTexture2D* Thumnail;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AJK1ItemInstance> ItemClass;
+	TSubclassOf<UJK1Item> ItemClass;
 };
 
 /**
@@ -53,10 +53,10 @@ public:
 
 	FJK1ItemData* GetItemTableRow(int ItemId);
 
-	TMultiMap<int, TObjectPtr<AJK1ItemInstance>>& GetItems() { return Items; }
+	TMultiMap<int, TObjectPtr<UJK1Item>>& GetItems() { return Items; }
 
 protected:
-	TMultiMap<int, TObjectPtr<AJK1ItemInstance>> Items;
+	TMultiMap<int, TObjectPtr<UJK1Item>> Items;
 
 private:
 	UPROPERTY()

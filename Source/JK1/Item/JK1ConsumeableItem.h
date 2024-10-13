@@ -3,20 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Item/JK1ItemInstance.h"
-#include "JK1ConsumeableItem.generated.h"
+#include "Item/JK1Item.h"
 
 /**
  * 
  */
-UCLASS()
-class JK1_API AJK1ConsumeableItem : public AJK1ItemInstance
+class JK1_API AJK1ConsumeableItem : public UJK1Item
 {
-	GENERATED_BODY()
 	
 public:
 	AJK1ConsumeableItem();
+	AJK1ConsumeableItem(TObjectPtr<AJK1PlayerCharacter> player, message::ItemInfo& itemInfo);
 
 public:
-	virtual void UseItem(AJK1PlayerCharacter* OwningPlayer);
+	virtual bool UseItem() override;
 };

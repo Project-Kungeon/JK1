@@ -6,7 +6,7 @@
 #include "Blueprint/DragDropOperation.h"
 #include "JK1DragDropOperation.generated.h"
 
-class AJK1ItemInstance;
+class UJK1Item;
 
 /**
  * 
@@ -23,7 +23,7 @@ public:
 	FIntPoint FromItemSlotPos = FIntPoint::ZeroValue;
 
 	UPROPERTY()
-	TObjectPtr<AJK1ItemInstance> ItemInstance;
+	TObjectPtr<UJK1Item> ItemInstance;
 	
 	FVector2D DeltaWidgetPos = FVector2D::ZeroVector;
 };

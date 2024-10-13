@@ -7,7 +7,7 @@
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Creature/PC/JK1PlayerCharacter.h"
-#include "Item/JK1ItemInstance.h"
+#include "Item/JK1Item.h"
 #include "Item/JK1InventorySubsystem.h"
 #include "JK1Define.h"
 #include "JK1InventorySlotsWidget.h"
@@ -32,7 +32,7 @@ UJK1InventoryEntryWidget::UJK1InventoryEntryWidget(const FObjectInitializer& Obj
 	check(JK1ItemTable->GetRowMap().Num() > 0);
 }
 
-void UJK1InventoryEntryWidget::Init(UJK1InventorySlotsWidget* InSlotWidget, AJK1ItemInstance* InItemInstance)
+void UJK1InventoryEntryWidget::Init(UJK1InventorySlotsWidget* InSlotWidget, UJK1Item* InItemInstance)
 {
 	SlotsWidget = InSlotWidget;
 	ItemInstance = InItemInstance;
@@ -41,6 +41,10 @@ void UJK1InventoryEntryWidget::Init(UJK1InventorySlotsWidget* InSlotWidget, AJK1
 	ItemClass = JK1ItemTable->FindRow<FJK1ItemData>(FName(FString::FromInt(ItemInstance->GetItemID())), TEXT(""))->ItemClass;
 	Text_Count->SetText((ItemCount >= 2) ? FText::AsNumber(ItemCount) : FText::GetEmpty());
 	Image_Icon->SetBrushFromTexture(GetItemImage(InItemInstance->GetItemID()), true);
+
+	// TODO : 이곳에서 이미지 결정.
+
+
 }
 
 void UJK1InventoryEntryWidget::NativeConstruct()
@@ -85,8 +89,8 @@ FReply UJK1InventoryEntryWidget::NativeOnMouseButtonDown(const FGeometry& InGeom
 		auto temp = Cast<AJK1PlayerCharacter>(GetOwningPlayer()->GetPawn());
 		if (temp != nullptr)
 		{
-			ItemInstance->UseItem(temp);
-			ItemInstance->SetItemCount(-1);
+			ItemInstance->UseItem();
+			//ItemInstance->SetItemCount(-1);
 			ItemCount--;
 			if (ItemInstance->GetItemCount() == 0)
 			{

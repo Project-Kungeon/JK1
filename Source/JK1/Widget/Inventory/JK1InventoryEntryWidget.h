@@ -11,8 +11,7 @@ class UTextBlock;
 class UImage;
 class UJK1InventorySlotsWidget;
 class UJK1ItemDragWidget;
-class AJK1ItemInstance;
-
+class UJK1Item;
 
 /**
  * 
@@ -25,7 +24,7 @@ class JK1_API UJK1InventoryEntryWidget : public UJK1ItemWidget
 public:
 	UJK1InventoryEntryWidget(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	
-	void Init(UJK1InventorySlotsWidget* InSlotWidget, AJK1ItemInstance* InItemInstance);
+	void Init(UJK1InventorySlotsWidget* InSlotWidget, UJK1Item* InItemInstance);
 
 protected:
 	virtual void NativeConstruct() override;
@@ -53,13 +52,13 @@ protected:
 	TObjectPtr<UJK1InventorySlotsWidget> SlotsWidget;
 
 	UPROPERTY()
-	TObjectPtr<AJK1ItemInstance> ItemInstance;
+	TObjectPtr<UJK1Item> ItemInstance;
 
 	UPROPERTY()
 	TSubclassOf<UJK1ItemDragWidget> DragWidgetClass;
 
 	UPROPERTY()
-	TSubclassOf<AJK1ItemInstance> ItemClass;
+	TSubclassOf<UJK1Item> ItemClass;
 
 protected:
 	UPROPERTY(meta = (BindWidget))
