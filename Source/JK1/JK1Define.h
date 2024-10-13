@@ -2,6 +2,7 @@
 
 #pragma once
 
+
 UENUM(BlueprintType)
 enum class ECreatureState : uint8
 {

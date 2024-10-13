@@ -12,6 +12,7 @@ AJK1ItemInstance::AJK1ItemInstance(const FObjectInitializer& ObjectInitializer)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
 }
 
 void AJK1ItemInstance::BeginPlay()
@@ -19,19 +20,20 @@ void AJK1ItemInstance::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AJK1ItemInstance::Init(int32 InItemID)
+void AJK1ItemInstance::Init(int32 InItemID, EItemType type, EItemRarity Rarity)
 {
 	if (InItemID <= 0)
 		return;
 
 	ItemID = InItemID;
 	ItemCount = 1;
-	ItemRarity = EItemRarity::Common;
+	Itemtype = type;
+	ItemRarity = Rarity;
 }
 
 void AJK1ItemInstance::UseItem(AJK1PlayerCharacter* OwningPlayer)
 {
-	if (type != EItemType::Consumable)
+	if (Itemtype != EItemType::Consumable)
 		return;
 }
 
