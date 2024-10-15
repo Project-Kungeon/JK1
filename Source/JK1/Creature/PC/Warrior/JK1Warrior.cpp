@@ -13,6 +13,9 @@
 #include "Animation/AnimMontage.h"
 #include "Engine/World.h"
 #include "Blueprint/UserWidget.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "JK1/Creature/JK1CreatureStatComponent.h"
 
 AJK1Warrior::AJK1Warrior()
 {
@@ -30,24 +33,27 @@ AJK1Warrior::AJK1Warrior()
 		SetR(WarriorRCT);
 		SetLS(WarriorLSCT);
 	}
+	RISkills.Add("LevelStart_Montage");
+	RISkills.Add("AM_SkillR");
+	RISkills.Add("AM_SkillLS");
+	RISkills.Add("AM_SkillE_Intro");
+	RISkills.Add("AM_SkillE_HitReact");
+	
+	CreatureStat->OnDamaged.AddDynamic(this, &AJK1Warrior::CheckDamagedInParry);
 }
 
 void AJK1Warrior::BeginPlay()
 {
 	Super::BeginPlay();
-
 	AnimInstance = GetMesh()->GetAnimInstance();
-	AnimInstance->Montage_Play(CurrentMontage);
 }
 
 void AJK1Warrior::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bParryActive)
-	{
-		CheckDamagedInParry();
-	}
+	/*if (bParryActive)
+		CheckDamagedInParry();*/
 }
 
 void AJK1Warrior::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -92,22 +98,23 @@ void AJK1Warrior::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
 	UE_LOG(LogWarrior, Log, TEXT("This is %s"), *this->GetName());
-	bQActive = true;
-	SetQ(0.f);
-	//GetWorldTimerManager().SetTimer(Qhandler, this, &AJK1Warrior::StartQTimer, 0.1f, true);
-	StartQTimer();
+	if (AnimInstance->IsAnyMontagePlaying())
+		return;
 
+	bQActive = true;
+	PlayAnimMontage(SkillQMontage,1.0f);
+	SetQ(0.f);
+	StartQTimer();
+	ResetSkillCooldown();
 }
 
 void AJK1Warrior::SkillE(const FInputActionValue& value)
 {
 	Super::SkillE(value);
 
-	if (!bWeaponActive && !AnimInstance->Montage_IsPlaying(CurrentMontage))
+	if (!bWeaponActive && !AnimInstance->IsAnyMontagePlaying())
 	{
-		
-		CurrentMontage = SkillEMontage_Intro;
-		AnimInstance->Montage_Play(SkillEMontage_Intro);
+		PlayAnimMontage(SkillEMontage_Intro, 1.f);
 		{
 			IsAttacking = false;
 			SaveAttacking = false;
@@ -122,7 +129,7 @@ void AJK1Warrior::SkillE(const FInputActionValue& value)
 void AJK1Warrior::SkillR(const FInputActionValue& value)
 {
 	Super::SkillR(value);
-	if (AnimInstance && AnimInstance->Montage_IsPlaying(CurrentMontage))
+	if (AnimInstance && AnimInstance->IsAnyMontagePlaying())
 	{
 		return;
 	}
@@ -133,8 +140,6 @@ void AJK1Warrior::SkillR(const FInputActionValue& value)
 			IsAttacking = false;
 			SaveAttacking = false;
 			CurrentCombo = 0;
-
-			CurrentMontage = SkillRMontage;
 			PlayAnimMontage(SkillRMontage);
 			PlayParticleSystem();
 			StartROverTime();
@@ -150,44 +155,32 @@ void AJK1Warrior::SkillR(const FInputActionValue& value)
 void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 {
 	Super::SkillLShift(value);
-	if (AnimInstance && AnimInstance->Montage_IsPlaying(CurrentMontage))
+	if (AnimInstance && AnimInstance->IsAnyMontagePlaying())
 		return;
-	else
-	{
-		//bCanMove = false;
-		//1000.f 1.f
-		//FVector ForwardDash = GetActorForwardVector() * (DashDistance / DashDuration);
-		//DashVelocity = ForwardDash;
 
-		CurrentMontage = SkillLShiftMontage;
-		PlayAnimMontage(SkillLShiftMontage);
+	PlayAnimMontage(SkillLShiftMontage);
 
-		FVector ForwardDirection = GetActorForwardVector();
+	FVector ForwardDirection = GetActorForwardVector();
 
-		LaunchCharacter(ForwardDirection * ForwardStrength + FVector(0, 0, JumpStrength), true, true);
-
-		SetLS(0.f);
-		StartLSTimer();
-	} 
+	LaunchCharacter(ForwardDirection * ForwardStrength + FVector(0, 0, JumpStrength), true, true);
+	ResetSkillCooldown();
+	SetLS(0.f);
+	StartLSTimer(); 
 }
 
 void AJK1Warrior::CheckDamagedInParry()
 {
 	UE_LOG(LogWarrior, Log, TEXT("this is CheckDamagedInParry"));
 
-	if (!bParryActive)
-		return;
-
-	if (/*Server TODO: Check Damaged?*/true && bParryCount)
+	if (bParryActive)
 	{
-		//TODO : Get Zero Damage
-		//TODO shield attack
+		ChangeStatusEffect(true, 0);
+		PlayAnimMontage(SkillEMontage_HitReact, 1.f);
 		ParryCount <= 4 ? ParryCount++ : ParryCount = 5;
 
 		UE_LOG(LogWarrior, Log, TEXT("%d"), ParryCount);
 		bParryCount = false;
-
-		PlayAnimMontage(SkillEMontage_HitReact, 1.f);
+		GetWorldTimerManager().SetTimer(DamageTimerHandle, this, &AJK1Warrior::ChangeStatus, 0.3f, false);
 	}
 }
 
@@ -440,7 +433,6 @@ void AJK1Warrior::StartETimer()
 	, 0.1f, true);
 	
 }
-
 void AJK1Warrior::StartRTimer()
 {
 	Super::StartRTimer();
@@ -496,4 +488,12 @@ void AJK1Warrior::StartLSTimer()
 		}
 	, 0.1f, true);
 }
+
+void AJK1Warrior::ChangeStatus()
+{
+	ChangeStatusEffect(false, 0);
+	CreatureStat->SetImmunity(false);
+}
+
+
 

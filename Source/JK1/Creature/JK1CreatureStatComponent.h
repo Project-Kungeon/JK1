@@ -10,6 +10,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHPChangedDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExpChangedDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelUpDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDamagedDelegate);
 
 class AJK1PlayerController;
 
@@ -40,6 +41,7 @@ public:
 	void LoadData();
 
 	// Battle System
+	bool GetImmunity() { return IsImmunity; }
 	void SetImmunity(bool Onoff) { IsImmunity = Onoff; }
 	void SetCurrentHP(float NewHP);
 	void SetStat(int index, float value);
@@ -48,6 +50,7 @@ public:
 	void StatRecovery();
 	bool HitDamage(float NewDamage, AActor* instigator);
 	float TotalDamageBy(AActor* instigator);
+	void SetIsParry(bool _IsParry) { IsParry = _IsParry; }
 
 	// For Widget
 	UFUNCTION(BlueprintCallable)
@@ -77,11 +80,13 @@ public:
 	FOnExpChangedDelegate OnExpChanged;
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnLevelUpDelegate OnLevelUp;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnDamagedDelegate OnDamaged;
 
 private:
 	bool IsPlayer;
 	bool IsImmunity;
-	
+	bool IsParry;
 	// Stat Data
 	struct FJK1CreatureData* BasicStatData;
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))

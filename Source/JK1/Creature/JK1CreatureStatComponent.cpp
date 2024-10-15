@@ -153,9 +153,15 @@ bool UJK1CreatureStatComponent::HitDamage(float NewDamage, AActor* instigator)
 	if (IsImmunity)
 		return false;
 
+	if (IsParry)
+	{
+		OnDamaged.Broadcast();
+		return false;
+	}
+
 	check(BasicStatData != nullptr);
 	DamageInstigator.Add(instigator, NewDamage);
-	
+
 	SetCurrentHP(FMath::Clamp<float>( CurrentHP - NewDamage / CurrentStat[1], 0.f, BasicStatData->MaxHP));
 	UE_LOG(LogSystem, Log, TEXT("Hit Damage: %f"), NewDamage);
 

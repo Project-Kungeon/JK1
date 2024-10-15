@@ -70,6 +70,7 @@ AJK1Archor::AJK1Archor()
 void AJK1Archor::BeginPlay()
 {
 	Super::BeginPlay();
+	AnimInstance = GetMesh()->GetAnimInstance();
 }
 
 void AJK1Archor::Tick(float DeltaTime)
@@ -253,7 +254,6 @@ void AJK1Archor::SkillQ(const FInputActionValue& value)
 	Super::SkillQ(value);
 	UE_LOG(LogArchor, Log, TEXT("This is %s"), *this->GetName());
 
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);

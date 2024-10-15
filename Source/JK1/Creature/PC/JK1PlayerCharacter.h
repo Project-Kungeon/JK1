@@ -43,6 +43,7 @@ public:
 	//Attack 
 	virtual void Attack();
 
+	//Combo
 	UFUNCTION(BlueprintCallable)
 	virtual void ComboActionBegin();
 	UFUNCTION(BlueprintCallable)
@@ -61,7 +62,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Resurrection();
 
-	//Temp Code
 	//Skill Cooldown Time Getter Setter func
 	float GetQ() { return SkillQCool; }
 	float GetE() { return SkillECool; }
@@ -90,6 +90,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	TObjectPtr<class UCameraComponent> FollowCamera;
 
+	// Check Montage AnimInstance
+	UAnimInstance* AnimInstance = nullptr;
+
 	class AJK1PlayerController* PlayerController;
 	class AJK1DemoRaidState* DemoRaidState;
 
@@ -102,7 +105,6 @@ public:
 	FTimerHandle Qhandler;
 	FTimerHandle QBuffHandler;
 	FTimerHandle Ehandler;
-	FTimerHandle EBuffHandler;
 	FTimerHandle Rhandler;
 	FTimerHandle RBuffHandler;
 	FTimerHandle LShandler;
@@ -126,8 +128,6 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	float LSLeftTime = 0.f;
 
-
-public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bWeaponActive;
 
@@ -137,6 +137,10 @@ public:
 
 	UPROPERTY()
 	TSet<AActor*> WeaponAttackTargets;
+
+	// rigid Immunity Skill Montage name
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FString> RISkills;
 
 	uint8 IsAttacking : 1;
 	uint8 SaveAttacking : 1;

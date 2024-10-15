@@ -87,6 +87,7 @@ void AJK1Assassin::BeginPlay()
 		MyTimeline->SetIgnoreTimeDilation(true);
 	}
 	GetAndStoreMaterials();
+	AnimInstance = GetMesh()->GetAnimInstance();
 }
 
 void AJK1Assassin::Tick(float DeltaTime)
@@ -95,8 +96,6 @@ void AJK1Assassin::Tick(float DeltaTime)
 
 	if (MyTimeline)
 		MyTimeline->TickComponent(DeltaTime, ELevelTick::LEVELTICK_TimeOnly, nullptr);
-
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
 	if (AnimInstance)
 		if(AnimInstance->Montage_IsPlaying(SkillRMontage))
@@ -258,9 +257,7 @@ void AJK1Assassin::CheckCharacterMovement()
 
 	if (Speed != 0.0f)
 	{
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance)
-			AnimInstance->Montage_Stop(0.2f, SkillRMontage);
+		AnimInstance->Montage_Stop(0.2f, SkillRMontage);
 	}
 }
 
