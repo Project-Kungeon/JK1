@@ -222,6 +222,7 @@ void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
 	{
 		SetInputMode(UIInputMode);
+		SetShowMouseCursor(true);
 		int index = static_cast<int>(Value.Get<float>());
 
 		switch (index)
@@ -249,7 +250,11 @@ void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 		}
 
 		if (OpenedWidget.IsEmpty())
+		{
 			SetInputMode(GameInputMode);
+			SetShowMouseCursor(false);
+		}
+			
 	}
 }
 

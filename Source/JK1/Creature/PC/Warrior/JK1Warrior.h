@@ -64,6 +64,8 @@ public:
 	virtual void StartROverTime();
 	TArray<FOverlapResult> CheckSkillRTrace();
 	void StopParticleSystem();
+
+	UFUNCTION(BlueprintCallable)
 	void ResetSkillCooldown();
 	
 	//SkillCooldownFunction
@@ -74,15 +76,12 @@ public:
 
 	bool GetbParryCount() { return bParryCount; }
 	void SetbParryCount(bool _bParryCount) { bParryCount = _bParryCount; }
-
-
+	
+	void ChangeStatus();
 	/*
 	*  Member Variable
 	*/
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	TObjectPtr<class UAnimMontage> CurrentMontage;
-
 	//Montage, 클래스들은 각자 기본공격 몽타주 갯수가 다르다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> ComboActionMontage1;
@@ -92,6 +91,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> ComboActionMontage3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> SkillQMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> SkillRMontage;
@@ -108,6 +110,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UParticleSystem> SkillREffect;
 
+	
 	UPROPERTY()
 	TObjectPtr<class UParticleSystemComponent> ParticleSystemComponent;
 
@@ -126,8 +129,6 @@ protected:
 	// Current speed of the dash
 	FVector DashVelocity;
 	
-	// Check Montage AnimInstance
-	UAnimInstance* AnimInstance = nullptr;
 	// 데미지 처리 주기
 	const float DamageInterval = 0.5f;
 	// 데미지 주기 지속 시간
@@ -157,11 +158,12 @@ private:
 	const float QBuffTime = 3.f;
 	const float RBuffTime = 5.f;
 	
-
 	// Check Success Parry Count
 	uint32 ParryCount = 0;
 	//Check IS SkillQ Activate
 	bool bQActive = false;
 	//Check Already add Check Parry Count
 	bool bParryCount = false;
+
+	
 };

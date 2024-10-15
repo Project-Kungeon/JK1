@@ -70,6 +70,7 @@ AJK1Archor::AJK1Archor()
 void AJK1Archor::BeginPlay()
 {
 	Super::BeginPlay();
+	AnimInstance = GetMesh()->GetAnimInstance();
 }
 
 void AJK1Archor::Tick(float DeltaTime)

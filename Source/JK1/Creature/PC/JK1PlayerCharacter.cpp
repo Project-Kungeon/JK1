@@ -80,6 +80,8 @@ void AJK1PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AnimInstance = GetMesh()->GetAnimInstance();
+
 	PlayerController = Cast<AJK1PlayerController>(UGameplayStatics::GetPlayerController(this, 0));
 	// Set size for collision capsule
 	{
@@ -97,6 +99,7 @@ void AJK1PlayerCharacter::BeginPlay()
 	}
 
 	DemoRaidState = Cast<AJK1DemoRaidState>(GetWorld()->GetGameState());
+	
 }
 
 void AJK1PlayerCharacter::Tick(float DeltaTime)
