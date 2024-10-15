@@ -4,6 +4,7 @@
 #include "Item/JK1ConsumeableItem.h"
 #include "Creature/PC/JK1PlayerCharacter.h"
 #include "Creature/JK1CreatureStatComponent.h"
+#include "JK1LogChannels.h"
 
 AJK1ConsumeableItem::AJK1ConsumeableItem()
 {
@@ -12,9 +13,9 @@ AJK1ConsumeableItem::AJK1ConsumeableItem()
 void AJK1ConsumeableItem::UseItem(AJK1PlayerCharacter* OwningPlayer)
 {
 	Super::UseItem(OwningPlayer);
-}
 
-void AJK1ConsumeableItem::InterActive()
-{
-	Super::InterActive();
+	if (ItemID == 1)
+		OwningPlayer->CreatureStat->SetCurrentHP(OwningPlayer->CreatureStat->GetCurrentHP() + 50.f);
+
+	UE_LOG(LogItem, Log, TEXT("Use Comsumeable Item"));
 }

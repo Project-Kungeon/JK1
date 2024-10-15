@@ -4,32 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Widget/JK1ItemWidget.h"
-#include "Engine/DataTable.h"
 #include "JK1InventoryEntryWidget.generated.h"
 
 class USizeBox;
 class UTextBlock;
 class UImage;
 class UJK1InventorySlotsWidget;
-class UJK1ItemInstance;
 class UJK1ItemDragWidget;
-class AJK1Item;
+class AJK1ItemInstance;
 
-USTRUCT(BlueprintType)
-struct FJK1ItemData : public FTableRowBase
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Name;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTexture2D* Thumnail;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AJK1Item> ItemClass;
-};
 
 /**
  * 
@@ -42,7 +25,7 @@ class JK1_API UJK1InventoryEntryWidget : public UJK1ItemWidget
 public:
 	UJK1InventoryEntryWidget(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	
-	void Init(UJK1InventorySlotsWidget* InSlotWidget, UJK1ItemInstance* InItemInstance, int32 InItemCount);
+	void Init(UJK1InventorySlotsWidget* InSlotWidget, AJK1ItemInstance* InItemInstance);
 
 protected:
 	virtual void NativeConstruct() override;
@@ -70,13 +53,13 @@ protected:
 	TObjectPtr<UJK1InventorySlotsWidget> SlotsWidget;
 
 	UPROPERTY()
-	TObjectPtr<UJK1ItemInstance> ItemInstance;
+	TObjectPtr<AJK1ItemInstance> ItemInstance;
 
 	UPROPERTY()
 	TSubclassOf<UJK1ItemDragWidget> DragWidgetClass;
 
 	UPROPERTY()
-	TSubclassOf<AJK1Item> ItemClass;
+	TSubclassOf<AJK1ItemInstance> ItemClass;
 
 protected:
 	UPROPERTY(meta = (BindWidget))

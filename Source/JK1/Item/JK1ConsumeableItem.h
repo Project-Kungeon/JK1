@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Item/JK1Item.h"
+#include "Item/JK1ItemInstance.h"
 #include "JK1ConsumeableItem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class JK1_API AJK1ConsumeableItem : public AJK1Item
+class JK1_API AJK1ConsumeableItem : public AJK1ItemInstance
 {
 	GENERATED_BODY()
 	
@@ -19,5 +19,4 @@ public:
 
 public:
 	virtual void UseItem(AJK1PlayerCharacter* OwningPlayer);
-	virtual void InterActive() override;
 };

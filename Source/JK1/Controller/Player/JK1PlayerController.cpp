@@ -216,6 +216,7 @@ void AJK1PlayerController::SkillAct(const FInputActionValue& Value)
 
 void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 {
+	SetShowMouseCursor(true);
 	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
 	{
 		SetInputMode(UIInputMode);
