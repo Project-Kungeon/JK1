@@ -8,6 +8,7 @@
 #include "Components/TextBlock.h"
 #include "Creature/PC/JK1PlayerCharacter.h"
 #include "Item/JK1Item.h"
+#include "Item/JK1Item.h"
 #include "Item/JK1InventorySubsystem.h"
 #include "JK1Define.h"
 #include "JK1InventorySlotsWidget.h"
@@ -40,7 +41,7 @@ void UJK1InventoryEntryWidget::Init(UJK1InventorySlotsWidget* InSlotWidget, UJK1
 	
 	ItemClass = JK1ItemTable->FindRow<FJK1ItemData>(FName(FString::FromInt(ItemInstance->GetItemID())), TEXT(""))->ItemClass;
 	Text_Count->SetText((ItemCount >= 2) ? FText::AsNumber(ItemCount) : FText::GetEmpty());
-	Image_Icon->SetBrushFromTexture(GetItemImage(InItemInstance->GetItemID()), true);
+	Image_Icon->SetBrushFromTexture(GetItemImage(InItemInstance->GetItemTable()), true);
 
 	// TODO : 이곳에서 이미지 결정.
 
@@ -89,6 +90,7 @@ FReply UJK1InventoryEntryWidget::NativeOnMouseButtonDown(const FGeometry& InGeom
 		auto temp = Cast<AJK1PlayerCharacter>(GetOwningPlayer()->GetPawn());
 		if (temp != nullptr)
 		{
+
 			ItemInstance->UseItem();
 			//ItemInstance->SetItemCount(-1);
 			ItemCount--;

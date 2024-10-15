@@ -42,6 +42,12 @@ void ClientPacketHandler::Init()
         UE_LOG(LogTemp, Log, TEXT("S_Death Handle"));
         return HandlePacket<message::S_Death>(BattlePacketHandler::Handle_S_Death, session, buffer, header, offset);
     };
+    GPacketHandler[message::HEADER::CREATURE_HEAL_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+        {
+            UE_LOG(LogTemp, Log, TEXT("S_Heal Handle"));
+            return HandlePacket<message::S_Heal>(BattlePacketHandler::Handle_S_Heal, session, buffer, header, offset);
+        };
+
     GPacketHandler[message::HEADER::WARRIOR_ATTACK_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
     {
         UE_LOG(LogTemp, Log, TEXT("S_WarriorAttack Handle"));
@@ -179,6 +185,13 @@ void ClientPacketHandler::Init()
             UE_LOG(LogTemp, Log, TEXT("S_Item_Acquisition Handle"));
             return HandlePacket<game::item::S_Item_Acquisition>(InteractivePacketHandler::Handle_S_Item_Acquisition, session, buffer, header, offset);
         };
+    GPacketHandler[message::HEADER::ITEM_OPENINVENTORY] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+        {
+            UE_LOG(LogTemp, Log, TEXT("S_Item_OpenInventory Handle"));
+            return HandlePacket<game::item::S_Item_OpenInventory>(InteractivePacketHandler::Handle_S_Item_OpenInventory, session, buffer, header, offset);
+        };
+
+
 
 
 }

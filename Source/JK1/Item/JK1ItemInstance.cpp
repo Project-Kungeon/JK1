@@ -2,7 +2,6 @@
 
 
 #include "Item/JK1ItemInstance.h"
-#include "Item/JK1InventorySubsystem.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
 #include "Network/Item.pb.h"
 #include "System/NetworkJK1GameInstance.h"

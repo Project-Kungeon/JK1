@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/NoExportTypes.h"
 #include "JK1/Interface/ItemInterface.h"
 #include "JK1Item.generated.h"
 
@@ -10,14 +11,15 @@
  * 
  */
 UCLASS()
-class JK1_API UJK1Item : public UItemInterface
+class JK1_API UJK1Item : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UJK1Item();
-	UJK1Item(TObjectPtr<AJK1PlayerCharacter> player, message::ItemInfo& itemInfo);
+	UJK1Item(const FObjectInitializer& ObjectInitializer);
 	~UJK1Item();
+
+	void Init(TObjectPtr<AJK1PlayerCharacter> player, const message::InventorySlot& itemInfo);
 
 public:
 	virtual bool UseItem();

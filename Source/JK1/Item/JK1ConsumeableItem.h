@@ -4,16 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Item/JK1Item.h"
+#include "JK1ConsumeableItem.generated.h"
 
 /**
  * 
  */
-class JK1_API AJK1ConsumeableItem : public UJK1Item
+UCLASS()
+class JK1_API UJK1ConsumeableItem : public UJK1Item
 {
-	
+	GENERATED_BODY()
 public:
-	AJK1ConsumeableItem();
-	AJK1ConsumeableItem(TObjectPtr<AJK1PlayerCharacter> player, message::ItemInfo& itemInfo);
+	UJK1ConsumeableItem(const FObjectInitializer& ObjectInitializer);
 
 public:
 	virtual bool UseItem() override;

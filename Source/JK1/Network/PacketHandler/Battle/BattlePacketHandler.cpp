@@ -18,6 +18,15 @@ bool BattlePacketHandler::Handle_S_Death(PacketSessionRef& session, message::S_D
 	return true;
 }
 
+bool BattlePacketHandler::Handle_S_Heal(PacketSessionRef& session, message::S_Heal& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleHeal(pkt);
+	}
+	return true;
+}
+
 bool BattlePacketHandler::Handle_S_WarriorAttack(PacketSessionRef& session, skill::S_Warrior_Attack& pkt)
 {
 

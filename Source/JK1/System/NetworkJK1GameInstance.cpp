@@ -11,6 +11,8 @@
 #include "Item/JK1ItemInstance.h"
 #include "Creature/JK1CreatureStatComponent.h"
 #include "Controller/Monster/JK1RampageController.h"
+#include "Item/JK1InventorySubsystem.h"
+#include "Subsystems/SubsystemBlueprintLibrary.h"
 
 void UNetworkJK1GameInstance::Init()
 {
@@ -348,6 +350,23 @@ void UNetworkJK1GameInstance::HandleDeath(const message::S_Death& deathPkt)
 		auto* Dead = *(DeadCreature);
 		Dead->Death();
 		UE_LOG(LogTemp, Log, TEXT("%d id creature dead"), objectId);
+	}
+}
+
+void UNetworkJK1GameInstance::HandleHeal(const message::S_Heal& pkt)
+{
+	for (auto object_id : pkt.object_id())
+	{
+		if (auto** FindPlayer = Players.Find(object_id))
+		{
+			auto* creature = *(FindPlayer);
+			creature->CreatureStat->SetCurrentHP(creature->CreatureStat->GetHP() + pkt.heal());
+		}
+		else if (auto** FindCreature = Creatures.Find(object_id))
+		{
+			auto* creature = *(FindCreature);
+			creature->CreatureStat->SetCurrentHP(creature->CreatureStat->GetHP() + pkt.heal());
+		}
 	}
 }
 
@@ -707,10 +726,23 @@ void UNetworkJK1GameInstance::HandleItemPickedUp(const game::item::S_Item_Picked
 
 void UNetworkJK1GameInstance::HandleItemConsumeableUsed(const game::item::S_Item_ConsumeableUsed& pkt)
 {
+	// TODO : 인벤토리 내 아이템 개수 감소시켜야 한다.
+
 
 }
 
 void UNetworkJK1GameInstance::HandleItemAcquisition(const game::item::S_Item_Acquisition& pkt)
 {
 	UE_LOG(LogTemp, Log, TEXT("Item Get! %f"));
+}
+
+void UNetworkJK1GameInstance::HandleItemOpenInventory(const game::item::S_Item_OpenInventory& pkt)
+{
+	// TOOD : 인벤토리 열고, 결과 위젯 띄워야 함.
+	UJK1InventorySubsystem* Inventory = Cast<UJK1InventorySubsystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(this, UJK1InventorySubsystem::StaticClass()));
+	if (Inventory)
+	{
+		Inventory->UpdateInventory(MyPlayer, pkt);
+	}
+
 }

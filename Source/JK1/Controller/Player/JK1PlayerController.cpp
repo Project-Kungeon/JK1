@@ -17,6 +17,8 @@
 #include "Widget/JK1UserWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Interface/InteractiveObjectInterface.h"
+#include "Creature/PC/JK1PlayerCharacter.h"
+#include "Creature/JK1CreatureStatComponent.h"
 #include "Item/JK1ItemInstance.h"
 
 
@@ -235,6 +237,11 @@ void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 			UE_LOG(LogPlayerController, Log, TEXT("input ESC"));
 			break;
 		case 2:
+			// 인벤토리 갱신
+			game::item::C_Item_OpenInventory pkt;
+			pkt.set_player_id(Cast<AJK1PlayerCharacter>(GetCharacter())->CreatureStat->GetCreatureInfo()->object_info().object_id());
+			SEND_PACKET(message::HEADER::ITEM_OPENINVENTORY, pkt);
+
 			InventoryWidget->AddToViewport();
 			OpenedWidget.AddUnique(InventoryWidget);
 			UE_LOG(LogPlayerController, Log, TEXT("input Inventory"));

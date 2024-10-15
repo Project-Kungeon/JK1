@@ -6,6 +6,8 @@ class BattlePacketHandler
 public:
 	static bool Handle_S_Attack(PacketSessionRef& session, message::S_Attack& pkt);
 	static bool Handle_S_Death(PacketSessionRef& session, message::S_Death& pkt);
+	static bool Handle_S_Heal(PacketSessionRef& session, message::S_Heal& pkt);
+	
 
 	static bool Handle_S_WarriorAttack(PacketSessionRef& session, skill::S_Warrior_Attack& pkt);
 	static bool Handle_S_WarriorE(PacketSessionRef& session, skill::S_Warrior_E& pkt);

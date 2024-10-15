@@ -5,10 +5,12 @@
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "Engine/DataTable.h"
+#include "JK1.h"
 #include "JK1Define.h"
 #include "JK1InventorySubsystem.generated.h"
 
 class UJK1Item;
+class AJK1PlayerCharacter;
 
 USTRUCT(BlueprintType)
 struct FJK1ItemData : public FTableRowBase
@@ -46,6 +48,8 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	virtual void Deinitialize() override;
+
+	void UpdateInventory(TObjectPtr<AJK1PlayerCharacter> my_player, const game::item::S_Item_OpenInventory& pkt);
 
 	//TEMP
 	void AddNewItem(int ItemId);

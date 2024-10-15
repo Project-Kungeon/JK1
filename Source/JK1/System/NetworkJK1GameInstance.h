@@ -50,6 +50,7 @@ public:
 
 	void HandleAttack(const message::S_Attack& attackPkt);
 	void HandleDeath(const message::S_Death& deathPkt);
+	void HandleHeal(const message::S_Heal& pkt);
 
 	void HandleWarriorAttack(const skill::S_Warrior_Attack& pkt);
 	void HandleWarriorE(const skill::S_Warrior_E& skillPkt);
@@ -81,6 +82,8 @@ public:
 	void HandleItemPickedUp(const game::item::S_Item_PickedUp& pkt);
 	void HandleItemConsumeableUsed(const game::item::S_Item_ConsumeableUsed& pkt);
 	void HandleItemAcquisition(const game::item::S_Item_Acquisition& pkt);
+	void HandleItemOpenInventory(const game::item::S_Item_OpenInventory& pkt);
+
 
 private:
 	PacketSessionRef GameSession;

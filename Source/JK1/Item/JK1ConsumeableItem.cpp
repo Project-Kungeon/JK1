@@ -2,22 +2,18 @@
 
 
 #include "Item/JK1ConsumeableItem.h"
-#include "JK1.h"
 #include "Creature/PC/JK1PlayerCharacter.h"
 #include "Creature/JK1CreatureStatComponent.h"
-#include "JK1LogChannels.h"
+#include "JK1.h"
 
-AJK1ConsumeableItem::AJK1ConsumeableItem()
+UJK1ConsumeableItem::UJK1ConsumeableItem(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 }
 
-AJK1ConsumeableItem::AJK1ConsumeableItem(TObjectPtr<AJK1PlayerCharacter> player, message::ItemInfo& itemInfo)
-	: UJK1Item(player, itemInfo)
+bool UJK1ConsumeableItem::UseItem()
 {
-}
-
-bool AJK1ConsumeableItem::UseItem()
-{
+	Super::UseItem();
 	if (auto player = _Owner.Get())
 	{
 		game::item::C_Item_ConsumeableUsed pkt;
@@ -30,6 +26,6 @@ bool AJK1ConsumeableItem::UseItem()
 	}
 
 	return false;
-	
-	
+
+
 }

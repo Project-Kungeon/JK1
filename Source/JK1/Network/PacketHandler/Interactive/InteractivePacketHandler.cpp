@@ -26,3 +26,12 @@ bool InteractivePacketHandler::Handle_S_Item_Acquisition(PacketSessionRef& sessi
 	}
 	return true;
 }
+
+bool InteractivePacketHandler::Handle_S_Item_OpenInventory(PacketSessionRef& session, game::item::S_Item_OpenInventory& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleItemOpenInventory(pkt);
+	}
+	return true;
+}
