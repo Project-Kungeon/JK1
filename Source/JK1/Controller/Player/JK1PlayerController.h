@@ -69,6 +69,8 @@ protected:
 	TObjectPtr<class UInputMappingContext> BattleMappingContext;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputMappingContext> UIMappingContext;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputMappingContext> AttackMappingContext;
 
 	//Actions
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
@@ -133,4 +135,6 @@ public:
 private:
 	FInputModeGameOnly GameInputMode;
 	FInputModeGameAndUI UIInputMode;
+
+	FTimerHandle UnMoveHandler;
 };

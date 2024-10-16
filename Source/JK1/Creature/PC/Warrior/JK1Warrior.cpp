@@ -158,7 +158,8 @@ void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 	if (AnimInstance && AnimInstance->IsAnyMontagePlaying())
 		return;
 
-	PlayAnimMontage(SkillLShiftMontage);
+	//PlayAnimMontage(SkillLShiftMontage);
+	AnimInstance->Montage_Play(SkillLShiftMontage);
 
 	FVector ForwardDirection = GetActorForwardVector();
 
