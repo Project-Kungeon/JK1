@@ -102,16 +102,8 @@ void AJK1Warrior::ComboActionEnd()
 void AJK1Warrior::SkillQ(const FInputActionValue& value)
 {
 	Super::SkillQ(value);
-	//WarriorQ();
-	UE_LOG(LogWarrior, Log, TEXT("This is %s"), *this->GetName());
-	if (AnimInstance->IsAnyMontagePlaying())
-		return;
-
-	bQActive = true;
-	PlayAnimMontage(SkillQMontage,1.0f);
-	SetQ(0.f);
-	StartQTimer();
-	ResetSkillCooldown();
+	WarriorQ();
+	
 }
 
 void AJK1Warrior::SkillE(const FInputActionValue& value)
@@ -135,6 +127,15 @@ void AJK1Warrior::SkillLShift(const FInputActionValue& value)
 
 void AJK1Warrior::WarriorQ()
 {
+	UE_LOG(LogWarrior, Log, TEXT("This is %s"), *this->GetName());
+	if (AnimInstance->IsAnyMontagePlaying())
+		return;
+
+	bQActive = true;
+	PlayAnimMontage(SkillQMontage, 1.0f);
+	SetQ(0.f);
+	StartQTimer();
+	ResetSkillCooldown();
 }
 
 void AJK1Warrior::WarriorE()
@@ -143,6 +144,7 @@ void AJK1Warrior::WarriorE()
 	{
 		PlayAnimMontage(SkillEMontage_Intro, 1.f);
 		{
+			ResetSkillCooldown();
 			IsAttacking = false;
 			SaveAttacking = false;
 			CurrentCombo = 0;
@@ -187,9 +189,10 @@ void AJK1Warrior::WarriorLShift(FVector ForwardDirection)
 {
 	if (AnimInstance && AnimInstance->IsAnyMontagePlaying())
 		return;
-
-	PlayAnimMontage(SkillLShiftMontage);
-
+	else
+	{
+		ResetSkillCooldown();
+		PlayAnimMontage(SkillLShiftMontage);
 		LaunchCharacter(ForwardDirection * ForwardStrength + FVector(0, 0, JumpStrength), true, true);
 
 		SetLS(0.f);
