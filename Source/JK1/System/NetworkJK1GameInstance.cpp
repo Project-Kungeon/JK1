@@ -775,8 +775,12 @@ void UNetworkJK1GameInstance::HandleItemPickedUp(const game::item::S_Item_Picked
 
 	if (Items.Find(itemObjectId) != nullptr)
 	{
-		Items[itemObjectId]->Destroy();
-		Items.Remove(itemObjectId);
+		AsyncTask(ENamedThreads::GameThread, [this, itemObjectId]()
+			{
+				Items[itemObjectId]->Destroy();
+				Items.Remove(itemObjectId);
+			});
+		
 	}
 }
 
