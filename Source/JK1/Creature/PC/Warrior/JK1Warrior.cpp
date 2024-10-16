@@ -131,28 +131,46 @@ void AJK1Warrior::WarriorQ()
 	if (AnimInstance->IsAnyMontagePlaying())
 		return;
 
-	bQActive = true;
-	PlayAnimMontage(SkillQMontage, 1.0f);
-	SetQ(0.f);
-	StartQTimer();
-	ResetSkillCooldown();
+	AsyncTask(ENamedThreads::GameThread, [this]() {
+		bQActive = true;
+		PlayAnimMontage(SkillQMontage, 1.0f);
+		SetQ(0.f);
+		StartQTimer();
+		ResetSkillCooldown();
+		});
+	
 }
 
 void AJK1Warrior::WarriorE()
 {
-	if (!bWeaponActive && !AnimInstance->IsAnyMontagePlaying())
+	AsyncTask(ENamedThreads::GameThread, [this]() \
 	{
-		PlayAnimMontage(SkillEMontage_Intro, 1.f);
+		if (!bWeaponActive && !AnimInstance->IsAnyMontagePlaying())
 		{
-			ResetSkillCooldown();
-			IsAttacking = false;
-			SaveAttacking = false;
-			CurrentCombo = 0;
+			PlayAnimMontage(SkillEMontage_Intro, 1.f);
+			{
+				ResetSkillCooldown();
+				IsAttacking = false;
+				SaveAttacking = false;
+				CurrentCombo = 0;
+			}
+			if (isMyPlayer)
+			{
+				bParryCount = true;
+				SetE(0.f);
+				GetWorldTimerManager().SetTimer(Ehandler, this, &AJK1Warrior::StartETimer, 0.1f, true);
+			}
+
 		}
-		bParryCount = true;
-		SetE(0.f);
-		GetWorldTimerManager().SetTimer(Ehandler, this, &AJK1Warrior::StartETimer, 0.1f, true);
-	}
+	});
+}
+
+void AJK1Warrior::WarriorE_Success()
+{
+	AsyncTask(ENamedThreads::GameThread, [this]() {
+		PlayAnimMontage(SkillEMontage_HitReact, 1.f);
+		bQActive = false;
+		});
 }
 
 void AJK1Warrior::WarriorR()
@@ -191,12 +209,15 @@ void AJK1Warrior::WarriorLShift(FVector ForwardDirection)
 		return;
 	else
 	{
-		ResetSkillCooldown();
-		PlayAnimMontage(SkillLShiftMontage);
-		LaunchCharacter(ForwardDirection * ForwardStrength + FVector(0, 0, JumpStrength), true, true);
+		AsyncTask(ENamedThreads::GameThread, [this, ForwardDirection]() {
+			ResetSkillCooldown();
+			PlayAnimMontage(SkillLShiftMontage);
+			LaunchCharacter(ForwardDirection * ForwardStrength + FVector(0, 0, JumpStrength), true, true);
 
-		SetLS(0.f);
-		StartLSTimer();
+			SetLS(0.f);
+			StartLSTimer();
+			});
+		
 	} 
 }
 
@@ -207,7 +228,7 @@ void AJK1Warrior::CheckDamagedInParry()
 	if (bParryActive)
 	{
 		ChangeStatusEffect(true, 0);
-		PlayAnimMontage(SkillEMontage_HitReact, 1.f);
+		WarriorE_Success();
 		ParryCount <= 4 ? ParryCount++ : ParryCount = 5;
 
 		UE_LOG(LogWarrior, Log, TEXT("%d"), ParryCount);
@@ -251,7 +272,8 @@ void AJK1Warrior::CheckBATrace()
 		{
 			ApplyDamageToTarget(HitResults, 1.f + 0.2f * ParryCount);
 			ParryCount = 0;
-			bQActive = false;
+			// 패링 성공 애니메이션 재생 후, true로 변경하도록 수정
+			//bQActive = false;
 		}
 		else
 			ApplyDamageToTarget(HitResults, 1.f);

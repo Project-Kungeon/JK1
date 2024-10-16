@@ -51,11 +51,13 @@ public:
 	// Warrior
 	virtual void WarriorQ();
 	virtual void WarriorE();
+	virtual void WarriorE_Success();
 	virtual void WarriorR();
 	virtual void WarriorLShift(FVector ForwardDirection);
 
+	UFUNCTION()
+	virtual void CheckDamagedInParry();
 
-	void CheckDamagedInParry();
 	//refactoring
 	UFUNCTION()
 	virtual void CheckBATrace() override;
@@ -146,7 +148,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float ForwardStrength = 1000.0f;
 
-private:
+protected:
 	 
 	//Warrior Skill Cool Time
 	const float WarriorQCT = 3.f;

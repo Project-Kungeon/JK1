@@ -53,7 +53,10 @@ public:
 	void HandleHeal(const message::S_Heal& pkt);
 
 	void HandleWarriorAttack(const skill::S_Warrior_Attack& pkt);
+	void HandleWarriorQ(const skill::S_Warrior_Q& pkt);
+	void HandleWarriorQ_Hit(const skill::S_Warrior_Q_Hit& pkt);
 	void HandleWarriorE(const skill::S_Warrior_E& skillPkt);
+	void HandleWarriorE_Success(const skill::S_Warrior_E_Success& skillPkt);
 	void HandleWarriorR(const skill::S_Warrior_R& skillPkt);
 	void HandleWarriorLS(const skill::S_Warrior_LS& skillPkt);
 

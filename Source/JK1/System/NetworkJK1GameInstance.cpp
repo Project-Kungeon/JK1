@@ -130,6 +130,7 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::PlayerInfo& info, bool 
 				//auto* Player = Cast<AJK1PlayerCharacter>(PC->GetPawn());
 				
 				PC->Possess(Player);
+				Cast<AJK1PlayerController>(PC)->UpdateWidget();
 				Player->isMyPlayer = true;
 				
 				// TODO : 나중에 초기 정보 던져주도록 설정해야 함.
@@ -381,6 +382,43 @@ void UNetworkJK1GameInstance::HandleWarriorAttack(const skill::S_Warrior_Attack&
 	
 }
 
+void UNetworkJK1GameInstance::HandleWarriorQ(const skill::S_Warrior_Q& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Warrior = Cast<AJK1Warrior>(Attacker);
+		Warrior->WarriorQ();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleWarriorQ_Hit(const skill::S_Warrior_Q_Hit& pkt)
+{
+	const uint64 objectId = pkt.object_id();
+	const uint64 victimId = pkt.target_id();
+	const float damage = pkt.damage();
+
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		AJK1CreatureBase* Victim = nullptr;
+		if (auto** player_pointer = Players.Find(victimId))
+		{
+			Victim = (*player_pointer);
+		}
+		else if (auto** creature_pointer = Creatures.Find(victimId))
+		{
+			Victim = (*creature_pointer);
+		}
+		if (Victim) Victim->CreatureStat->HitDamage(damage, *FindAttacker);
+
+
+		UE_LOG(LogTemp, Log, TEXT("%lld parried by %lld Damage: %f"), victimId, objectId, damage);
+		
+	}
+
+}
+
 void UNetworkJK1GameInstance::HandleWarriorE(const skill::S_Warrior_E& skillPkt)
 {
 	const uint64 objectId = skillPkt.object_id();
@@ -389,6 +427,17 @@ void UNetworkJK1GameInstance::HandleWarriorE(const skill::S_Warrior_E& skillPkt)
 		auto* Attacker = *(FindAttacker);
 		auto* Warrior = Cast<AJK1Warrior>(Attacker);
 		Warrior->WarriorE();
+	}
+}
+
+void UNetworkJK1GameInstance::HandleWarriorE_Success(const skill::S_Warrior_E_Success& skillPkt)
+{
+	const uint64 objectId = skillPkt.object_id();
+	if (auto** FindAttacker = Players.Find(objectId))
+	{
+		auto* Attacker = *(FindAttacker);
+		auto* Warrior = Cast<AJK1Warrior>(Attacker);
+		Warrior->WarriorE_Success();
 	}
 }
 

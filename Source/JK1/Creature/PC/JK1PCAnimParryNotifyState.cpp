@@ -22,7 +22,7 @@ void UJK1PCAnimParryNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAn
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
 
 	if (AJK1Warrior* warrior = Cast<AJK1Warrior>(MeshComp->GetOwner()))
-	{
+	{  
 		warrior->bParryActive = false;
 		warrior->CreatureStat->SetIsParry(false);
 	}

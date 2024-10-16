@@ -37,11 +37,38 @@ bool BattlePacketHandler::Handle_S_WarriorAttack(PacketSessionRef& session, skil
 	return true;
 }
 
+bool BattlePacketHandler::Handle_S_WarriorQ(PacketSessionRef& session, skill::S_Warrior_Q& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleWarriorQ(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_WarriorQ_Hit(PacketSessionRef& session, skill::S_Warrior_Q_Hit& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleWarriorQ_Hit(pkt);
+	}
+	return true;
+}
+
 bool BattlePacketHandler::Handle_S_WarriorE(PacketSessionRef& session, skill::S_Warrior_E& pkt)
 {
 	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
 	{
 		GameInstance->HandleWarriorE(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_WarriorE_Success(PacketSessionRef& session, skill::S_Warrior_E_Success& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleWarriorE_Success(pkt);
 	}
 	return true;
 }

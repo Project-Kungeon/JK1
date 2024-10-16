@@ -49,6 +49,9 @@ public:
 	virtual void SkillR(const FInputActionValue& Value) override;
 	virtual void SkillLShift(const FInputActionValue& Value) override;
 
+
+	virtual void CheckDamagedInParry() override;
+
 	// Warrior
 	virtual void DealDamageOverTime();
 	virtual void StartROverTime();

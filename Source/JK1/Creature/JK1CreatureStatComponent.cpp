@@ -68,32 +68,35 @@ void UJK1CreatureStatComponent::LoadData()
 
 void UJK1CreatureStatComponent::SetCurrentHP(float NewHP)
 {
-	CurrentHP = NewHP;
-	UE_LOG(LogSystem, Log, TEXT("Remain HP : %f"), CurrentHP);
-	OnHPChanged.Broadcast();
+	AsyncTask(ENamedThreads::GameThread, [this, NewHP]() {
+		CurrentHP = NewHP;
+		UE_LOG(LogSystem, Log, TEXT("Remain HP : %f"), CurrentHP);
+		OnHPChanged.Broadcast();
 
-	if (CurrentHP <= KINDA_SMALL_NUMBER)
-	{
-		CurrentHP = 0.f;
-		OnHPIsZero.Broadcast();
+		if (CurrentHP <= 0.f)
+		{
+			CurrentHP = 0.f;
+			OnHPIsZero.Broadcast();
 
-		//// TEMP CODE
-		//if (!DamageInstigator.IsEmpty())
-		//{
-		//	TArray<AActor*> temp;
-		//	DamageInstigator.GetKeys(temp);
+			//// TEMP CODE
+			//if (!DamageInstigator.IsEmpty())
+			//{
+			//	TArray<AActor*> temp;
+			//	DamageInstigator.GetKeys(temp);
 
-		//	for (AActor* instigator : temp)
-		//	{
-		//		if(auto player = Cast<AJK1PlayerController>(instigator))
-		//			if (auto Character = Cast<AJK1CreatureBase>(player->GetPawn()))
-		//			{
-		//				Character->CreatureStat->PlusExp(BasicStatData->Exp);
-		//				Cast<AJK1PlayerController>(Character->GetController())->DisengagedLockOn();
-		//			}
-		//	}
-		//}
-	}
+			//	for (AActor* instigator : temp)
+			//	{
+			//		if(auto player = Cast<AJK1PlayerController>(instigator))
+			//			if (auto Character = Cast<AJK1CreatureBase>(player->GetPawn()))
+			//			{
+			//				Character->CreatureStat->PlusExp(BasicStatData->Exp);
+			//				Cast<AJK1PlayerController>(Character->GetController())->DisengagedLockOn();
+			//			}
+			//	}
+			//}
+		}
+		});
+	
 }
 
 void UJK1CreatureStatComponent::SetStat(int index, float value)
