@@ -43,6 +43,7 @@ public:
 	void ShowResurrection(bool ononff);
 	class UJK1PlayerHUD* GetPlayerWidget() const;
 	void UpdateWidget();
+	void UpdateControlledCharacter();
 
 	// InputSystem
 	void AttachInputSystem();

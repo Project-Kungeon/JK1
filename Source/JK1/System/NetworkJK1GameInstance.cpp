@@ -130,7 +130,11 @@ void UNetworkJK1GameInstance::HandleSpawn(const message::PlayerInfo& info, bool 
 				//auto* Player = Cast<AJK1PlayerCharacter>(PC->GetPawn());
 				
 				PC->Possess(Player);
-				Cast<AJK1PlayerController>(PC)->UpdateWidget();
+				if (auto* jkPlayerController = Cast<AJK1PlayerController>(PC))
+				{
+					jkPlayerController->UpdateControlledCharacter();
+					jkPlayerController->UpdateWidget();
+				}
 				Player->isMyPlayer = true;
 				
 				// TODO : 나중에 초기 정보 던져주도록 설정해야 함.
@@ -663,9 +667,12 @@ void UNetworkJK1GameInstance::HandleRampageTurnToTarget(const monster::pattern::
 		auto* rampage = Cast<AJK1Rampage>(*(FindRampage));
 		if (rampage != nullptr)
 		{
-
-			FRotator rotator(pkt.pitch(), pkt.yaw(), pkt.roll());
-			rampage->SetActorRotation(rotator);
+			AsyncTask(ENamedThreads::GameThread, [this, pkt, rampage]()
+				{
+					FRotator rotator(pkt.pitch(), pkt.yaw(), pkt.roll());
+					rampage->SetActorRotation(rotator);
+				});
+			
 		}
 
 	}
