@@ -20,7 +20,7 @@
 #include "Creature/PC/JK1PlayerCharacter.h"
 #include "Creature/JK1CreatureStatComponent.h"
 #include "Item/JK1ItemInstance.h"
-
+#include "TimerManager.h"
 
 AJK1PlayerController::AJK1PlayerController()
 {
@@ -33,7 +33,9 @@ AJK1PlayerController::AJK1PlayerController()
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> UIInputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_UI.IMC_UI'"));
 	if (nullptr != UIInputMappingContextRef.Object)
 		UIMappingContext = UIInputMappingContextRef.Object;
-
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> AttackInputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_Attack.IMC_Attack'"));
+	if (nullptr != AttackInputMappingContextRef.Object)
+		AttackMappingContext = AttackInputMappingContextRef.Object;
 
 	// InputAction
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionMoveRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_Move.IA_Move'"));
@@ -188,8 +190,23 @@ void AJK1PlayerController::StopAct(const FInputActionValue& Value)
 
 void AJK1PlayerController::AttackAct()
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	{
+		Subsystem->RemoveMappingContext(BattleMappingContext);
+
 		ControlledPlayer->Attack();
+
+		UAnimInstance* anim = ControlledPlayer->GetMesh()->GetAnimInstance();
+
+		GetWorldTimerManager().SetTimer(UnMoveHandler, [this] {
+			Subsystem->AddMappingContext(BattleMappingContext, 1);
+			},
+			0.43f, false);
+
+		//(anim->GetCurrentActiveMontage()->GetPlayLength())-1.2f
+		
+	}
+		
 }
 
 void AJK1PlayerController::SkillAct(const FInputActionValue& Value)
@@ -198,19 +215,37 @@ void AJK1PlayerController::SkillAct(const FInputActionValue& Value)
 	{
 		int index = static_cast<int>(Value.Get<float>());
 
+		Subsystem->RemoveMappingContext(BattleMappingContext);
+
 		switch (index)
 		{
 		case 1:
 			ControlledPlayer->SkillQ(Value);
+			GetWorldTimerManager().SetTimer(UnMoveHandler, [this] {
+				Subsystem->AddMappingContext(BattleMappingContext, 1);
+				},
+				0.5f, false);
 			break;
 		case 2:
 			ControlledPlayer->SkillE(Value);
+			GetWorldTimerManager().SetTimer(UnMoveHandler, [this] {
+				Subsystem->AddMappingContext(BattleMappingContext, 1);
+				},
+				0.5f, false);
 			break;
 		case 3:
 			ControlledPlayer->SkillR(Value);
+			GetWorldTimerManager().SetTimer(UnMoveHandler, [this] {
+				Subsystem->AddMappingContext(BattleMappingContext, 1);
+				},
+				0.4f, false);
 			break;
 		case 4:
 			ControlledPlayer->SkillLShift(Value);
+			GetWorldTimerManager().SetTimer(UnMoveHandler, [this] {
+				Subsystem->AddMappingContext(BattleMappingContext, 1);
+				},
+				0.55f, false);
 			break;
 		}
 	}
@@ -339,6 +374,11 @@ void AJK1PlayerController::UpdateWidget()
 		else
 			PlayerWidget->SetWidgetsStat(ControlledPlayer->CreatureStat, nullptr);
 	}
+}
+
+void AJK1PlayerController::UpdateControlledCharacter()
+{
+	ControlledCharacter = GetCharacter();
 }
 
 void AJK1PlayerController::AttachInputSystem()
