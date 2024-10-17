@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Animation/AnimMontage.h"
+#include "GameMode/DemoRaid/JK1DemoRaidState.h"
 
 AJK1PlayerCharacter::AJK1PlayerCharacter()
 	: Super()
@@ -23,7 +24,7 @@ AJK1PlayerCharacter::AJK1PlayerCharacter()
 	//Pawn
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
-	bUseControllerRotationYaw = true;
+	bUseControllerRotationYaw = false;
 
 	//Capsule (프로파일 설정)
 	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_JK1CAPSULE);
@@ -31,9 +32,9 @@ AJK1PlayerCharacter::AJK1PlayerCharacter()
 	//Movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
-	GetCharacterMovement()->JumpZVelocity = 700.f;
+	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.7f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
@@ -42,9 +43,9 @@ AJK1PlayerCharacter::AJK1PlayerCharacter()
 
 	// CameraBoom
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(GetRootComponent());
-	CameraBoom->TargetArmLength = 750.f;
-	CameraBoom->SetRelativeRotation(FRotator(-20.f, 0.f, 0.f));
+	CameraBoom->SetupAttachment(GetCapsuleComponent());
+	CameraBoom->TargetArmLength = 900.f;
+	CameraBoom->SetRelativeRotation(FRotator(-25.f, 0.f, 0.f));
 	CameraBoom->bUsePawnControlRotation = true;
 	CameraBoom->bEnableCameraLag = true;
 
@@ -79,6 +80,8 @@ void AJK1PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AnimInstance = GetMesh()->GetAnimInstance();
+
 	PlayerController = Cast<AJK1PlayerController>(UGameplayStatics::GetPlayerController(this, 0));
 	// Set size for collision capsule
 	{
@@ -94,8 +97,9 @@ void AJK1PlayerCharacter::BeginPlay()
 
 		SetMoveState(message::MOVE_STATE_IDLE);
 	}
-	//if (PlayerController)
-		//PlayerController->GetPlayerWidget()->SetWidgetsStat(CharacterStat, nullptr);
+
+	DemoRaidState = Cast<AJK1DemoRaidState>(GetWorld()->GetGameState());
+	
 }
 
 void AJK1PlayerCharacter::Tick(float DeltaTime)
@@ -344,4 +348,34 @@ void AJK1PlayerCharacter::Death()
 
 	Cast<AJK1PlayerController>(GetController())->RemoveInputSystem();
 	UE_LOG(LogPlayerCharacter, Log, TEXT("Player is Down!!"));
+
+	//if(DemoRaidState->GetDeathCount() > 0)
+	//	Cast<AJK1PlayerController>(GetController())->ShowResurrection(true);
+}
+
+void AJK1PlayerCharacter::Resurrection()
+{
+	Cast<AJK1PlayerController>(GetController())->AttachInputSystem();
+	Cast<AJK1PlayerController>(GetController())->ShowResurrection(false);
+	
+	DemoRaidState->UseDeathCount();
+	CreatureStat->StatRecovery();
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	OnResurrection.Broadcast();
+}
+
+void AJK1PlayerCharacter::StartQTimer()
+{
+}
+
+void AJK1PlayerCharacter::StartETimer()
+{
+}
+
+void AJK1PlayerCharacter::StartRTimer()
+{
+}
+
+void AJK1PlayerCharacter::StartLSTimer()
+{
 }

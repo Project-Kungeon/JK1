@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "InputActionValue.h"
+#include <stack>
 #include "JK1PlayerController.generated.h"
 
 /**
@@ -35,12 +36,17 @@ protected:
 	void SkillAct(const FInputActionValue& Value);
 
 	void ShowUI(const FInputActionValue& Value);
+	
 
 public:
+	void InteractToObject();
+	void ShowResurrection(bool ononff);
 	class UJK1PlayerHUD* GetPlayerWidget() const;
 	void UpdateWidget();
+	void UpdateControlledCharacter();
 
 	// InputSystem
+	void AttachInputSystem();
 	void RemoveInputSystem();
 
 	// Lock On
@@ -64,6 +70,8 @@ protected:
 	TObjectPtr<class UInputMappingContext> BattleMappingContext;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputMappingContext> UIMappingContext;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputMappingContext> AttackMappingContext;
 
 	//Actions
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
@@ -78,17 +86,38 @@ protected:
 	TObjectPtr<class UInputAction> AttackAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> SkillAction;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> UIInput;
+	TObjectPtr<class UInputAction> UIInputAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> InterAction;
 
 	// Widget
 	UPROPERTY()
 	UJK1PlayerHUD* PlayerWidget;
+	UPROPERTY()
+	UUserWidget* MenuWidget;
+	UPROPERTY()
+	UUserWidget* ResurrectionWidget;
+	UPROPERTY()
+	UUserWidget* InventoryWidget;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<UJK1PlayerHUD> HUDWidgetClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<UUserWidget> MenuWidgetClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<UUserWidget> ResurrectionWidgetClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<UUserWidget> InventoryWidgetClass;
 
 public:
+	TArray<UUserWidget*> OpenedWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float InterActDistance;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float LockOnDistance;
 
@@ -103,4 +132,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bShouldRotate;
+
+private:
+	FInputModeGameOnly GameInputMode;
+	FInputModeGameAndUI UIInputMode;
+
+	FTimerHandle UnMoveHandler;
 };

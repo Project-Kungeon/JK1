@@ -18,12 +18,39 @@ bool BattlePacketHandler::Handle_S_Death(PacketSessionRef& session, message::S_D
 	return true;
 }
 
+bool BattlePacketHandler::Handle_S_Heal(PacketSessionRef& session, message::S_Heal& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleHeal(pkt);
+	}
+	return true;
+}
+
 bool BattlePacketHandler::Handle_S_WarriorAttack(PacketSessionRef& session, skill::S_Warrior_Attack& pkt)
 {
 
 	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
 	{
 		GameInstance->HandleWarriorAttack(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_WarriorQ(PacketSessionRef& session, skill::S_Warrior_Q& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleWarriorQ(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_WarriorQ_Hit(PacketSessionRef& session, skill::S_Warrior_Q_Hit& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleWarriorQ_Hit(pkt);
 	}
 	return true;
 }
@@ -37,11 +64,29 @@ bool BattlePacketHandler::Handle_S_WarriorE(PacketSessionRef& session, skill::S_
 	return true;
 }
 
+bool BattlePacketHandler::Handle_S_WarriorE_Success(PacketSessionRef& session, skill::S_Warrior_E_Success& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleWarriorE_Success(pkt);
+	}
+	return true;
+}
+
 bool BattlePacketHandler::Handle_S_WarriorR(PacketSessionRef& session, skill::S_Warrior_R& pkt)
 {
 	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
 	{
 		GameInstance->HandleWarriorR(pkt);
+	}
+	return true;
+}
+
+bool BattlePacketHandler::Handle_S_WarriorLS(PacketSessionRef& session, skill::S_Warrior_LS& pkt)
+{
+	if (auto* GameInstance = Cast<UNetworkJK1GameInstance>(session->GetGameInstance()))
+	{
+		GameInstance->HandleWarriorLS(pkt);
 	}
 	return true;
 }

@@ -13,5 +13,8 @@ UCLASS()
 class JK1_API AJK1GameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage);
 	
 };

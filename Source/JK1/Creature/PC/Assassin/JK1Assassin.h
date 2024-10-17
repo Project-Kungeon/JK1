@@ -73,6 +73,11 @@ public:
 	void GetAndStoreMaterials();
 	UFUNCTION()
 	void TimelineProgress(float Value);
+
+	//SkillCooldownFunction
+	virtual void StartQTimer() override;
+	virtual void StartRTimer() override;
+	virtual void StartLSTimer() override;
 	/*
 	*  Member Variable
 	*/
@@ -110,7 +115,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timeline")
 	float TimelineValue;
 
-	TObjectPtr<class UCurveFloat> FloatCurve;
+	TObjectPtr<class UCurveFloat> CloakCurve;
 	UPROPERTY()
 	TObjectPtr<class UTimelineComponent> MyTimeline;
 	
@@ -124,12 +129,20 @@ protected:
 	FVector ThrowDirection;
 	UPROPERTY(EditAnywhere, Category = "Spawning")
 	float ThrowForce;
-	UPROPERTY(EditAnywhere, Category = "CoolDown")
-	float SkillQCoolDownTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+
 	bool bCanThrow = true;
 
+private:
 
-	
+	//Assassin Skill Cool Time
+	const float AssassinQCT = 3.f;
+	const float AssassinRCT = 30.f;
+	const float AssassinLSCT = 15.f;
+
+	//Assassin Buff Time
+	const float LSBuffTime = 5.f;
 
 	
 };

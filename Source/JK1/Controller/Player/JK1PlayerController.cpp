@@ -14,10 +14,18 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Widget/JK1PlayerHUD.h"
-
+#include "Widget/JK1UserWidget.h"
+#include "Blueprint/UserWidget.h"
+#include "Interface/InteractiveObjectInterface.h"
+#include "Creature/PC/JK1PlayerCharacter.h"
+#include "Creature/JK1CreatureStatComponent.h"
+#include "Item/JK1ItemInstance.h"
+#include "TimerManager.h"
 
 AJK1PlayerController::AJK1PlayerController()
 {
+	SetShowMouseCursor(false);
+
 	//InputMappingContext
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> BattleInputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_JK1.IMC_JK1'"));
 	if (nullptr != BattleInputMappingContextRef.Object)
@@ -25,7 +33,9 @@ AJK1PlayerController::AJK1PlayerController()
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> UIInputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_UI.IMC_UI'"));
 	if (nullptr != UIInputMappingContextRef.Object)
 		UIMappingContext = UIInputMappingContextRef.Object;
-
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> AttackInputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_Attack.IMC_Attack'"));
+	if (nullptr != AttackInputMappingContextRef.Object)
+		AttackMappingContext = AttackInputMappingContextRef.Object;
 
 	// InputAction
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionMoveRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_Move.IA_Move'"));
@@ -51,7 +61,11 @@ AJK1PlayerController::AJK1PlayerController()
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionUIRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_UI.IA_UI'"));
 	if (nullptr != InputActionUIRef.Object)
-		UIInput = InputActionUIRef.Object;
+		UIInputAction = InputActionUIRef.Object;
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionInterActRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_InterAct.IA_InterAct'"));
+	if (nullptr != InputActionInterActRef.Object)
+		InterAction = InputActionInterActRef.Object;
+
 
 
 	//Widget
@@ -60,7 +74,23 @@ AJK1PlayerController::AJK1PlayerController()
 	{
 		HUDWidgetClass = Player_UI.Class;
 	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> Menu_UI(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/Widget/Basic/WBP_Menu.WBP_Menu_C'"));
+	if (Menu_UI.Class)
+	{
+		MenuWidgetClass = Menu_UI.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> Resurrection_UI(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/Widget/Battle/WBP_Resurrection.WBP_Resurrection_C'"));
+	if (Resurrection_UI.Class)
+	{
+		ResurrectionWidgetClass = Resurrection_UI.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> Inventory_UI(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/Widget/Item/Scene/WBP_SceneWidget.WBP_SceneWidget_C'"));
+	if (Inventory_UI.Class)
+	{
+		InventoryWidgetClass = Inventory_UI.Class;
+	}
 
+	InterActDistance = 500.f;
 	LockOnDistance = 750.f;
 }
 
@@ -71,9 +101,8 @@ void AJK1PlayerController::BeginPlay()
 
 	ControlledCharacter = GetCharacter();
 	check(ControlledCharacter != nullptr);
-
-	//FInputModeGameOnly GameOnlyInputMode;
-	//SetInputMode(GameOnlyInputMode);
+	SetInputMode(GameInputMode);
+	
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	if (Subsystem)
 	{
@@ -82,6 +111,9 @@ void AJK1PlayerController::BeginPlay()
 		//Input Priority
 	}
 
+	MenuWidget = CreateWidget<UUserWidget>(this, MenuWidgetClass);
+	ResurrectionWidget = CreateWidget<UUserWidget>(this, ResurrectionWidgetClass);
+	InventoryWidget = CreateWidget<UUserWidget>(this, InventoryWidgetClass);
 	PlayerWidget = CreateWidget<UJK1PlayerHUD>(this, HUDWidgetClass);
 	PlayerWidget->AddToViewport();
 	UpdateWidget();
@@ -100,7 +132,8 @@ void AJK1PlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(LockOnAction, ETriggerEvent::Started, this, &AJK1PlayerController::ToggleLockOn);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::AttackAct);
 		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::SkillAct);
-		EnhancedInputComponent->BindAction(UIInput, ETriggerEvent::Triggered, this, &AJK1PlayerController::ShowUI);
+		EnhancedInputComponent->BindAction(UIInputAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::ShowUI);
+		EnhancedInputComponent->BindAction(InterAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::InteractToObject);
 	}
 }
 
@@ -157,8 +190,23 @@ void AJK1PlayerController::StopAct(const FInputActionValue& Value)
 
 void AJK1PlayerController::AttackAct()
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
+	{
+		Subsystem->RemoveMappingContext(BattleMappingContext);
+
 		ControlledPlayer->Attack();
+
+		UAnimInstance* anim = ControlledPlayer->GetMesh()->GetAnimInstance();
+
+		GetWorldTimerManager().SetTimer(UnMoveHandler, [this] {
+			Subsystem->AddMappingContext(BattleMappingContext, 1);
+			},
+			0.43f, false);
+
+		//(anim->GetCurrentActiveMontage()->GetPlayLength())-1.2f
+		
+	}
+		
 }
 
 void AJK1PlayerController::SkillAct(const FInputActionValue& Value)
@@ -167,19 +215,37 @@ void AJK1PlayerController::SkillAct(const FInputActionValue& Value)
 	{
 		int index = static_cast<int>(Value.Get<float>());
 
+		Subsystem->RemoveMappingContext(BattleMappingContext);
+
 		switch (index)
 		{
 		case 1:
 			ControlledPlayer->SkillQ(Value);
+			GetWorldTimerManager().SetTimer(UnMoveHandler, [this] {
+				Subsystem->AddMappingContext(BattleMappingContext, 1);
+				},
+				0.5f, false);
 			break;
 		case 2:
 			ControlledPlayer->SkillE(Value);
+			GetWorldTimerManager().SetTimer(UnMoveHandler, [this] {
+				Subsystem->AddMappingContext(BattleMappingContext, 1);
+				},
+				0.5f, false);
 			break;
 		case 3:
 			ControlledPlayer->SkillR(Value);
+			GetWorldTimerManager().SetTimer(UnMoveHandler, [this] {
+				Subsystem->AddMappingContext(BattleMappingContext, 1);
+				},
+				0.4f, false);
 			break;
 		case 4:
 			ControlledPlayer->SkillLShift(Value);
+			GetWorldTimerManager().SetTimer(UnMoveHandler, [this] {
+				Subsystem->AddMappingContext(BattleMappingContext, 1);
+				},
+				0.55f, false);
 			break;
 		}
 	}
@@ -187,19 +253,110 @@ void AJK1PlayerController::SkillAct(const FInputActionValue& Value)
 
 void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 {
-	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
+	SetShowMouseCursor(true);
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(ControlledCharacter))
 	{
+		SetInputMode(UIInputMode);
+		SetShowMouseCursor(true);
 		int index = static_cast<int>(Value.Get<float>());
 
 		switch (index)
 		{
 		case 1:
+			if (!OpenedWidget.IsEmpty())
+				OpenedWidget.Pop()->RemoveFromParent();
+			else
+			{
+				MenuWidget->AddToViewport();
+				OpenedWidget.AddUnique(MenuWidget);
+			}
 			UE_LOG(LogPlayerController, Log, TEXT("input ESC"));
 			break;
 		case 2:
+			// 인벤토리 갱신
+			game::item::C_Item_OpenInventory pkt;
+			pkt.set_player_id(Cast<AJK1PlayerCharacter>(GetCharacter())->CreatureStat->GetCreatureInfo()->object_info().object_id());
+			SEND_PACKET(message::HEADER::ITEM_OPENINVENTORY, pkt);
+
+			InventoryWidget->AddToViewport();
+			OpenedWidget.AddUnique(InventoryWidget);
 			UE_LOG(LogPlayerController, Log, TEXT("input Inventory"));
 			break;
 		}
+
+		if (OpenedWidget.IsEmpty())
+		{
+			SetInputMode(GameInputMode);
+			SetShowMouseCursor(false);
+		}
+			
+	}
+}
+
+void AJK1PlayerController::InteractToObject()
+{
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Emplace(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
+
+	TArray<FHitResult> HitResults;
+
+	// 감지 무시할 액터들 집어넣기
+	TArray<AActor*> Ignore;
+	if (ControlledCharacter == NULL)
+	{
+		ControlledCharacter = GetCharacter();
+	}
+	Ignore.Add(ControlledCharacter);
+
+	bool bSuccess = UKismetSystemLibrary::SphereTraceMultiForObjects(
+		this,
+		ControlledCharacter->GetActorLocation(),
+		ControlledCharacter->GetActorLocation(),
+		InterActDistance,
+		ObjectTypes,
+		false,
+		Ignore,
+		EDrawDebugTrace::ForDuration,
+		OUT HitResults,
+		true,
+		FLinearColor::Red,
+		FLinearColor::Green,
+		1.f);
+
+	// 1단계 후보군 집어넣기
+	if (bSuccess)
+	{
+		for (FHitResult Result : HitResults)
+		{
+			if (Cast<IInteractiveObjectInterface>(Result.GetActor()))
+			{
+				auto temp = Cast<AJK1ItemInstance>(Result.GetActor());	
+				if (temp->CanInterAct())
+				{
+					temp->SetInterAct(false);
+					temp->InterActive();
+					//temp->Destroy();
+				}
+
+			}
+			
+		}
+	}
+}
+
+void AJK1PlayerController::ShowResurrection(bool ononff)
+{
+	if (ononff)
+	{
+		SetInputMode(UIInputMode);
+		SetShowMouseCursor(true);
+		ResurrectionWidget->AddToViewport();
+	}
+	else
+	{
+		SetInputMode(GameInputMode);
+		SetShowMouseCursor(false);
+		ResurrectionWidget->RemoveFromParent();
 	}
 }
 
@@ -217,6 +374,16 @@ void AJK1PlayerController::UpdateWidget()
 		else
 			PlayerWidget->SetWidgetsStat(ControlledPlayer->CreatureStat, nullptr);
 	}
+}
+
+void AJK1PlayerController::UpdateControlledCharacter()
+{
+	ControlledCharacter = GetCharacter();
+}
+
+void AJK1PlayerController::AttachInputSystem()
+{
+	Subsystem->AddMappingContext(BattleMappingContext, 1);
 }
 
 void AJK1PlayerController::RemoveInputSystem()

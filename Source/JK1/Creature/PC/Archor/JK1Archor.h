@@ -74,6 +74,13 @@ public:
 	virtual void StopParticleSystem();
 	virtual void BIsLShift() { IsLShift = false; }
 
+	//SkillCooldownFunction
+	virtual void StartQTimer() override;
+	virtual void StartETimer() override;
+	virtual void StartRTimer() override;
+	virtual void StartLSTimer() override;
+
+
 
 protected:
 	//Montage, 클래스들은 각자 기본공격 몽타주 갯수가 다르다.
@@ -104,8 +111,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	float DamageDistance = 1500.0f;
 
+	// 타격 위치 계산
+	FVector CalculateDamageLocation();
+
+	//현재 LShift스킬을 사용했는지 판단하는 bool type 변수
+	bool IsLShift = false;
+
 	// 데미지 타이머 변수
 	FTimerHandle DamageTimerHandle;
+	FTimerHandle LShiftTimerHandler;
 
 	//Archor 일반공격 발사 애니메이션 재생 속도
 	float ComboActionMontagePlayRate = 1.0f;
@@ -116,9 +130,7 @@ protected:
 	// 총 데미지 지속 시간 동안 남은 시간
 	float RemainingDamageTime = 5.0f;
 
-protected:
-	// 타격 위치 계산
-	FVector CalculateDamageLocation();
+private:
 
 	//Skill E 이펙트 컴포넌트 변수
 	UParticleSystemComponent* SkillEDamageEffectComponent;
@@ -126,8 +138,6 @@ protected:
 	//Skill E 타격 Location
 	FVector SkillELocation;
 
-	//현재 LShift스킬을 사용했는지 판단하는 bool type 변수
-	bool IsLShift = false;
 
 	// 데미지 범위 (Sphere) 변수
 	float DamageRadius = 500.0f;
@@ -147,5 +157,14 @@ protected:
 	int32 CurrentTime = 0;
 	FVector ArrowStartLocation;
 	FVector ImpactPoint;
+
+	const float ArchorQCT = 5.f;
+	const float ArchorECT = 12.f;
+	const float ArchorRCT = 20.f;
+	const float ArchorLSCT = 15.f;
+
+	//Archor Buff Time
+	const float RBuffTime = 10.f;
+	const float LSBuffTime = 5.f;
 	
 };

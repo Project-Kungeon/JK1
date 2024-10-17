@@ -52,30 +52,38 @@ void AJK1Rampage::BasicAttack()
 {
 	UE_LOG(LogMonster, Log, TEXT("Attack"));
 
-	switch (CurrentCombo)
-	{
-	case 0:
-		PlayAnimMontage(ComboActionMontage1, 1.f);	
-		break;
-	case 1:
-		PlayAnimMontage(ComboActionMontage2, 1.f);
-		break;
-	case 2:
-		PlayAnimMontage(ComboActionMontage3, 1.f);
-		CurrentCombo = 0;
-		break;
-	}
+	AsyncTask(ENamedThreads::GameThread, [this]()
+		{
+		
+		switch (CurrentCombo)
+		{
+		case 0:
+			PlayAnimMontage(ComboActionMontage1, 1.f);
+			break;
+		case 1:
+			PlayAnimMontage(ComboActionMontage2, 1.f);
+			break;
+		case 2:
+			PlayAnimMontage(ComboActionMontage3, 1.f);
+			CurrentCombo = 0;
+			break;
+		}
 
-	OnAttackEnd.Broadcast();
+		OnAttackEnd.Broadcast();
+		});
+	
 }
 
 void AJK1Rampage::Roar()
 {
 	UE_LOG(LogMonster, Log, TEXT("Roar!!!!!!!!!"));
+	AsyncTask(ENamedThreads::GameThread, [this]()
+		{
+			PlayAnimMontage(RoarMontage, 0.3f);
+		});
 	
-	PlayAnimMontage(RoarMontage, 0.3f);
 	
-	OnGimmicEnd.Broadcast();
+	//OnGimmicEnd.Broadcast();
 }
 
 void AJK1Rampage::EarthQuake()
@@ -97,8 +105,10 @@ void AJK1Rampage::ThrowAway()
 void AJK1Rampage::EnhancedAttack()
 {
 	UE_LOG(LogMonster, Log, TEXT("EnhancedAttack"));
-
-	PlayAnimMontage(EnhancedAttackMontage, 0.5f);
+	AsyncTask(ENamedThreads::GameThread, [this]()
+		{
+			PlayAnimMontage(EnhancedAttackMontage, 0.5f);
+		});
 
 	OnGimmicEnd.Broadcast();
 }

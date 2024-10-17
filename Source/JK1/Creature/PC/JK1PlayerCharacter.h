@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "JK1PlayerCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnResurrectionDelegate);
 /**
  * 
  */
@@ -44,6 +45,7 @@ public:
 	//Attack 
 	virtual void Attack();
 
+	//Combo
 	UFUNCTION(BlueprintCallable)
 	virtual void ComboActionBegin();
 	UFUNCTION(BlueprintCallable)
@@ -60,9 +62,30 @@ public:
 
 	virtual void Death() override;
 
+	UFUNCTION(BlueprintCallable)
+	void Resurrection();
+
+	//Skill Cooldown Time Getter Setter func
+	float GetQ() { return SkillQCool; }
+	float GetE() { return SkillECool; }
+	float GetR() { return SkillRCool; }
+	float GetLS() { return SkillLSCool; }
+
+	void SetQ(float Q) { SkillQCool = Q; }
+	void SetE(float E) { SkillECool = E; }
+	void SetR(float R) { SkillRCool = R; }
+	void SetLS(float LS) { SkillLSCool = LS; }
+
+	virtual void StartQTimer();
+	virtual void StartETimer();
+	virtual void StartRTimer();
+	virtual void StartLSTimer();
+
+
 	/*
 	* Member Variable
 	*/
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	TObjectPtr<class USpringArmComponent> CameraBoom;
@@ -70,9 +93,44 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	TObjectPtr<class UCameraComponent> FollowCamera;
 
+	// Check Montage AnimInstance
+	UAnimInstance* AnimInstance = nullptr;
+
 	class AJK1PlayerController* PlayerController;
+	class AJK1DemoRaidState* DemoRaidState;
 
 public:
+	// Delegate
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnResurrectionDelegate OnResurrection;
+
+	//Cooldown Timer handle
+	FTimerHandle Qhandler;
+	FTimerHandle QBuffHandler;
+	FTimerHandle Ehandler;
+	FTimerHandle Rhandler;
+	FTimerHandle RBuffHandler;
+	FTimerHandle LShandler;
+	FTimerHandle LSBuffHandler;
+
+	//Check Skill Cooldown Var
+	UPROPERTY(BlueprintReadOnly)
+	float SkillQCool;
+	UPROPERTY(BlueprintReadOnly)
+	float SkillECool;
+	UPROPERTY(BlueprintReadOnly)
+	float SkillRCool;
+	UPROPERTY(BlueprintReadOnly)
+	float SkillLSCool;
+
+	//Check BuffCooldown Var
+	UPROPERTY(BlueprintReadOnly)
+	float QLeftTime = 0.f;
+	UPROPERTY(BlueprintReadOnly)
+	float RLeftTime = 0.f;
+	UPROPERTY(BlueprintReadOnly)
+	float LSLeftTime = 0.f;
+
 	UPROPERTY(BlueprintReadWrite)
 	bool bWeaponActive;
 
@@ -83,6 +141,10 @@ public:
 
 	UPROPERTY()
 	TSet<AActor*> WeaponAttackTargets;
+
+	// rigid Immunity Skill Montage name
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FString> RISkills;
 
 	uint8 IsAttacking : 1;
 	uint8 SaveAttacking : 1;

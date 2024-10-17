@@ -99,6 +99,31 @@ inline bool CreatureType_Parse(
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<CreatureType>(
     CreatureType_descriptor(), name, value);
 }
+enum MonsterType : int {
+  MONSTER_TYPE_NONE = 0,
+  MONSTER_TYPE_RAMPAGE = 1,
+  MonsterType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  MonsterType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool MonsterType_IsValid(int value);
+constexpr MonsterType MonsterType_MIN = MONSTER_TYPE_NONE;
+constexpr MonsterType MonsterType_MAX = MONSTER_TYPE_RAMPAGE;
+constexpr int MonsterType_ARRAYSIZE = MonsterType_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MonsterType_descriptor();
+template<typename T>
+inline const std::string& MonsterType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, MonsterType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function MonsterType_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    MonsterType_descriptor(), enum_t_value);
+}
+inline bool MonsterType_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, MonsterType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MonsterType>(
+    MonsterType_descriptor(), name, value);
+}
 enum PlayerType : int {
   PLAYER_TYPE_NONE = 0,
   PLAYER_TYPE_WARRIOR = 1,
@@ -155,15 +180,16 @@ inline bool MoveState_Parse(
     MoveState_descriptor(), name, value);
 }
 enum ItemType : int {
-  NONE_ITEM = 0,
-  WEAPON_SWORD = 1,
-  POTION_HEALTH = 1001,
+  NONE_Item = 0,
+  WEAPON = 1,
+  Consumable = 2,
+  Etc = 3,
   ItemType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   ItemType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool ItemType_IsValid(int value);
-constexpr ItemType ItemType_MIN = NONE_ITEM;
-constexpr ItemType ItemType_MAX = POTION_HEALTH;
+constexpr ItemType ItemType_MIN = NONE_Item;
+constexpr ItemType ItemType_MAX = Etc;
 constexpr int ItemType_ARRAYSIZE = ItemType_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* ItemType_descriptor();
@@ -179,6 +205,31 @@ inline bool ItemType_Parse(
     ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, ItemType* value) {
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<ItemType>(
     ItemType_descriptor(), name, value);
+}
+enum ItemTable : int {
+  NONE_ITEM = 0,
+  GENERAL_HEALTH_POSION = 1,
+  ItemTable_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  ItemTable_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+};
+bool ItemTable_IsValid(int value);
+constexpr ItemTable ItemTable_MIN = NONE_ITEM;
+constexpr ItemTable ItemTable_MAX = GENERAL_HEALTH_POSION;
+constexpr int ItemTable_ARRAYSIZE = ItemTable_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* ItemTable_descriptor();
+template<typename T>
+inline const std::string& ItemTable_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, ItemTable>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function ItemTable_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    ItemTable_descriptor(), enum_t_value);
+}
+inline bool ItemTable_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, ItemTable* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<ItemTable>(
+    ItemTable_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -212,6 +263,11 @@ template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::message::CreatureType>() {
   return ::message::CreatureType_descriptor();
 }
+template <> struct is_proto_enum< ::message::MonsterType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::message::MonsterType>() {
+  return ::message::MonsterType_descriptor();
+}
 template <> struct is_proto_enum< ::message::PlayerType> : ::std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::message::PlayerType>() {
@@ -226,6 +282,11 @@ template <> struct is_proto_enum< ::message::ItemType> : ::std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::message::ItemType>() {
   return ::message::ItemType_descriptor();
+}
+template <> struct is_proto_enum< ::message::ItemTable> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::message::ItemTable>() {
+  return ::message::ItemTable_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE

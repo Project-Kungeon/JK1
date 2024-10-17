@@ -61,8 +61,7 @@ struct S_Warrior_AttackDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 S_Warrior_AttackDefaultTypeInternal _S_Warrior_Attack_default_instance_;
 PROTOBUF_CONSTEXPR C_Warrior_Q::C_Warrior_Q(
     ::_pbi::ConstantInitialized)
-  : object_id_(uint64_t{0u})
-  , target_id_(uint64_t{0u}){}
+  : object_id_(uint64_t{0u}){}
 struct C_Warrior_QDefaultTypeInternal {
   PROTOBUF_CONSTEXPR C_Warrior_QDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -74,8 +73,7 @@ struct C_Warrior_QDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 C_Warrior_QDefaultTypeInternal _C_Warrior_Q_default_instance_;
 PROTOBUF_CONSTEXPR S_Warrior_Q::S_Warrior_Q(
     ::_pbi::ConstantInitialized)
-  : object_id_(uint64_t{0u})
-  , target_id_(uint64_t{0u}){}
+  : object_id_(uint64_t{0u}){}
 struct S_Warrior_QDefaultTypeInternal {
   PROTOBUF_CONSTEXPR S_Warrior_QDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -85,6 +83,33 @@ struct S_Warrior_QDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 S_Warrior_QDefaultTypeInternal _S_Warrior_Q_default_instance_;
+PROTOBUF_CONSTEXPR C_Warrior_Q_Hit::C_Warrior_Q_Hit(
+    ::_pbi::ConstantInitialized)
+  : object_id_(uint64_t{0u})
+  , target_id_(uint64_t{0u}){}
+struct C_Warrior_Q_HitDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR C_Warrior_Q_HitDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~C_Warrior_Q_HitDefaultTypeInternal() {}
+  union {
+    C_Warrior_Q_Hit _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 C_Warrior_Q_HitDefaultTypeInternal _C_Warrior_Q_Hit_default_instance_;
+PROTOBUF_CONSTEXPR S_Warrior_Q_Hit::S_Warrior_Q_Hit(
+    ::_pbi::ConstantInitialized)
+  : object_id_(uint64_t{0u})
+  , target_id_(uint64_t{0u})
+  , damage_(0){}
+struct S_Warrior_Q_HitDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR S_Warrior_Q_HitDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~S_Warrior_Q_HitDefaultTypeInternal() {}
+  union {
+    S_Warrior_Q_Hit _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 S_Warrior_Q_HitDefaultTypeInternal _S_Warrior_Q_Hit_default_instance_;
 PROTOBUF_CONSTEXPR C_Warrior_E::C_Warrior_E(
     ::_pbi::ConstantInitialized)
   : object_id_(uint64_t{0u}){}
@@ -109,6 +134,33 @@ struct S_Warrior_EDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 S_Warrior_EDefaultTypeInternal _S_Warrior_E_default_instance_;
+PROTOBUF_CONSTEXPR C_Warrior_E_Success::C_Warrior_E_Success(
+    ::_pbi::ConstantInitialized)
+  : object_id_(uint64_t{0u})
+  , target_id_(uint64_t{0u}){}
+struct C_Warrior_E_SuccessDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR C_Warrior_E_SuccessDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~C_Warrior_E_SuccessDefaultTypeInternal() {}
+  union {
+    C_Warrior_E_Success _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 C_Warrior_E_SuccessDefaultTypeInternal _C_Warrior_E_Success_default_instance_;
+PROTOBUF_CONSTEXPR S_Warrior_E_Success::S_Warrior_E_Success(
+    ::_pbi::ConstantInitialized)
+  : object_id_(uint64_t{0u})
+  , target_id_(uint64_t{0u})
+  , parry_count_(0){}
+struct S_Warrior_E_SuccessDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR S_Warrior_E_SuccessDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~S_Warrior_E_SuccessDefaultTypeInternal() {}
+  union {
+    S_Warrior_E_Success _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 S_Warrior_E_SuccessDefaultTypeInternal _S_Warrior_E_Success_default_instance_;
 PROTOBUF_CONSTEXPR C_Warrior_R::C_Warrior_R(
     ::_pbi::ConstantInitialized)
   : object_id_(uint64_t{0u}){}
@@ -138,8 +190,7 @@ PROTOBUF_CONSTEXPR C_Warrior_LS::C_Warrior_LS(
   : object_id_(uint64_t{0u})
   , x_(0)
   , y_(0)
-  , z_(0)
-  , yaw_(0){}
+  , z_(0){}
 struct C_Warrior_LSDefaultTypeInternal {
   PROTOBUF_CONSTEXPR C_Warrior_LSDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -529,7 +580,7 @@ struct S_Archor_LS_OffDefaultTypeInternal {
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 S_Archor_LS_OffDefaultTypeInternal _S_Archor_LS_Off_default_instance_;
 }  // namespace skill
-static ::_pb::Metadata file_level_metadata_Skill_2eproto[37];
+static ::_pb::Metadata file_level_metadata_Skill_2eproto[41];
 static const ::_pb::EnumDescriptor* file_level_enum_descriptors_Skill_2eproto[1];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_Skill_2eproto = nullptr;
 
@@ -563,7 +614,6 @@ const uint32_t TableStruct_Skill_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pr
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_Q, object_id_),
-  PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_Q, target_id_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_Q, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -571,7 +621,23 @@ const uint32_t TableStruct_Skill_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pr
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_Q, object_id_),
-  PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_Q, target_id_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_Q_Hit, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_Q_Hit, object_id_),
+  PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_Q_Hit, target_id_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_Q_Hit, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_Q_Hit, object_id_),
+  PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_Q_Hit, target_id_),
+  PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_Q_Hit, damage_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_E, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -586,6 +652,23 @@ const uint32_t TableStruct_Skill_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pr
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_E, object_id_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_E_Success, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_E_Success, object_id_),
+  PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_E_Success, target_id_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_E_Success, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_E_Success, object_id_),
+  PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_E_Success, target_id_),
+  PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_E_Success, parry_count_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_R, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -610,7 +693,6 @@ const uint32_t TableStruct_Skill_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pr
   PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_LS, x_),
   PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_LS, y_),
   PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_LS, z_),
-  PROTOBUF_FIELD_OFFSET(::skill::C_Warrior_LS, yaw_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::skill::S_Warrior_LS, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -861,39 +943,43 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 8, -1, -1, sizeof(::skill::C_Warrior_Attack)},
   { 15, -1, -1, sizeof(::skill::S_Warrior_Attack)},
   { 22, -1, -1, sizeof(::skill::C_Warrior_Q)},
-  { 30, -1, -1, sizeof(::skill::S_Warrior_Q)},
-  { 38, -1, -1, sizeof(::skill::C_Warrior_E)},
-  { 45, -1, -1, sizeof(::skill::S_Warrior_E)},
-  { 52, -1, -1, sizeof(::skill::C_Warrior_R)},
-  { 59, -1, -1, sizeof(::skill::S_Warrior_R)},
-  { 66, -1, -1, sizeof(::skill::C_Warrior_LS)},
-  { 77, -1, -1, sizeof(::skill::S_Warrior_LS)},
-  { 88, -1, -1, sizeof(::skill::C_ASSASSIN_Attack)},
-  { 95, -1, -1, sizeof(::skill::S_ASSASSIN_Attack)},
-  { 102, -1, -1, sizeof(::skill::C_ASSASSIN_Q)},
-  { 115, -1, -1, sizeof(::skill::S_ASSASSIN_Q)},
-  { 128, -1, -1, sizeof(::skill::C_Assassin_E)},
-  { 138, -1, -1, sizeof(::skill::S_Assassin_E)},
-  { 148, -1, -1, sizeof(::skill::C_ASSASSIN_R)},
-  { 155, -1, -1, sizeof(::skill::S_ASSASSIN_R)},
-  { 162, -1, -1, sizeof(::skill::C_ASSASSIN_LS)},
-  { 169, -1, -1, sizeof(::skill::S_ASSASSIN_LS)},
-  { 176, -1, -1, sizeof(::skill::C_Assassin_LS_Off)},
-  { 183, -1, -1, sizeof(::skill::S_Assassin_LS_Off)},
-  { 190, -1, -1, sizeof(::skill::C_Archor_Attack)},
-  { 203, -1, -1, sizeof(::skill::S_Archor_Attack)},
-  { 218, -1, -1, sizeof(::skill::C_Archor_Q_Charging)},
-  { 225, -1, -1, sizeof(::skill::S_Archor_Q_Charging)},
-  { 233, -1, -1, sizeof(::skill::C_Archor_Q_Shot)},
-  { 246, -1, -1, sizeof(::skill::S_Archor_Q_Shot)},
-  { 259, -1, -1, sizeof(::skill::C_Archor_E)},
-  { 269, -1, -1, sizeof(::skill::S_Archor_E)},
-  { 279, -1, -1, sizeof(::skill::C_Archor_R)},
-  { 286, -1, -1, sizeof(::skill::S_Archor_R)},
-  { 293, -1, -1, sizeof(::skill::C_Archor_LS)},
-  { 300, -1, -1, sizeof(::skill::S_Archor_LS)},
-  { 307, -1, -1, sizeof(::skill::S_Archor_R_Off)},
-  { 314, -1, -1, sizeof(::skill::S_Archor_LS_Off)},
+  { 29, -1, -1, sizeof(::skill::S_Warrior_Q)},
+  { 36, -1, -1, sizeof(::skill::C_Warrior_Q_Hit)},
+  { 44, -1, -1, sizeof(::skill::S_Warrior_Q_Hit)},
+  { 53, -1, -1, sizeof(::skill::C_Warrior_E)},
+  { 60, -1, -1, sizeof(::skill::S_Warrior_E)},
+  { 67, -1, -1, sizeof(::skill::C_Warrior_E_Success)},
+  { 75, -1, -1, sizeof(::skill::S_Warrior_E_Success)},
+  { 84, -1, -1, sizeof(::skill::C_Warrior_R)},
+  { 91, -1, -1, sizeof(::skill::S_Warrior_R)},
+  { 98, -1, -1, sizeof(::skill::C_Warrior_LS)},
+  { 108, -1, -1, sizeof(::skill::S_Warrior_LS)},
+  { 119, -1, -1, sizeof(::skill::C_ASSASSIN_Attack)},
+  { 126, -1, -1, sizeof(::skill::S_ASSASSIN_Attack)},
+  { 133, -1, -1, sizeof(::skill::C_ASSASSIN_Q)},
+  { 146, -1, -1, sizeof(::skill::S_ASSASSIN_Q)},
+  { 159, -1, -1, sizeof(::skill::C_Assassin_E)},
+  { 169, -1, -1, sizeof(::skill::S_Assassin_E)},
+  { 179, -1, -1, sizeof(::skill::C_ASSASSIN_R)},
+  { 186, -1, -1, sizeof(::skill::S_ASSASSIN_R)},
+  { 193, -1, -1, sizeof(::skill::C_ASSASSIN_LS)},
+  { 200, -1, -1, sizeof(::skill::S_ASSASSIN_LS)},
+  { 207, -1, -1, sizeof(::skill::C_Assassin_LS_Off)},
+  { 214, -1, -1, sizeof(::skill::S_Assassin_LS_Off)},
+  { 221, -1, -1, sizeof(::skill::C_Archor_Attack)},
+  { 234, -1, -1, sizeof(::skill::S_Archor_Attack)},
+  { 249, -1, -1, sizeof(::skill::C_Archor_Q_Charging)},
+  { 256, -1, -1, sizeof(::skill::S_Archor_Q_Charging)},
+  { 264, -1, -1, sizeof(::skill::C_Archor_Q_Shot)},
+  { 277, -1, -1, sizeof(::skill::S_Archor_Q_Shot)},
+  { 290, -1, -1, sizeof(::skill::C_Archor_E)},
+  { 300, -1, -1, sizeof(::skill::S_Archor_E)},
+  { 310, -1, -1, sizeof(::skill::C_Archor_R)},
+  { 317, -1, -1, sizeof(::skill::S_Archor_R)},
+  { 324, -1, -1, sizeof(::skill::C_Archor_LS)},
+  { 331, -1, -1, sizeof(::skill::S_Archor_LS)},
+  { 338, -1, -1, sizeof(::skill::S_Archor_R_Off)},
+  { 345, -1, -1, sizeof(::skill::S_Archor_LS_Off)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -902,8 +988,12 @@ static const ::_pb::Message* const file_default_instances[] = {
   &::skill::_S_Warrior_Attack_default_instance_._instance,
   &::skill::_C_Warrior_Q_default_instance_._instance,
   &::skill::_S_Warrior_Q_default_instance_._instance,
+  &::skill::_C_Warrior_Q_Hit_default_instance_._instance,
+  &::skill::_S_Warrior_Q_Hit_default_instance_._instance,
   &::skill::_C_Warrior_E_default_instance_._instance,
   &::skill::_S_Warrior_E_default_instance_._instance,
+  &::skill::_C_Warrior_E_Success_default_instance_._instance,
+  &::skill::_S_Warrior_E_Success_default_instance_._instance,
   &::skill::_C_Warrior_R_default_instance_._instance,
   &::skill::_S_Warrior_R_default_instance_._instance,
   &::skill::_C_Warrior_LS_default_instance_._instance,
@@ -941,66 +1031,72 @@ const char descriptor_table_protodef_Skill_2eproto[] PROTOBUF_SECTION_VARIABLE(p
   "me\030\001 \001(\005\022$\n\nskill_type\030\002 \001(\0162\020.skill.SKI"
   "LLTYPE\"%\n\020C_Warrior_Attack\022\021\n\tobject_id\030"
   "\001 \001(\004\"%\n\020S_Warrior_Attack\022\021\n\tobject_id\030\001"
-  " \001(\004\"3\n\013C_Warrior_Q\022\021\n\tobject_id\030\001 \001(\004\022\021"
-  "\n\ttarget_id\030\002 \001(\004\"3\n\013S_Warrior_Q\022\021\n\tobje"
-  "ct_id\030\001 \001(\004\022\021\n\ttarget_id\030\002 \001(\004\" \n\013C_Warr"
-  "ior_E\022\021\n\tobject_id\030\001 \001(\004\" \n\013S_Warrior_E\022"
-  "\021\n\tobject_id\030\001 \001(\004\" \n\013C_Warrior_R\022\021\n\tobj"
-  "ect_id\030\001 \001(\004\" \n\013S_Warrior_R\022\021\n\tobject_id"
-  "\030\001 \001(\004\"O\n\014C_Warrior_LS\022\021\n\tobject_id\030\001 \001("
-  "\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003ya"
-  "w\030\005 \001(\002\"O\n\014S_Warrior_LS\022\021\n\tobject_id\030\001 \001"
-  "(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003y"
-  "aw\030\005 \001(\002\"&\n\021C_ASSASSIN_Attack\022\021\n\tobject_"
-  "id\030\001 \001(\004\"&\n\021S_ASSASSIN_Attack\022\021\n\tobject_"
-  "id\030\001 \001(\004\"l\n\014C_ASSASSIN_Q\022\021\n\tobject_id\030\001 "
-  "\001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\r\n\005"
-  "pitch\030\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\022\014\n\004roll\030\007 \001(\002\"l"
-  "\n\014S_ASSASSIN_Q\022\021\n\tobject_id\030\001 \001(\004\022\t\n\001x\030\002"
-  " \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\r\n\005pitch\030\005 \001("
-  "\002\022\013\n\003yaw\030\006 \001(\002\022\014\n\004roll\030\007 \001(\002\"B\n\014C_Assass"
-  "in_E\022\021\n\tobject_id\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030"
-  "\003 \001(\002\022\t\n\001z\030\004 \001(\002\"B\n\014S_Assassin_E\022\021\n\tobje"
-  "ct_id\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004"
-  " \001(\002\"!\n\014C_ASSASSIN_R\022\021\n\tobject_id\030\001 \001(\004\""
-  "!\n\014S_ASSASSIN_R\022\021\n\tobject_id\030\001 \001(\004\"\"\n\rC_"
-  "ASSASSIN_LS\022\021\n\tobject_id\030\001 \001(\004\"\"\n\rS_ASSA"
-  "SSIN_LS\022\021\n\tobject_id\030\001 \001(\004\"&\n\021C_Assassin"
-  "_LS_Off\022\021\n\tobject_id\030\001 \001(\004\"&\n\021S_Assassin"
-  "_LS_Off\022\021\n\tobject_id\030\001 \001(\004\"\204\001\n\017C_Archor_"
-  "Attack\022\021\n\tobject_id\030\001 \001(\004\022\017\n\007start_x\030\002 \001"
+  " \001(\004\" \n\013C_Warrior_Q\022\021\n\tobject_id\030\001 \001(\004\" "
+  "\n\013S_Warrior_Q\022\021\n\tobject_id\030\001 \001(\004\"7\n\017C_Wa"
+  "rrior_Q_Hit\022\021\n\tobject_id\030\001 \001(\004\022\021\n\ttarget"
+  "_id\030\002 \001(\004\"G\n\017S_Warrior_Q_Hit\022\021\n\tobject_i"
+  "d\030\001 \001(\004\022\021\n\ttarget_id\030\002 \001(\004\022\016\n\006damage\030\003 \001"
+  "(\002\" \n\013C_Warrior_E\022\021\n\tobject_id\030\001 \001(\004\" \n\013"
+  "S_Warrior_E\022\021\n\tobject_id\030\001 \001(\004\";\n\023C_Warr"
+  "ior_E_Success\022\021\n\tobject_id\030\001 \001(\004\022\021\n\ttarg"
+  "et_id\030\002 \001(\004\"P\n\023S_Warrior_E_Success\022\021\n\tob"
+  "ject_id\030\001 \001(\004\022\021\n\ttarget_id\030\002 \001(\004\022\023\n\013parr"
+  "y_count\030\003 \001(\005\" \n\013C_Warrior_R\022\021\n\tobject_i"
+  "d\030\001 \001(\004\" \n\013S_Warrior_R\022\021\n\tobject_id\030\001 \001("
+  "\004\"B\n\014C_Warrior_LS\022\021\n\tobject_id\030\001 \001(\004\022\t\n\001"
+  "x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\"O\n\014S_Warri"
+  "or_LS\022\021\n\tobject_id\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y"
+  "\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"&\n\021C_ASSA"
+  "SSIN_Attack\022\021\n\tobject_id\030\001 \001(\004\"&\n\021S_ASSA"
+  "SSIN_Attack\022\021\n\tobject_id\030\001 \001(\004\"l\n\014C_ASSA"
+  "SSIN_Q\022\021\n\tobject_id\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001"
+  "y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\r\n\005pitch\030\005 \001(\002\022\013\n\003yaw"
+  "\030\006 \001(\002\022\014\n\004roll\030\007 \001(\002\"l\n\014S_ASSASSIN_Q\022\021\n\t"
+  "object_id\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n"
+  "\001z\030\004 \001(\002\022\r\n\005pitch\030\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\022\014\n\004"
+  "roll\030\007 \001(\002\"B\n\014C_Assassin_E\022\021\n\tobject_id\030"
+  "\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\"B"
+  "\n\014S_Assassin_E\022\021\n\tobject_id\030\001 \001(\004\022\t\n\001x\030\002"
+  " \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\"!\n\014C_ASSASSIN"
+  "_R\022\021\n\tobject_id\030\001 \001(\004\"!\n\014S_ASSASSIN_R\022\021\n"
+  "\tobject_id\030\001 \001(\004\"\"\n\rC_ASSASSIN_LS\022\021\n\tobj"
+  "ect_id\030\001 \001(\004\"\"\n\rS_ASSASSIN_LS\022\021\n\tobject_"
+  "id\030\001 \001(\004\"&\n\021C_Assassin_LS_Off\022\021\n\tobject_"
+  "id\030\001 \001(\004\"&\n\021S_Assassin_LS_Off\022\021\n\tobject_"
+  "id\030\001 \001(\004\"\204\001\n\017C_Archor_Attack\022\021\n\tobject_i"
+  "d\030\001 \001(\004\022\017\n\007start_x\030\002 \001(\002\022\017\n\007start_y\030\003 \001("
+  "\002\022\017\n\007start_z\030\004 \001(\002\022\r\n\005end_x\030\005 \001(\002\022\r\n\005end"
+  "_y\030\006 \001(\002\022\r\n\005end_z\030\007 \001(\002\"\245\001\n\017S_Archor_Att"
+  "ack\022\021\n\tobject_id\030\001 \001(\004\022\017\n\007start_x\030\002 \001(\002\022"
+  "\017\n\007start_y\030\003 \001(\002\022\017\n\007start_z\030\004 \001(\002\022\r\n\005end"
+  "_x\030\005 \001(\002\022\r\n\005end_y\030\006 \001(\002\022\r\n\005end_z\030\007 \001(\002\022\016"
+  "\n\006R_Mode\030\010 \001(\005\022\017\n\007LS_Mode\030\t \001(\005\"(\n\023C_Arc"
+  "hor_Q_Charging\022\021\n\tobject_id\030\001 \001(\004\"8\n\023S_A"
+  "rchor_Q_Charging\022\021\n\tobject_id\030\001 \001(\004\022\016\n\006R"
+  "_Mode\030\002 \001(\005\"\204\001\n\017C_Archor_Q_Shot\022\021\n\tobjec"
+  "t_id\030\001 \001(\004\022\017\n\007start_x\030\002 \001(\002\022\017\n\007start_y\030\003"
+  " \001(\002\022\017\n\007start_z\030\004 \001(\002\022\r\n\005end_x\030\005 \001(\002\022\r\n\005"
+  "end_y\030\006 \001(\002\022\r\n\005end_z\030\007 \001(\002\"\204\001\n\017S_Archor_"
+  "Q_Shot\022\021\n\tobject_id\030\001 \001(\004\022\017\n\007start_x\030\002 \001"
   "(\002\022\017\n\007start_y\030\003 \001(\002\022\017\n\007start_z\030\004 \001(\002\022\r\n\005"
   "end_x\030\005 \001(\002\022\r\n\005end_y\030\006 \001(\002\022\r\n\005end_z\030\007 \001("
-  "\002\"\245\001\n\017S_Archor_Attack\022\021\n\tobject_id\030\001 \001(\004"
-  "\022\017\n\007start_x\030\002 \001(\002\022\017\n\007start_y\030\003 \001(\002\022\017\n\007st"
-  "art_z\030\004 \001(\002\022\r\n\005end_x\030\005 \001(\002\022\r\n\005end_y\030\006 \001("
-  "\002\022\r\n\005end_z\030\007 \001(\002\022\016\n\006R_Mode\030\010 \001(\005\022\017\n\007LS_M"
-  "ode\030\t \001(\005\"(\n\023C_Archor_Q_Charging\022\021\n\tobje"
-  "ct_id\030\001 \001(\004\"8\n\023S_Archor_Q_Charging\022\021\n\tob"
-  "ject_id\030\001 \001(\004\022\016\n\006R_Mode\030\002 \001(\005\"\204\001\n\017C_Arch"
-  "or_Q_Shot\022\021\n\tobject_id\030\001 \001(\004\022\017\n\007start_x\030"
-  "\002 \001(\002\022\017\n\007start_y\030\003 \001(\002\022\017\n\007start_z\030\004 \001(\002\022"
-  "\r\n\005end_x\030\005 \001(\002\022\r\n\005end_y\030\006 \001(\002\022\r\n\005end_z\030\007"
-  " \001(\002\"\204\001\n\017S_Archor_Q_Shot\022\021\n\tobject_id\030\001 "
-  "\001(\004\022\017\n\007start_x\030\002 \001(\002\022\017\n\007start_y\030\003 \001(\002\022\017\n"
-  "\007start_z\030\004 \001(\002\022\r\n\005end_x\030\005 \001(\002\022\r\n\005end_y\030\006"
-  " \001(\002\022\r\n\005end_z\030\007 \001(\002\"@\n\nC_Archor_E\022\021\n\tobj"
-  "ect_id\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030"
-  "\004 \001(\002\"@\n\nS_Archor_E\022\021\n\tobject_id\030\001 \001(\004\022\t"
-  "\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\"\037\n\nC_Arc"
-  "hor_R\022\021\n\tobject_id\030\001 \001(\004\"\037\n\nS_Archor_R\022\021"
-  "\n\tobject_id\030\001 \001(\004\" \n\013C_Archor_LS\022\021\n\tobje"
-  "ct_id\030\001 \001(\004\" \n\013S_Archor_LS\022\021\n\tobject_id\030"
-  "\001 \001(\004\"#\n\016S_Archor_R_Off\022\021\n\tobject_id\030\001 \001"
-  "(\004\"$\n\017S_Archor_LS_Off\022\021\n\tobject_id\030\001 \001(\004"
-  "*2\n\tSKILLTYPE\022\010\n\004NONE\020\000\022\005\n\001Q\020\001\022\005\n\001E\020\002\022\005\n"
-  "\001R\020\003\022\006\n\002LS\020\004b\006proto3"
+  "\002\"@\n\nC_Archor_E\022\021\n\tobject_id\030\001 \001(\004\022\t\n\001x\030"
+  "\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\"@\n\nS_Archor_"
+  "E\022\021\n\tobject_id\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001"
+  "(\002\022\t\n\001z\030\004 \001(\002\"\037\n\nC_Archor_R\022\021\n\tobject_id"
+  "\030\001 \001(\004\"\037\n\nS_Archor_R\022\021\n\tobject_id\030\001 \001(\004\""
+  " \n\013C_Archor_LS\022\021\n\tobject_id\030\001 \001(\004\" \n\013S_A"
+  "rchor_LS\022\021\n\tobject_id\030\001 \001(\004\"#\n\016S_Archor_"
+  "R_Off\022\021\n\tobject_id\030\001 \001(\004\"$\n\017S_Archor_LS_"
+  "Off\022\021\n\tobject_id\030\001 \001(\004*2\n\tSKILLTYPE\022\010\n\004N"
+  "ONE\020\000\022\005\n\001Q\020\001\022\005\n\001E\020\002\022\005\n\001R\020\003\022\006\n\002LS\020\004b\006prot"
+  "o3"
   ;
 static ::_pbi::once_flag descriptor_table_Skill_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Skill_2eproto = {
-    false, false, 2300, descriptor_table_protodef_Skill_2eproto,
+    false, false, 2522, descriptor_table_protodef_Skill_2eproto,
     "Skill.proto",
-    &descriptor_table_Skill_2eproto_once, nullptr, 0, 37,
+    &descriptor_table_Skill_2eproto_once, nullptr, 0, 41,
     schemas, file_default_instances, TableStruct_Skill_2eproto::offsets,
     file_level_metadata_Skill_2eproto, file_level_enum_descriptors_Skill_2eproto,
     file_level_service_descriptors_Skill_2eproto,
@@ -1595,17 +1691,12 @@ C_Warrior_Q::C_Warrior_Q(::PROTOBUF_NAMESPACE_ID::Arena* arena,
 C_Warrior_Q::C_Warrior_Q(const C_Warrior_Q& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  ::memcpy(&object_id_, &from.object_id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&target_id_) -
-    reinterpret_cast<char*>(&object_id_)) + sizeof(target_id_));
+  object_id_ = from.object_id_;
   // @@protoc_insertion_point(copy_constructor:skill.C_Warrior_Q)
 }
 
 inline void C_Warrior_Q::SharedCtor() {
-::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
-    reinterpret_cast<char*>(&object_id_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&target_id_) -
-    reinterpret_cast<char*>(&object_id_)) + sizeof(target_id_));
+object_id_ = uint64_t{0u};
 }
 
 C_Warrior_Q::~C_Warrior_Q() {
@@ -1631,9 +1722,7 @@ void C_Warrior_Q::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&object_id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&target_id_) -
-      reinterpret_cast<char*>(&object_id_)) + sizeof(target_id_));
+  object_id_ = uint64_t{0u};
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -1647,14 +1736,6 @@ const char* C_Warrior_Q::_InternalParse(const char* ptr, ::_pbi::ParseContext* c
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
           object_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else
-          goto handle_unusual;
-        continue;
-      // uint64 target_id = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
-          target_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -1694,12 +1775,6 @@ uint8_t* C_Warrior_Q::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteUInt64ToArray(1, this->_internal_object_id(), target);
   }
 
-  // uint64 target_id = 2;
-  if (this->_internal_target_id() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(2, this->_internal_target_id(), target);
-  }
-
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -1719,11 +1794,6 @@ size_t C_Warrior_Q::ByteSizeLong() const {
   // uint64 object_id = 1;
   if (this->_internal_object_id() != 0) {
     total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_object_id());
-  }
-
-  // uint64 target_id = 2;
-  if (this->_internal_target_id() != 0) {
-    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_target_id());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
@@ -1751,9 +1821,6 @@ void C_Warrior_Q::MergeFrom(const C_Warrior_Q& from) {
   if (from._internal_object_id() != 0) {
     _internal_set_object_id(from._internal_object_id());
   }
-  if (from._internal_target_id() != 0) {
-    _internal_set_target_id(from._internal_target_id());
-  }
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -1771,12 +1838,7 @@ bool C_Warrior_Q::IsInitialized() const {
 void C_Warrior_Q::InternalSwap(C_Warrior_Q* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(C_Warrior_Q, target_id_)
-      + sizeof(C_Warrior_Q::target_id_)
-      - PROTOBUF_FIELD_OFFSET(C_Warrior_Q, object_id_)>(
-          reinterpret_cast<char*>(&object_id_),
-          reinterpret_cast<char*>(&other->object_id_));
+  swap(object_id_, other->object_id_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Warrior_Q::GetMetadata() const {
@@ -1800,17 +1862,12 @@ S_Warrior_Q::S_Warrior_Q(::PROTOBUF_NAMESPACE_ID::Arena* arena,
 S_Warrior_Q::S_Warrior_Q(const S_Warrior_Q& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  ::memcpy(&object_id_, &from.object_id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&target_id_) -
-    reinterpret_cast<char*>(&object_id_)) + sizeof(target_id_));
+  object_id_ = from.object_id_;
   // @@protoc_insertion_point(copy_constructor:skill.S_Warrior_Q)
 }
 
 inline void S_Warrior_Q::SharedCtor() {
-::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
-    reinterpret_cast<char*>(&object_id_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&target_id_) -
-    reinterpret_cast<char*>(&object_id_)) + sizeof(target_id_));
+object_id_ = uint64_t{0u};
 }
 
 S_Warrior_Q::~S_Warrior_Q() {
@@ -1836,13 +1893,189 @@ void S_Warrior_Q::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  object_id_ = uint64_t{0u};
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* S_Warrior_Q::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // uint64 object_id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          object_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* S_Warrior_Q::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:skill.S_Warrior_Q)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // uint64 object_id = 1;
+  if (this->_internal_object_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(1, this->_internal_object_id(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:skill.S_Warrior_Q)
+  return target;
+}
+
+size_t S_Warrior_Q::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:skill.S_Warrior_Q)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // uint64 object_id = 1;
+  if (this->_internal_object_id() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_object_id());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData S_Warrior_Q::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSizeCheck,
+    S_Warrior_Q::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*S_Warrior_Q::GetClassData() const { return &_class_data_; }
+
+void S_Warrior_Q::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to,
+                      const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+  static_cast<S_Warrior_Q *>(to)->MergeFrom(
+      static_cast<const S_Warrior_Q &>(from));
+}
+
+
+void S_Warrior_Q::MergeFrom(const S_Warrior_Q& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:skill.S_Warrior_Q)
+  GOOGLE_DCHECK_NE(&from, this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_object_id() != 0) {
+    _internal_set_object_id(from._internal_object_id());
+  }
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void S_Warrior_Q::CopyFrom(const S_Warrior_Q& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:skill.S_Warrior_Q)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool S_Warrior_Q::IsInitialized() const {
+  return true;
+}
+
+void S_Warrior_Q::InternalSwap(S_Warrior_Q* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(object_id_, other->object_id_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata S_Warrior_Q::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
+      file_level_metadata_Skill_2eproto[4]);
+}
+
+// ===================================================================
+
+class C_Warrior_Q_Hit::_Internal {
+ public:
+};
+
+C_Warrior_Q_Hit::C_Warrior_Q_Hit(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor();
+  // @@protoc_insertion_point(arena_constructor:skill.C_Warrior_Q_Hit)
+}
+C_Warrior_Q_Hit::C_Warrior_Q_Hit(const C_Warrior_Q_Hit& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&object_id_, &from.object_id_,
+    static_cast<size_t>(reinterpret_cast<char*>(&target_id_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(target_id_));
+  // @@protoc_insertion_point(copy_constructor:skill.C_Warrior_Q_Hit)
+}
+
+inline void C_Warrior_Q_Hit::SharedCtor() {
+::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
+    reinterpret_cast<char*>(&object_id_) - reinterpret_cast<char*>(this)),
+    0, static_cast<size_t>(reinterpret_cast<char*>(&target_id_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(target_id_));
+}
+
+C_Warrior_Q_Hit::~C_Warrior_Q_Hit() {
+  // @@protoc_insertion_point(destructor:skill.C_Warrior_Q_Hit)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void C_Warrior_Q_Hit::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void C_Warrior_Q_Hit::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+
+void C_Warrior_Q_Hit::Clear() {
+// @@protoc_insertion_point(message_clear_start:skill.C_Warrior_Q_Hit)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   ::memset(&object_id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&target_id_) -
       reinterpret_cast<char*>(&object_id_)) + sizeof(target_id_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-const char* S_Warrior_Q::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+const char* C_Warrior_Q_Hit::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   while (!ctx->Done(&ptr)) {
     uint32_t tag;
@@ -1887,9 +2120,9 @@ failure:
 #undef CHK_
 }
 
-uint8_t* S_Warrior_Q::_InternalSerialize(
+uint8_t* C_Warrior_Q_Hit::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:skill.S_Warrior_Q)
+  // @@protoc_insertion_point(serialize_to_array_start:skill.C_Warrior_Q_Hit)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -1909,12 +2142,12 @@ uint8_t* S_Warrior_Q::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:skill.S_Warrior_Q)
+  // @@protoc_insertion_point(serialize_to_array_end:skill.C_Warrior_Q_Hit)
   return target;
 }
 
-size_t S_Warrior_Q::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:skill.S_Warrior_Q)
+size_t C_Warrior_Q_Hit::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:skill.C_Warrior_Q_Hit)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -1934,21 +2167,21 @@ size_t S_Warrior_Q::ByteSizeLong() const {
   return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData S_Warrior_Q::_class_data_ = {
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData C_Warrior_Q_Hit::_class_data_ = {
     ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSizeCheck,
-    S_Warrior_Q::MergeImpl
+    C_Warrior_Q_Hit::MergeImpl
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*S_Warrior_Q::GetClassData() const { return &_class_data_; }
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*C_Warrior_Q_Hit::GetClassData() const { return &_class_data_; }
 
-void S_Warrior_Q::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to,
+void C_Warrior_Q_Hit::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to,
                       const ::PROTOBUF_NAMESPACE_ID::Message& from) {
-  static_cast<S_Warrior_Q *>(to)->MergeFrom(
-      static_cast<const S_Warrior_Q &>(from));
+  static_cast<C_Warrior_Q_Hit *>(to)->MergeFrom(
+      static_cast<const C_Warrior_Q_Hit &>(from));
 }
 
 
-void S_Warrior_Q::MergeFrom(const S_Warrior_Q& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:skill.S_Warrior_Q)
+void C_Warrior_Q_Hit::MergeFrom(const C_Warrior_Q_Hit& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:skill.C_Warrior_Q_Hit)
   GOOGLE_DCHECK_NE(&from, this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -1962,32 +2195,271 @@ void S_Warrior_Q::MergeFrom(const S_Warrior_Q& from) {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
-void S_Warrior_Q::CopyFrom(const S_Warrior_Q& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:skill.S_Warrior_Q)
+void C_Warrior_Q_Hit::CopyFrom(const C_Warrior_Q_Hit& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:skill.C_Warrior_Q_Hit)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool S_Warrior_Q::IsInitialized() const {
+bool C_Warrior_Q_Hit::IsInitialized() const {
   return true;
 }
 
-void S_Warrior_Q::InternalSwap(S_Warrior_Q* other) {
+void C_Warrior_Q_Hit::InternalSwap(C_Warrior_Q_Hit* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(S_Warrior_Q, target_id_)
-      + sizeof(S_Warrior_Q::target_id_)
-      - PROTOBUF_FIELD_OFFSET(S_Warrior_Q, object_id_)>(
+      PROTOBUF_FIELD_OFFSET(C_Warrior_Q_Hit, target_id_)
+      + sizeof(C_Warrior_Q_Hit::target_id_)
+      - PROTOBUF_FIELD_OFFSET(C_Warrior_Q_Hit, object_id_)>(
           reinterpret_cast<char*>(&object_id_),
           reinterpret_cast<char*>(&other->object_id_));
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata S_Warrior_Q::GetMetadata() const {
+::PROTOBUF_NAMESPACE_ID::Metadata C_Warrior_Q_Hit::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[4]);
+      file_level_metadata_Skill_2eproto[5]);
+}
+
+// ===================================================================
+
+class S_Warrior_Q_Hit::_Internal {
+ public:
+};
+
+S_Warrior_Q_Hit::S_Warrior_Q_Hit(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor();
+  // @@protoc_insertion_point(arena_constructor:skill.S_Warrior_Q_Hit)
+}
+S_Warrior_Q_Hit::S_Warrior_Q_Hit(const S_Warrior_Q_Hit& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&object_id_, &from.object_id_,
+    static_cast<size_t>(reinterpret_cast<char*>(&damage_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(damage_));
+  // @@protoc_insertion_point(copy_constructor:skill.S_Warrior_Q_Hit)
+}
+
+inline void S_Warrior_Q_Hit::SharedCtor() {
+::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
+    reinterpret_cast<char*>(&object_id_) - reinterpret_cast<char*>(this)),
+    0, static_cast<size_t>(reinterpret_cast<char*>(&damage_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(damage_));
+}
+
+S_Warrior_Q_Hit::~S_Warrior_Q_Hit() {
+  // @@protoc_insertion_point(destructor:skill.S_Warrior_Q_Hit)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void S_Warrior_Q_Hit::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void S_Warrior_Q_Hit::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+
+void S_Warrior_Q_Hit::Clear() {
+// @@protoc_insertion_point(message_clear_start:skill.S_Warrior_Q_Hit)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&object_id_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&damage_) -
+      reinterpret_cast<char*>(&object_id_)) + sizeof(damage_));
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* S_Warrior_Q_Hit::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // uint64 object_id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          object_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint64 target_id = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          target_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // float damage = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          damage_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* S_Warrior_Q_Hit::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:skill.S_Warrior_Q_Hit)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // uint64 object_id = 1;
+  if (this->_internal_object_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(1, this->_internal_object_id(), target);
+  }
+
+  // uint64 target_id = 2;
+  if (this->_internal_target_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(2, this->_internal_target_id(), target);
+  }
+
+  // float damage = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_damage = this->_internal_damage();
+  uint32_t raw_damage;
+  memcpy(&raw_damage, &tmp_damage, sizeof(tmp_damage));
+  if (raw_damage != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_damage(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:skill.S_Warrior_Q_Hit)
+  return target;
+}
+
+size_t S_Warrior_Q_Hit::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:skill.S_Warrior_Q_Hit)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // uint64 object_id = 1;
+  if (this->_internal_object_id() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_object_id());
+  }
+
+  // uint64 target_id = 2;
+  if (this->_internal_target_id() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_target_id());
+  }
+
+  // float damage = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_damage = this->_internal_damage();
+  uint32_t raw_damage;
+  memcpy(&raw_damage, &tmp_damage, sizeof(tmp_damage));
+  if (raw_damage != 0) {
+    total_size += 1 + 4;
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData S_Warrior_Q_Hit::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSizeCheck,
+    S_Warrior_Q_Hit::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*S_Warrior_Q_Hit::GetClassData() const { return &_class_data_; }
+
+void S_Warrior_Q_Hit::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to,
+                      const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+  static_cast<S_Warrior_Q_Hit *>(to)->MergeFrom(
+      static_cast<const S_Warrior_Q_Hit &>(from));
+}
+
+
+void S_Warrior_Q_Hit::MergeFrom(const S_Warrior_Q_Hit& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:skill.S_Warrior_Q_Hit)
+  GOOGLE_DCHECK_NE(&from, this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_object_id() != 0) {
+    _internal_set_object_id(from._internal_object_id());
+  }
+  if (from._internal_target_id() != 0) {
+    _internal_set_target_id(from._internal_target_id());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_damage = from._internal_damage();
+  uint32_t raw_damage;
+  memcpy(&raw_damage, &tmp_damage, sizeof(tmp_damage));
+  if (raw_damage != 0) {
+    _internal_set_damage(from._internal_damage());
+  }
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void S_Warrior_Q_Hit::CopyFrom(const S_Warrior_Q_Hit& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:skill.S_Warrior_Q_Hit)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool S_Warrior_Q_Hit::IsInitialized() const {
+  return true;
+}
+
+void S_Warrior_Q_Hit::InternalSwap(S_Warrior_Q_Hit* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(S_Warrior_Q_Hit, damage_)
+      + sizeof(S_Warrior_Q_Hit::damage_)
+      - PROTOBUF_FIELD_OFFSET(S_Warrior_Q_Hit, object_id_)>(
+          reinterpret_cast<char*>(&object_id_),
+          reinterpret_cast<char*>(&other->object_id_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata S_Warrior_Q_Hit::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
+      file_level_metadata_Skill_2eproto[6]);
 }
 
 // ===================================================================
@@ -2158,7 +2630,7 @@ void C_Warrior_E::InternalSwap(C_Warrior_E* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Warrior_E::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[5]);
+      file_level_metadata_Skill_2eproto[7]);
 }
 
 // ===================================================================
@@ -2329,7 +2801,439 @@ void S_Warrior_E::InternalSwap(S_Warrior_E* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Warrior_E::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[6]);
+      file_level_metadata_Skill_2eproto[8]);
+}
+
+// ===================================================================
+
+class C_Warrior_E_Success::_Internal {
+ public:
+};
+
+C_Warrior_E_Success::C_Warrior_E_Success(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor();
+  // @@protoc_insertion_point(arena_constructor:skill.C_Warrior_E_Success)
+}
+C_Warrior_E_Success::C_Warrior_E_Success(const C_Warrior_E_Success& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&object_id_, &from.object_id_,
+    static_cast<size_t>(reinterpret_cast<char*>(&target_id_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(target_id_));
+  // @@protoc_insertion_point(copy_constructor:skill.C_Warrior_E_Success)
+}
+
+inline void C_Warrior_E_Success::SharedCtor() {
+::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
+    reinterpret_cast<char*>(&object_id_) - reinterpret_cast<char*>(this)),
+    0, static_cast<size_t>(reinterpret_cast<char*>(&target_id_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(target_id_));
+}
+
+C_Warrior_E_Success::~C_Warrior_E_Success() {
+  // @@protoc_insertion_point(destructor:skill.C_Warrior_E_Success)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void C_Warrior_E_Success::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void C_Warrior_E_Success::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+
+void C_Warrior_E_Success::Clear() {
+// @@protoc_insertion_point(message_clear_start:skill.C_Warrior_E_Success)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&object_id_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&target_id_) -
+      reinterpret_cast<char*>(&object_id_)) + sizeof(target_id_));
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* C_Warrior_E_Success::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // uint64 object_id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          object_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint64 target_id = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          target_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* C_Warrior_E_Success::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:skill.C_Warrior_E_Success)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // uint64 object_id = 1;
+  if (this->_internal_object_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(1, this->_internal_object_id(), target);
+  }
+
+  // uint64 target_id = 2;
+  if (this->_internal_target_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(2, this->_internal_target_id(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:skill.C_Warrior_E_Success)
+  return target;
+}
+
+size_t C_Warrior_E_Success::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:skill.C_Warrior_E_Success)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // uint64 object_id = 1;
+  if (this->_internal_object_id() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_object_id());
+  }
+
+  // uint64 target_id = 2;
+  if (this->_internal_target_id() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_target_id());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData C_Warrior_E_Success::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSizeCheck,
+    C_Warrior_E_Success::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*C_Warrior_E_Success::GetClassData() const { return &_class_data_; }
+
+void C_Warrior_E_Success::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to,
+                      const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+  static_cast<C_Warrior_E_Success *>(to)->MergeFrom(
+      static_cast<const C_Warrior_E_Success &>(from));
+}
+
+
+void C_Warrior_E_Success::MergeFrom(const C_Warrior_E_Success& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:skill.C_Warrior_E_Success)
+  GOOGLE_DCHECK_NE(&from, this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_object_id() != 0) {
+    _internal_set_object_id(from._internal_object_id());
+  }
+  if (from._internal_target_id() != 0) {
+    _internal_set_target_id(from._internal_target_id());
+  }
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void C_Warrior_E_Success::CopyFrom(const C_Warrior_E_Success& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:skill.C_Warrior_E_Success)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool C_Warrior_E_Success::IsInitialized() const {
+  return true;
+}
+
+void C_Warrior_E_Success::InternalSwap(C_Warrior_E_Success* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(C_Warrior_E_Success, target_id_)
+      + sizeof(C_Warrior_E_Success::target_id_)
+      - PROTOBUF_FIELD_OFFSET(C_Warrior_E_Success, object_id_)>(
+          reinterpret_cast<char*>(&object_id_),
+          reinterpret_cast<char*>(&other->object_id_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata C_Warrior_E_Success::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
+      file_level_metadata_Skill_2eproto[9]);
+}
+
+// ===================================================================
+
+class S_Warrior_E_Success::_Internal {
+ public:
+};
+
+S_Warrior_E_Success::S_Warrior_E_Success(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor();
+  // @@protoc_insertion_point(arena_constructor:skill.S_Warrior_E_Success)
+}
+S_Warrior_E_Success::S_Warrior_E_Success(const S_Warrior_E_Success& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  ::memcpy(&object_id_, &from.object_id_,
+    static_cast<size_t>(reinterpret_cast<char*>(&parry_count_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(parry_count_));
+  // @@protoc_insertion_point(copy_constructor:skill.S_Warrior_E_Success)
+}
+
+inline void S_Warrior_E_Success::SharedCtor() {
+::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
+    reinterpret_cast<char*>(&object_id_) - reinterpret_cast<char*>(this)),
+    0, static_cast<size_t>(reinterpret_cast<char*>(&parry_count_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(parry_count_));
+}
+
+S_Warrior_E_Success::~S_Warrior_E_Success() {
+  // @@protoc_insertion_point(destructor:skill.S_Warrior_E_Success)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void S_Warrior_E_Success::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+}
+
+void S_Warrior_E_Success::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+
+void S_Warrior_E_Success::Clear() {
+// @@protoc_insertion_point(message_clear_start:skill.S_Warrior_E_Success)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&object_id_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&parry_count_) -
+      reinterpret_cast<char*>(&object_id_)) + sizeof(parry_count_));
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* S_Warrior_E_Success::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // uint64 object_id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          object_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint64 target_id = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          target_id_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // int32 parry_count = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
+          parry_count_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* S_Warrior_E_Success::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:skill.S_Warrior_E_Success)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // uint64 object_id = 1;
+  if (this->_internal_object_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(1, this->_internal_object_id(), target);
+  }
+
+  // uint64 target_id = 2;
+  if (this->_internal_target_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(2, this->_internal_target_id(), target);
+  }
+
+  // int32 parry_count = 3;
+  if (this->_internal_parry_count() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(3, this->_internal_parry_count(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:skill.S_Warrior_E_Success)
+  return target;
+}
+
+size_t S_Warrior_E_Success::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:skill.S_Warrior_E_Success)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // uint64 object_id = 1;
+  if (this->_internal_object_id() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_object_id());
+  }
+
+  // uint64 target_id = 2;
+  if (this->_internal_target_id() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(this->_internal_target_id());
+  }
+
+  // int32 parry_count = 3;
+  if (this->_internal_parry_count() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_parry_count());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData S_Warrior_E_Success::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSizeCheck,
+    S_Warrior_E_Success::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*S_Warrior_E_Success::GetClassData() const { return &_class_data_; }
+
+void S_Warrior_E_Success::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to,
+                      const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+  static_cast<S_Warrior_E_Success *>(to)->MergeFrom(
+      static_cast<const S_Warrior_E_Success &>(from));
+}
+
+
+void S_Warrior_E_Success::MergeFrom(const S_Warrior_E_Success& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:skill.S_Warrior_E_Success)
+  GOOGLE_DCHECK_NE(&from, this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_object_id() != 0) {
+    _internal_set_object_id(from._internal_object_id());
+  }
+  if (from._internal_target_id() != 0) {
+    _internal_set_target_id(from._internal_target_id());
+  }
+  if (from._internal_parry_count() != 0) {
+    _internal_set_parry_count(from._internal_parry_count());
+  }
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void S_Warrior_E_Success::CopyFrom(const S_Warrior_E_Success& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:skill.S_Warrior_E_Success)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool S_Warrior_E_Success::IsInitialized() const {
+  return true;
+}
+
+void S_Warrior_E_Success::InternalSwap(S_Warrior_E_Success* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(S_Warrior_E_Success, parry_count_)
+      + sizeof(S_Warrior_E_Success::parry_count_)
+      - PROTOBUF_FIELD_OFFSET(S_Warrior_E_Success, object_id_)>(
+          reinterpret_cast<char*>(&object_id_),
+          reinterpret_cast<char*>(&other->object_id_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata S_Warrior_E_Success::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
+      file_level_metadata_Skill_2eproto[10]);
 }
 
 // ===================================================================
@@ -2500,7 +3404,7 @@ void C_Warrior_R::InternalSwap(C_Warrior_R* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Warrior_R::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[7]);
+      file_level_metadata_Skill_2eproto[11]);
 }
 
 // ===================================================================
@@ -2671,7 +3575,7 @@ void S_Warrior_R::InternalSwap(S_Warrior_R* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Warrior_R::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[8]);
+      file_level_metadata_Skill_2eproto[12]);
 }
 
 // ===================================================================
@@ -2690,16 +3594,16 @@ C_Warrior_LS::C_Warrior_LS(const C_Warrior_LS& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&object_id_, &from.object_id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&yaw_) -
-    reinterpret_cast<char*>(&object_id_)) + sizeof(yaw_));
+    static_cast<size_t>(reinterpret_cast<char*>(&z_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(z_));
   // @@protoc_insertion_point(copy_constructor:skill.C_Warrior_LS)
 }
 
 inline void C_Warrior_LS::SharedCtor() {
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&object_id_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&yaw_) -
-    reinterpret_cast<char*>(&object_id_)) + sizeof(yaw_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&z_) -
+    reinterpret_cast<char*>(&object_id_)) + sizeof(z_));
 }
 
 C_Warrior_LS::~C_Warrior_LS() {
@@ -2726,8 +3630,8 @@ void C_Warrior_LS::Clear() {
   (void) cached_has_bits;
 
   ::memset(&object_id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&yaw_) -
-      reinterpret_cast<char*>(&object_id_)) + sizeof(yaw_));
+      reinterpret_cast<char*>(&z_) -
+      reinterpret_cast<char*>(&object_id_)) + sizeof(z_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -2765,14 +3669,6 @@ const char* C_Warrior_LS::_InternalParse(const char* ptr, ::_pbi::ParseContext* 
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 37)) {
           z_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
-          ptr += sizeof(float);
-        } else
-          goto handle_unusual;
-        continue;
-      // float yaw = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 45)) {
-          yaw_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
         } else
           goto handle_unusual;
@@ -2842,16 +3738,6 @@ uint8_t* C_Warrior_LS::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteFloatToArray(4, this->_internal_z(), target);
   }
 
-  // float yaw = 5;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_yaw = this->_internal_yaw();
-  uint32_t raw_yaw;
-  memcpy(&raw_yaw, &tmp_yaw, sizeof(tmp_yaw));
-  if (raw_yaw != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(5, this->_internal_yaw(), target);
-  }
-
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -2897,15 +3783,6 @@ size_t C_Warrior_LS::ByteSizeLong() const {
   uint32_t raw_z;
   memcpy(&raw_z, &tmp_z, sizeof(tmp_z));
   if (raw_z != 0) {
-    total_size += 1 + 4;
-  }
-
-  // float yaw = 5;
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_yaw = this->_internal_yaw();
-  uint32_t raw_yaw;
-  memcpy(&raw_yaw, &tmp_yaw, sizeof(tmp_yaw));
-  if (raw_yaw != 0) {
     total_size += 1 + 4;
   }
 
@@ -2955,13 +3832,6 @@ void C_Warrior_LS::MergeFrom(const C_Warrior_LS& from) {
   if (raw_z != 0) {
     _internal_set_z(from._internal_z());
   }
-  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
-  float tmp_yaw = from._internal_yaw();
-  uint32_t raw_yaw;
-  memcpy(&raw_yaw, &tmp_yaw, sizeof(tmp_yaw));
-  if (raw_yaw != 0) {
-    _internal_set_yaw(from._internal_yaw());
-  }
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -2980,8 +3850,8 @@ void C_Warrior_LS::InternalSwap(C_Warrior_LS* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(C_Warrior_LS, yaw_)
-      + sizeof(C_Warrior_LS::yaw_)
+      PROTOBUF_FIELD_OFFSET(C_Warrior_LS, z_)
+      + sizeof(C_Warrior_LS::z_)
       - PROTOBUF_FIELD_OFFSET(C_Warrior_LS, object_id_)>(
           reinterpret_cast<char*>(&object_id_),
           reinterpret_cast<char*>(&other->object_id_));
@@ -2990,7 +3860,7 @@ void C_Warrior_LS::InternalSwap(C_Warrior_LS* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Warrior_LS::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[9]);
+      file_level_metadata_Skill_2eproto[13]);
 }
 
 // ===================================================================
@@ -3309,7 +4179,7 @@ void S_Warrior_LS::InternalSwap(S_Warrior_LS* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Warrior_LS::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[10]);
+      file_level_metadata_Skill_2eproto[14]);
 }
 
 // ===================================================================
@@ -3480,7 +4350,7 @@ void C_ASSASSIN_Attack::InternalSwap(C_ASSASSIN_Attack* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_ASSASSIN_Attack::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[11]);
+      file_level_metadata_Skill_2eproto[15]);
 }
 
 // ===================================================================
@@ -3651,7 +4521,7 @@ void S_ASSASSIN_Attack::InternalSwap(S_ASSASSIN_Attack* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_ASSASSIN_Attack::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[12]);
+      file_level_metadata_Skill_2eproto[16]);
 }
 
 // ===================================================================
@@ -4038,7 +4908,7 @@ void C_ASSASSIN_Q::InternalSwap(C_ASSASSIN_Q* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_ASSASSIN_Q::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[13]);
+      file_level_metadata_Skill_2eproto[17]);
 }
 
 // ===================================================================
@@ -4425,7 +5295,7 @@ void S_ASSASSIN_Q::InternalSwap(S_ASSASSIN_Q* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_ASSASSIN_Q::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[14]);
+      file_level_metadata_Skill_2eproto[18]);
 }
 
 // ===================================================================
@@ -4710,7 +5580,7 @@ void C_Assassin_E::InternalSwap(C_Assassin_E* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Assassin_E::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[15]);
+      file_level_metadata_Skill_2eproto[19]);
 }
 
 // ===================================================================
@@ -4995,7 +5865,7 @@ void S_Assassin_E::InternalSwap(S_Assassin_E* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Assassin_E::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[16]);
+      file_level_metadata_Skill_2eproto[20]);
 }
 
 // ===================================================================
@@ -5166,7 +6036,7 @@ void C_ASSASSIN_R::InternalSwap(C_ASSASSIN_R* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_ASSASSIN_R::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[17]);
+      file_level_metadata_Skill_2eproto[21]);
 }
 
 // ===================================================================
@@ -5337,7 +6207,7 @@ void S_ASSASSIN_R::InternalSwap(S_ASSASSIN_R* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_ASSASSIN_R::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[18]);
+      file_level_metadata_Skill_2eproto[22]);
 }
 
 // ===================================================================
@@ -5508,7 +6378,7 @@ void C_ASSASSIN_LS::InternalSwap(C_ASSASSIN_LS* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_ASSASSIN_LS::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[19]);
+      file_level_metadata_Skill_2eproto[23]);
 }
 
 // ===================================================================
@@ -5679,7 +6549,7 @@ void S_ASSASSIN_LS::InternalSwap(S_ASSASSIN_LS* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_ASSASSIN_LS::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[20]);
+      file_level_metadata_Skill_2eproto[24]);
 }
 
 // ===================================================================
@@ -5850,7 +6720,7 @@ void C_Assassin_LS_Off::InternalSwap(C_Assassin_LS_Off* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Assassin_LS_Off::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[21]);
+      file_level_metadata_Skill_2eproto[25]);
 }
 
 // ===================================================================
@@ -6021,7 +6891,7 @@ void S_Assassin_LS_Off::InternalSwap(S_Assassin_LS_Off* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Assassin_LS_Off::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[22]);
+      file_level_metadata_Skill_2eproto[26]);
 }
 
 // ===================================================================
@@ -6408,7 +7278,7 @@ void C_Archor_Attack::InternalSwap(C_Archor_Attack* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Archor_Attack::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[23]);
+      file_level_metadata_Skill_2eproto[27]);
 }
 
 // ===================================================================
@@ -6839,7 +7709,7 @@ void S_Archor_Attack::InternalSwap(S_Archor_Attack* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Archor_Attack::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[24]);
+      file_level_metadata_Skill_2eproto[28]);
 }
 
 // ===================================================================
@@ -7010,7 +7880,7 @@ void C_Archor_Q_Charging::InternalSwap(C_Archor_Q_Charging* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Archor_Q_Charging::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[25]);
+      file_level_metadata_Skill_2eproto[29]);
 }
 
 // ===================================================================
@@ -7215,7 +8085,7 @@ void S_Archor_Q_Charging::InternalSwap(S_Archor_Q_Charging* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Archor_Q_Charging::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[26]);
+      file_level_metadata_Skill_2eproto[30]);
 }
 
 // ===================================================================
@@ -7602,7 +8472,7 @@ void C_Archor_Q_Shot::InternalSwap(C_Archor_Q_Shot* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Archor_Q_Shot::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[27]);
+      file_level_metadata_Skill_2eproto[31]);
 }
 
 // ===================================================================
@@ -7989,7 +8859,7 @@ void S_Archor_Q_Shot::InternalSwap(S_Archor_Q_Shot* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Archor_Q_Shot::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[28]);
+      file_level_metadata_Skill_2eproto[32]);
 }
 
 // ===================================================================
@@ -8274,7 +9144,7 @@ void C_Archor_E::InternalSwap(C_Archor_E* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Archor_E::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[29]);
+      file_level_metadata_Skill_2eproto[33]);
 }
 
 // ===================================================================
@@ -8559,7 +9429,7 @@ void S_Archor_E::InternalSwap(S_Archor_E* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Archor_E::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[30]);
+      file_level_metadata_Skill_2eproto[34]);
 }
 
 // ===================================================================
@@ -8730,7 +9600,7 @@ void C_Archor_R::InternalSwap(C_Archor_R* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Archor_R::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[31]);
+      file_level_metadata_Skill_2eproto[35]);
 }
 
 // ===================================================================
@@ -8901,7 +9771,7 @@ void S_Archor_R::InternalSwap(S_Archor_R* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Archor_R::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[32]);
+      file_level_metadata_Skill_2eproto[36]);
 }
 
 // ===================================================================
@@ -9072,7 +9942,7 @@ void C_Archor_LS::InternalSwap(C_Archor_LS* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata C_Archor_LS::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[33]);
+      file_level_metadata_Skill_2eproto[37]);
 }
 
 // ===================================================================
@@ -9243,7 +10113,7 @@ void S_Archor_LS::InternalSwap(S_Archor_LS* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Archor_LS::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[34]);
+      file_level_metadata_Skill_2eproto[38]);
 }
 
 // ===================================================================
@@ -9414,7 +10284,7 @@ void S_Archor_R_Off::InternalSwap(S_Archor_R_Off* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Archor_R_Off::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[35]);
+      file_level_metadata_Skill_2eproto[39]);
 }
 
 // ===================================================================
@@ -9585,7 +10455,7 @@ void S_Archor_LS_Off::InternalSwap(S_Archor_LS_Off* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata S_Archor_LS_Off::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_Skill_2eproto_getter, &descriptor_table_Skill_2eproto_once,
-      file_level_metadata_Skill_2eproto[36]);
+      file_level_metadata_Skill_2eproto[40]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
@@ -9611,6 +10481,14 @@ template<> PROTOBUF_NOINLINE ::skill::S_Warrior_Q*
 Arena::CreateMaybeMessage< ::skill::S_Warrior_Q >(Arena* arena) {
   return Arena::CreateMessageInternal< ::skill::S_Warrior_Q >(arena);
 }
+template<> PROTOBUF_NOINLINE ::skill::C_Warrior_Q_Hit*
+Arena::CreateMaybeMessage< ::skill::C_Warrior_Q_Hit >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::skill::C_Warrior_Q_Hit >(arena);
+}
+template<> PROTOBUF_NOINLINE ::skill::S_Warrior_Q_Hit*
+Arena::CreateMaybeMessage< ::skill::S_Warrior_Q_Hit >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::skill::S_Warrior_Q_Hit >(arena);
+}
 template<> PROTOBUF_NOINLINE ::skill::C_Warrior_E*
 Arena::CreateMaybeMessage< ::skill::C_Warrior_E >(Arena* arena) {
   return Arena::CreateMessageInternal< ::skill::C_Warrior_E >(arena);
@@ -9618,6 +10496,14 @@ Arena::CreateMaybeMessage< ::skill::C_Warrior_E >(Arena* arena) {
 template<> PROTOBUF_NOINLINE ::skill::S_Warrior_E*
 Arena::CreateMaybeMessage< ::skill::S_Warrior_E >(Arena* arena) {
   return Arena::CreateMessageInternal< ::skill::S_Warrior_E >(arena);
+}
+template<> PROTOBUF_NOINLINE ::skill::C_Warrior_E_Success*
+Arena::CreateMaybeMessage< ::skill::C_Warrior_E_Success >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::skill::C_Warrior_E_Success >(arena);
+}
+template<> PROTOBUF_NOINLINE ::skill::S_Warrior_E_Success*
+Arena::CreateMaybeMessage< ::skill::S_Warrior_E_Success >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::skill::S_Warrior_E_Success >(arena);
 }
 template<> PROTOBUF_NOINLINE ::skill::C_Warrior_R*
 Arena::CreateMaybeMessage< ::skill::C_Warrior_R >(Arena* arena) {

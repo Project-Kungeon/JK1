@@ -16,6 +16,7 @@ class JK1_API AJK1RampageController : public AAIController
 
 public:
 	AJK1RampageController();
+	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 

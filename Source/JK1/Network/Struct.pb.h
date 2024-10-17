@@ -49,9 +49,18 @@ namespace message {
 class CreatureInfo;
 struct CreatureInfoDefaultTypeInternal;
 extern CreatureInfoDefaultTypeInternal _CreatureInfo_default_instance_;
+class InventorySlot;
+struct InventorySlotDefaultTypeInternal;
+extern InventorySlotDefaultTypeInternal _InventorySlot_default_instance_;
 class ItemInfo;
 struct ItemInfoDefaultTypeInternal;
 extern ItemInfoDefaultTypeInternal _ItemInfo_default_instance_;
+class ItemObjectInfo;
+struct ItemObjectInfoDefaultTypeInternal;
+extern ItemObjectInfoDefaultTypeInternal _ItemObjectInfo_default_instance_;
+class MonsterInfo;
+struct MonsterInfoDefaultTypeInternal;
+extern MonsterInfoDefaultTypeInternal _MonsterInfo_default_instance_;
 class ObjectInfo;
 struct ObjectInfoDefaultTypeInternal;
 extern ObjectInfoDefaultTypeInternal _ObjectInfo_default_instance_;
@@ -70,7 +79,10 @@ extern TimestampDefaultTypeInternal _Timestamp_default_instance_;
 }  // namespace message
 PROTOBUF_NAMESPACE_OPEN
 template<> ::message::CreatureInfo* Arena::CreateMaybeMessage<::message::CreatureInfo>(Arena*);
+template<> ::message::InventorySlot* Arena::CreateMaybeMessage<::message::InventorySlot>(Arena*);
 template<> ::message::ItemInfo* Arena::CreateMaybeMessage<::message::ItemInfo>(Arena*);
+template<> ::message::ItemObjectInfo* Arena::CreateMaybeMessage<::message::ItemObjectInfo>(Arena*);
+template<> ::message::MonsterInfo* Arena::CreateMaybeMessage<::message::MonsterInfo>(Arena*);
 template<> ::message::ObjectInfo* Arena::CreateMaybeMessage<::message::ObjectInfo>(Arena*);
 template<> ::message::PlayerInfo* Arena::CreateMaybeMessage<::message::PlayerInfo>(Arena*);
 template<> ::message::PosInfo* Arena::CreateMaybeMessage<::message::PosInfo>(Arena*);
@@ -455,6 +467,182 @@ class PosInfo final :
 };
 // -------------------------------------------------------------------
 
+class SkillCooltime final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:message.SkillCooltime) */ {
+ public:
+  inline SkillCooltime() : SkillCooltime(nullptr) {}
+  ~SkillCooltime() override;
+  explicit PROTOBUF_CONSTEXPR SkillCooltime(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  SkillCooltime(const SkillCooltime& from);
+  SkillCooltime(SkillCooltime&& from) noexcept
+    : SkillCooltime() {
+    *this = ::std::move(from);
+  }
+
+  inline SkillCooltime& operator=(const SkillCooltime& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SkillCooltime& operator=(SkillCooltime&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SkillCooltime& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SkillCooltime* internal_default_instance() {
+    return reinterpret_cast<const SkillCooltime*>(
+               &_SkillCooltime_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(SkillCooltime& a, SkillCooltime& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(SkillCooltime* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SkillCooltime* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SkillCooltime* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<SkillCooltime>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const SkillCooltime& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom(const SkillCooltime& from);
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(SkillCooltime* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "message.SkillCooltime";
+  }
+  protected:
+  explicit SkillCooltime(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kQCooltimeFieldNumber = 1,
+    kECooltimeFieldNumber = 2,
+    kRCooltimeFieldNumber = 3,
+    kLsCooltimeFieldNumber = 4,
+  };
+  // uint32 q_cooltime = 1;
+  void clear_q_cooltime();
+  uint32_t q_cooltime() const;
+  void set_q_cooltime(uint32_t value);
+  private:
+  uint32_t _internal_q_cooltime() const;
+  void _internal_set_q_cooltime(uint32_t value);
+  public:
+
+  // uint32 e_cooltime = 2;
+  void clear_e_cooltime();
+  uint32_t e_cooltime() const;
+  void set_e_cooltime(uint32_t value);
+  private:
+  uint32_t _internal_e_cooltime() const;
+  void _internal_set_e_cooltime(uint32_t value);
+  public:
+
+  // uint32 r_cooltime = 3;
+  void clear_r_cooltime();
+  uint32_t r_cooltime() const;
+  void set_r_cooltime(uint32_t value);
+  private:
+  uint32_t _internal_r_cooltime() const;
+  void _internal_set_r_cooltime(uint32_t value);
+  public:
+
+  // uint32 ls_cooltime = 4;
+  void clear_ls_cooltime();
+  uint32_t ls_cooltime() const;
+  void set_ls_cooltime(uint32_t value);
+  private:
+  uint32_t _internal_ls_cooltime() const;
+  void _internal_set_ls_cooltime(uint32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:message.SkillCooltime)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  uint32_t q_cooltime_;
+  uint32_t e_cooltime_;
+  uint32_t r_cooltime_;
+  uint32_t ls_cooltime_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_Struct_2eproto;
+};
+// -------------------------------------------------------------------
+
 class ObjectInfo final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:message.ObjectInfo) */ {
  public:
@@ -503,7 +691,7 @@ class ObjectInfo final :
                &_ObjectInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    3;
 
   friend void swap(ObjectInfo& a, ObjectInfo& b) {
     a.Swap(&b);
@@ -649,6 +837,169 @@ class ObjectInfo final :
 };
 // -------------------------------------------------------------------
 
+class ItemObjectInfo final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:message.ItemObjectInfo) */ {
+ public:
+  inline ItemObjectInfo() : ItemObjectInfo(nullptr) {}
+  ~ItemObjectInfo() override;
+  explicit PROTOBUF_CONSTEXPR ItemObjectInfo(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  ItemObjectInfo(const ItemObjectInfo& from);
+  ItemObjectInfo(ItemObjectInfo&& from) noexcept
+    : ItemObjectInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline ItemObjectInfo& operator=(const ItemObjectInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ItemObjectInfo& operator=(ItemObjectInfo&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ItemObjectInfo& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ItemObjectInfo* internal_default_instance() {
+    return reinterpret_cast<const ItemObjectInfo*>(
+               &_ItemObjectInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    4;
+
+  friend void swap(ItemObjectInfo& a, ItemObjectInfo& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ItemObjectInfo* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ItemObjectInfo* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ItemObjectInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ItemObjectInfo>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ItemObjectInfo& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom(const ItemObjectInfo& from);
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ItemObjectInfo* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "message.ItemObjectInfo";
+  }
+  protected:
+  explicit ItemObjectInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kObjectInfoFieldNumber = 1,
+    kItemTypeFieldNumber = 2,
+  };
+  // .message.ObjectInfo object_info = 1;
+  bool has_object_info() const;
+  private:
+  bool _internal_has_object_info() const;
+  public:
+  void clear_object_info();
+  const ::message::ObjectInfo& object_info() const;
+  PROTOBUF_NODISCARD ::message::ObjectInfo* release_object_info();
+  ::message::ObjectInfo* mutable_object_info();
+  void set_allocated_object_info(::message::ObjectInfo* object_info);
+  private:
+  const ::message::ObjectInfo& _internal_object_info() const;
+  ::message::ObjectInfo* _internal_mutable_object_info();
+  public:
+  void unsafe_arena_set_allocated_object_info(
+      ::message::ObjectInfo* object_info);
+  ::message::ObjectInfo* unsafe_arena_release_object_info();
+
+  // .message.ItemType item_type = 2;
+  void clear_item_type();
+  ::message::ItemType item_type() const;
+  void set_item_type(::message::ItemType value);
+  private:
+  ::message::ItemType _internal_item_type() const;
+  void _internal_set_item_type(::message::ItemType value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:message.ItemObjectInfo)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::message::ObjectInfo* object_info_;
+  int item_type_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_Struct_2eproto;
+};
+// -------------------------------------------------------------------
+
 class CreatureInfo final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:message.CreatureInfo) */ {
  public:
@@ -697,7 +1048,7 @@ class CreatureInfo final :
                &_CreatureInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    5;
 
   friend void swap(CreatureInfo& a, CreatureInfo& b) {
     a.Swap(&b);
@@ -845,24 +1196,24 @@ class CreatureInfo final :
 };
 // -------------------------------------------------------------------
 
-class SkillCooltime final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:message.SkillCooltime) */ {
+class MonsterInfo final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:message.MonsterInfo) */ {
  public:
-  inline SkillCooltime() : SkillCooltime(nullptr) {}
-  ~SkillCooltime() override;
-  explicit PROTOBUF_CONSTEXPR SkillCooltime(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline MonsterInfo() : MonsterInfo(nullptr) {}
+  ~MonsterInfo() override;
+  explicit PROTOBUF_CONSTEXPR MonsterInfo(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  SkillCooltime(const SkillCooltime& from);
-  SkillCooltime(SkillCooltime&& from) noexcept
-    : SkillCooltime() {
+  MonsterInfo(const MonsterInfo& from);
+  MonsterInfo(MonsterInfo&& from) noexcept
+    : MonsterInfo() {
     *this = ::std::move(from);
   }
 
-  inline SkillCooltime& operator=(const SkillCooltime& from) {
+  inline MonsterInfo& operator=(const MonsterInfo& from) {
     CopyFrom(from);
     return *this;
   }
-  inline SkillCooltime& operator=(SkillCooltime&& from) noexcept {
+  inline MonsterInfo& operator=(MonsterInfo&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()
   #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -885,20 +1236,20 @@ class SkillCooltime final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const SkillCooltime& default_instance() {
+  static const MonsterInfo& default_instance() {
     return *internal_default_instance();
   }
-  static inline const SkillCooltime* internal_default_instance() {
-    return reinterpret_cast<const SkillCooltime*>(
-               &_SkillCooltime_default_instance_);
+  static inline const MonsterInfo* internal_default_instance() {
+    return reinterpret_cast<const MonsterInfo*>(
+               &_MonsterInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    6;
 
-  friend void swap(SkillCooltime& a, SkillCooltime& b) {
+  friend void swap(MonsterInfo& a, MonsterInfo& b) {
     a.Swap(&b);
   }
-  inline void Swap(SkillCooltime* other) {
+  inline void Swap(MonsterInfo* other) {
     if (other == this) return;
   #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetOwningArena() != nullptr &&
@@ -911,7 +1262,7 @@ class SkillCooltime final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(SkillCooltime* other) {
+  void UnsafeArenaSwap(MonsterInfo* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -919,13 +1270,13 @@ class SkillCooltime final :
 
   // implements Message ----------------------------------------------
 
-  SkillCooltime* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<SkillCooltime>(arena);
+  MonsterInfo* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<MonsterInfo>(arena);
   }
   using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const SkillCooltime& from);
+  void CopyFrom(const MonsterInfo& from);
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom(const SkillCooltime& from);
+  void MergeFrom(const MonsterInfo& from);
   private:
   static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
   public:
@@ -942,15 +1293,15 @@ class SkillCooltime final :
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(SkillCooltime* other);
+  void InternalSwap(MonsterInfo* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "message.SkillCooltime";
+    return "message.MonsterInfo";
   }
   protected:
-  explicit SkillCooltime(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+  explicit MonsterInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
   public:
 
@@ -964,58 +1315,45 @@ class SkillCooltime final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kQCooltimeFieldNumber = 1,
-    kECooltimeFieldNumber = 2,
-    kRCooltimeFieldNumber = 3,
-    kLsCooltimeFieldNumber = 4,
+    kCreatureInfoFieldNumber = 1,
+    kMonsterTypeFieldNumber = 2,
   };
-  // uint32 q_cooltime = 1;
-  void clear_q_cooltime();
-  uint32_t q_cooltime() const;
-  void set_q_cooltime(uint32_t value);
+  // .message.CreatureInfo creature_info = 1;
+  bool has_creature_info() const;
   private:
-  uint32_t _internal_q_cooltime() const;
-  void _internal_set_q_cooltime(uint32_t value);
+  bool _internal_has_creature_info() const;
+  public:
+  void clear_creature_info();
+  const ::message::CreatureInfo& creature_info() const;
+  PROTOBUF_NODISCARD ::message::CreatureInfo* release_creature_info();
+  ::message::CreatureInfo* mutable_creature_info();
+  void set_allocated_creature_info(::message::CreatureInfo* creature_info);
+  private:
+  const ::message::CreatureInfo& _internal_creature_info() const;
+  ::message::CreatureInfo* _internal_mutable_creature_info();
+  public:
+  void unsafe_arena_set_allocated_creature_info(
+      ::message::CreatureInfo* creature_info);
+  ::message::CreatureInfo* unsafe_arena_release_creature_info();
+
+  // .message.MonsterType monster_type = 2;
+  void clear_monster_type();
+  ::message::MonsterType monster_type() const;
+  void set_monster_type(::message::MonsterType value);
+  private:
+  ::message::MonsterType _internal_monster_type() const;
+  void _internal_set_monster_type(::message::MonsterType value);
   public:
 
-  // uint32 e_cooltime = 2;
-  void clear_e_cooltime();
-  uint32_t e_cooltime() const;
-  void set_e_cooltime(uint32_t value);
-  private:
-  uint32_t _internal_e_cooltime() const;
-  void _internal_set_e_cooltime(uint32_t value);
-  public:
-
-  // uint32 r_cooltime = 3;
-  void clear_r_cooltime();
-  uint32_t r_cooltime() const;
-  void set_r_cooltime(uint32_t value);
-  private:
-  uint32_t _internal_r_cooltime() const;
-  void _internal_set_r_cooltime(uint32_t value);
-  public:
-
-  // uint32 ls_cooltime = 4;
-  void clear_ls_cooltime();
-  uint32_t ls_cooltime() const;
-  void set_ls_cooltime(uint32_t value);
-  private:
-  uint32_t _internal_ls_cooltime() const;
-  void _internal_set_ls_cooltime(uint32_t value);
-  public:
-
-  // @@protoc_insertion_point(class_scope:message.SkillCooltime)
+  // @@protoc_insertion_point(class_scope:message.MonsterInfo)
  private:
   class _Internal;
 
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  uint32_t q_cooltime_;
-  uint32_t e_cooltime_;
-  uint32_t r_cooltime_;
-  uint32_t ls_cooltime_;
+  ::message::CreatureInfo* creature_info_;
+  int monster_type_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Struct_2eproto;
 };
@@ -1069,7 +1407,7 @@ class PlayerInfo final :
                &_PlayerInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    7;
 
   friend void swap(PlayerInfo& a, PlayerInfo& b) {
     a.Swap(&b);
@@ -1252,7 +1590,7 @@ class ItemInfo final :
                &_ItemInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    8;
 
   friend void swap(ItemInfo& a, ItemInfo& b) {
     a.Swap(&b);
@@ -1323,34 +1661,10 @@ class ItemInfo final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kDescriptionFieldNumber = 3,
     kItemIdFieldNumber = 1,
     kItemTypeFieldNumber = 2,
+    kItemTableFieldNumber = 3,
   };
-  // repeated string description = 3;
-  int description_size() const;
-  private:
-  int _internal_description_size() const;
-  public:
-  void clear_description();
-  const std::string& description(int index) const;
-  std::string* mutable_description(int index);
-  void set_description(int index, const std::string& value);
-  void set_description(int index, std::string&& value);
-  void set_description(int index, const char* value);
-  void set_description(int index, const char* value, size_t size);
-  std::string* add_description();
-  void add_description(const std::string& value);
-  void add_description(std::string&& value);
-  void add_description(const char* value);
-  void add_description(const char* value, size_t size);
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& description() const;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_description();
-  private:
-  const std::string& _internal_description(int index) const;
-  std::string* _internal_add_description();
-  public:
-
   // uint64 item_id = 1;
   void clear_item_id();
   uint64_t item_id() const;
@@ -1369,6 +1683,15 @@ class ItemInfo final :
   void _internal_set_item_type(::message::ItemType value);
   public:
 
+  // .message.ItemTable item_table = 3;
+  void clear_item_table();
+  ::message::ItemTable item_table() const;
+  void set_item_table(::message::ItemTable value);
+  private:
+  ::message::ItemTable _internal_item_table() const;
+  void _internal_set_item_table(::message::ItemTable value);
+  public:
+
   // @@protoc_insertion_point(class_scope:message.ItemInfo)
  private:
   class _Internal;
@@ -1376,9 +1699,172 @@ class ItemInfo final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> description_;
   uint64_t item_id_;
   int item_type_;
+  int item_table_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_Struct_2eproto;
+};
+// -------------------------------------------------------------------
+
+class InventorySlot final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:message.InventorySlot) */ {
+ public:
+  inline InventorySlot() : InventorySlot(nullptr) {}
+  ~InventorySlot() override;
+  explicit PROTOBUF_CONSTEXPR InventorySlot(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  InventorySlot(const InventorySlot& from);
+  InventorySlot(InventorySlot&& from) noexcept
+    : InventorySlot() {
+    *this = ::std::move(from);
+  }
+
+  inline InventorySlot& operator=(const InventorySlot& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline InventorySlot& operator=(InventorySlot&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const InventorySlot& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const InventorySlot* internal_default_instance() {
+    return reinterpret_cast<const InventorySlot*>(
+               &_InventorySlot_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    9;
+
+  friend void swap(InventorySlot& a, InventorySlot& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(InventorySlot* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(InventorySlot* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  InventorySlot* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<InventorySlot>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const InventorySlot& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom(const InventorySlot& from);
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message* to, const ::PROTOBUF_NAMESPACE_ID::Message& from);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(InventorySlot* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "message.InventorySlot";
+  }
+  protected:
+  explicit InventorySlot(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kItemInfoFieldNumber = 1,
+    kCntFieldNumber = 2,
+  };
+  // .message.ItemInfo itemInfo = 1;
+  bool has_iteminfo() const;
+  private:
+  bool _internal_has_iteminfo() const;
+  public:
+  void clear_iteminfo();
+  const ::message::ItemInfo& iteminfo() const;
+  PROTOBUF_NODISCARD ::message::ItemInfo* release_iteminfo();
+  ::message::ItemInfo* mutable_iteminfo();
+  void set_allocated_iteminfo(::message::ItemInfo* iteminfo);
+  private:
+  const ::message::ItemInfo& _internal_iteminfo() const;
+  ::message::ItemInfo* _internal_mutable_iteminfo();
+  public:
+  void unsafe_arena_set_allocated_iteminfo(
+      ::message::ItemInfo* iteminfo);
+  ::message::ItemInfo* unsafe_arena_release_iteminfo();
+
+  // int32 cnt = 2;
+  void clear_cnt();
+  int32_t cnt() const;
+  void set_cnt(int32_t value);
+  private:
+  int32_t _internal_cnt() const;
+  void _internal_set_cnt(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:message.InventorySlot)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  ::message::ItemInfo* iteminfo_;
+  int32_t cnt_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Struct_2eproto;
 };
@@ -1595,6 +2081,90 @@ inline void PosInfo::_internal_set_state(::message::MoveState value) {
 inline void PosInfo::set_state(::message::MoveState value) {
   _internal_set_state(value);
   // @@protoc_insertion_point(field_set:message.PosInfo.state)
+}
+
+// -------------------------------------------------------------------
+
+// SkillCooltime
+
+// uint32 q_cooltime = 1;
+inline void SkillCooltime::clear_q_cooltime() {
+  q_cooltime_ = 0u;
+}
+inline uint32_t SkillCooltime::_internal_q_cooltime() const {
+  return q_cooltime_;
+}
+inline uint32_t SkillCooltime::q_cooltime() const {
+  // @@protoc_insertion_point(field_get:message.SkillCooltime.q_cooltime)
+  return _internal_q_cooltime();
+}
+inline void SkillCooltime::_internal_set_q_cooltime(uint32_t value) {
+  
+  q_cooltime_ = value;
+}
+inline void SkillCooltime::set_q_cooltime(uint32_t value) {
+  _internal_set_q_cooltime(value);
+  // @@protoc_insertion_point(field_set:message.SkillCooltime.q_cooltime)
+}
+
+// uint32 e_cooltime = 2;
+inline void SkillCooltime::clear_e_cooltime() {
+  e_cooltime_ = 0u;
+}
+inline uint32_t SkillCooltime::_internal_e_cooltime() const {
+  return e_cooltime_;
+}
+inline uint32_t SkillCooltime::e_cooltime() const {
+  // @@protoc_insertion_point(field_get:message.SkillCooltime.e_cooltime)
+  return _internal_e_cooltime();
+}
+inline void SkillCooltime::_internal_set_e_cooltime(uint32_t value) {
+  
+  e_cooltime_ = value;
+}
+inline void SkillCooltime::set_e_cooltime(uint32_t value) {
+  _internal_set_e_cooltime(value);
+  // @@protoc_insertion_point(field_set:message.SkillCooltime.e_cooltime)
+}
+
+// uint32 r_cooltime = 3;
+inline void SkillCooltime::clear_r_cooltime() {
+  r_cooltime_ = 0u;
+}
+inline uint32_t SkillCooltime::_internal_r_cooltime() const {
+  return r_cooltime_;
+}
+inline uint32_t SkillCooltime::r_cooltime() const {
+  // @@protoc_insertion_point(field_get:message.SkillCooltime.r_cooltime)
+  return _internal_r_cooltime();
+}
+inline void SkillCooltime::_internal_set_r_cooltime(uint32_t value) {
+  
+  r_cooltime_ = value;
+}
+inline void SkillCooltime::set_r_cooltime(uint32_t value) {
+  _internal_set_r_cooltime(value);
+  // @@protoc_insertion_point(field_set:message.SkillCooltime.r_cooltime)
+}
+
+// uint32 ls_cooltime = 4;
+inline void SkillCooltime::clear_ls_cooltime() {
+  ls_cooltime_ = 0u;
+}
+inline uint32_t SkillCooltime::_internal_ls_cooltime() const {
+  return ls_cooltime_;
+}
+inline uint32_t SkillCooltime::ls_cooltime() const {
+  // @@protoc_insertion_point(field_get:message.SkillCooltime.ls_cooltime)
+  return _internal_ls_cooltime();
+}
+inline void SkillCooltime::_internal_set_ls_cooltime(uint32_t value) {
+  
+  ls_cooltime_ = value;
+}
+inline void SkillCooltime::set_ls_cooltime(uint32_t value) {
+  _internal_set_ls_cooltime(value);
+  // @@protoc_insertion_point(field_set:message.SkillCooltime.ls_cooltime)
 }
 
 // -------------------------------------------------------------------
@@ -1823,6 +2393,120 @@ inline void ObjectInfo::set_allocated_last_updated(::message::Timestamp* last_up
 
 // -------------------------------------------------------------------
 
+// ItemObjectInfo
+
+// .message.ObjectInfo object_info = 1;
+inline bool ItemObjectInfo::_internal_has_object_info() const {
+  return this != internal_default_instance() && object_info_ != nullptr;
+}
+inline bool ItemObjectInfo::has_object_info() const {
+  return _internal_has_object_info();
+}
+inline void ItemObjectInfo::clear_object_info() {
+  if (GetArenaForAllocation() == nullptr && object_info_ != nullptr) {
+    delete object_info_;
+  }
+  object_info_ = nullptr;
+}
+inline const ::message::ObjectInfo& ItemObjectInfo::_internal_object_info() const {
+  const ::message::ObjectInfo* p = object_info_;
+  return p != nullptr ? *p : reinterpret_cast<const ::message::ObjectInfo&>(
+      ::message::_ObjectInfo_default_instance_);
+}
+inline const ::message::ObjectInfo& ItemObjectInfo::object_info() const {
+  // @@protoc_insertion_point(field_get:message.ItemObjectInfo.object_info)
+  return _internal_object_info();
+}
+inline void ItemObjectInfo::unsafe_arena_set_allocated_object_info(
+    ::message::ObjectInfo* object_info) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(object_info_);
+  }
+  object_info_ = object_info;
+  if (object_info) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:message.ItemObjectInfo.object_info)
+}
+inline ::message::ObjectInfo* ItemObjectInfo::release_object_info() {
+  
+  ::message::ObjectInfo* temp = object_info_;
+  object_info_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::message::ObjectInfo* ItemObjectInfo::unsafe_arena_release_object_info() {
+  // @@protoc_insertion_point(field_release:message.ItemObjectInfo.object_info)
+  
+  ::message::ObjectInfo* temp = object_info_;
+  object_info_ = nullptr;
+  return temp;
+}
+inline ::message::ObjectInfo* ItemObjectInfo::_internal_mutable_object_info() {
+  
+  if (object_info_ == nullptr) {
+    auto* p = CreateMaybeMessage<::message::ObjectInfo>(GetArenaForAllocation());
+    object_info_ = p;
+  }
+  return object_info_;
+}
+inline ::message::ObjectInfo* ItemObjectInfo::mutable_object_info() {
+  ::message::ObjectInfo* _msg = _internal_mutable_object_info();
+  // @@protoc_insertion_point(field_mutable:message.ItemObjectInfo.object_info)
+  return _msg;
+}
+inline void ItemObjectInfo::set_allocated_object_info(::message::ObjectInfo* object_info) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete object_info_;
+  }
+  if (object_info) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(object_info);
+    if (message_arena != submessage_arena) {
+      object_info = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, object_info, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  object_info_ = object_info;
+  // @@protoc_insertion_point(field_set_allocated:message.ItemObjectInfo.object_info)
+}
+
+// .message.ItemType item_type = 2;
+inline void ItemObjectInfo::clear_item_type() {
+  item_type_ = 0;
+}
+inline ::message::ItemType ItemObjectInfo::_internal_item_type() const {
+  return static_cast< ::message::ItemType >(item_type_);
+}
+inline ::message::ItemType ItemObjectInfo::item_type() const {
+  // @@protoc_insertion_point(field_get:message.ItemObjectInfo.item_type)
+  return _internal_item_type();
+}
+inline void ItemObjectInfo::_internal_set_item_type(::message::ItemType value) {
+  
+  item_type_ = value;
+}
+inline void ItemObjectInfo::set_item_type(::message::ItemType value) {
+  _internal_set_item_type(value);
+  // @@protoc_insertion_point(field_set:message.ItemObjectInfo.item_type)
+}
+
+// -------------------------------------------------------------------
+
 // CreatureInfo
 
 // .message.ObjectInfo object_info = 1;
@@ -1997,86 +2681,116 @@ inline void CreatureInfo::set_exp(float value) {
 
 // -------------------------------------------------------------------
 
-// SkillCooltime
+// MonsterInfo
 
-// uint32 q_cooltime = 1;
-inline void SkillCooltime::clear_q_cooltime() {
-  q_cooltime_ = 0u;
+// .message.CreatureInfo creature_info = 1;
+inline bool MonsterInfo::_internal_has_creature_info() const {
+  return this != internal_default_instance() && creature_info_ != nullptr;
 }
-inline uint32_t SkillCooltime::_internal_q_cooltime() const {
-  return q_cooltime_;
+inline bool MonsterInfo::has_creature_info() const {
+  return _internal_has_creature_info();
 }
-inline uint32_t SkillCooltime::q_cooltime() const {
-  // @@protoc_insertion_point(field_get:message.SkillCooltime.q_cooltime)
-  return _internal_q_cooltime();
+inline void MonsterInfo::clear_creature_info() {
+  if (GetArenaForAllocation() == nullptr && creature_info_ != nullptr) {
+    delete creature_info_;
+  }
+  creature_info_ = nullptr;
 }
-inline void SkillCooltime::_internal_set_q_cooltime(uint32_t value) {
+inline const ::message::CreatureInfo& MonsterInfo::_internal_creature_info() const {
+  const ::message::CreatureInfo* p = creature_info_;
+  return p != nullptr ? *p : reinterpret_cast<const ::message::CreatureInfo&>(
+      ::message::_CreatureInfo_default_instance_);
+}
+inline const ::message::CreatureInfo& MonsterInfo::creature_info() const {
+  // @@protoc_insertion_point(field_get:message.MonsterInfo.creature_info)
+  return _internal_creature_info();
+}
+inline void MonsterInfo::unsafe_arena_set_allocated_creature_info(
+    ::message::CreatureInfo* creature_info) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(creature_info_);
+  }
+  creature_info_ = creature_info;
+  if (creature_info) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:message.MonsterInfo.creature_info)
+}
+inline ::message::CreatureInfo* MonsterInfo::release_creature_info() {
   
-  q_cooltime_ = value;
+  ::message::CreatureInfo* temp = creature_info_;
+  creature_info_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
 }
-inline void SkillCooltime::set_q_cooltime(uint32_t value) {
-  _internal_set_q_cooltime(value);
-  // @@protoc_insertion_point(field_set:message.SkillCooltime.q_cooltime)
+inline ::message::CreatureInfo* MonsterInfo::unsafe_arena_release_creature_info() {
+  // @@protoc_insertion_point(field_release:message.MonsterInfo.creature_info)
+  
+  ::message::CreatureInfo* temp = creature_info_;
+  creature_info_ = nullptr;
+  return temp;
+}
+inline ::message::CreatureInfo* MonsterInfo::_internal_mutable_creature_info() {
+  
+  if (creature_info_ == nullptr) {
+    auto* p = CreateMaybeMessage<::message::CreatureInfo>(GetArenaForAllocation());
+    creature_info_ = p;
+  }
+  return creature_info_;
+}
+inline ::message::CreatureInfo* MonsterInfo::mutable_creature_info() {
+  ::message::CreatureInfo* _msg = _internal_mutable_creature_info();
+  // @@protoc_insertion_point(field_mutable:message.MonsterInfo.creature_info)
+  return _msg;
+}
+inline void MonsterInfo::set_allocated_creature_info(::message::CreatureInfo* creature_info) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete creature_info_;
+  }
+  if (creature_info) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(creature_info);
+    if (message_arena != submessage_arena) {
+      creature_info = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, creature_info, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  creature_info_ = creature_info;
+  // @@protoc_insertion_point(field_set_allocated:message.MonsterInfo.creature_info)
 }
 
-// uint32 e_cooltime = 2;
-inline void SkillCooltime::clear_e_cooltime() {
-  e_cooltime_ = 0u;
+// .message.MonsterType monster_type = 2;
+inline void MonsterInfo::clear_monster_type() {
+  monster_type_ = 0;
 }
-inline uint32_t SkillCooltime::_internal_e_cooltime() const {
-  return e_cooltime_;
+inline ::message::MonsterType MonsterInfo::_internal_monster_type() const {
+  return static_cast< ::message::MonsterType >(monster_type_);
 }
-inline uint32_t SkillCooltime::e_cooltime() const {
-  // @@protoc_insertion_point(field_get:message.SkillCooltime.e_cooltime)
-  return _internal_e_cooltime();
+inline ::message::MonsterType MonsterInfo::monster_type() const {
+  // @@protoc_insertion_point(field_get:message.MonsterInfo.monster_type)
+  return _internal_monster_type();
 }
-inline void SkillCooltime::_internal_set_e_cooltime(uint32_t value) {
+inline void MonsterInfo::_internal_set_monster_type(::message::MonsterType value) {
   
-  e_cooltime_ = value;
+  monster_type_ = value;
 }
-inline void SkillCooltime::set_e_cooltime(uint32_t value) {
-  _internal_set_e_cooltime(value);
-  // @@protoc_insertion_point(field_set:message.SkillCooltime.e_cooltime)
-}
-
-// uint32 r_cooltime = 3;
-inline void SkillCooltime::clear_r_cooltime() {
-  r_cooltime_ = 0u;
-}
-inline uint32_t SkillCooltime::_internal_r_cooltime() const {
-  return r_cooltime_;
-}
-inline uint32_t SkillCooltime::r_cooltime() const {
-  // @@protoc_insertion_point(field_get:message.SkillCooltime.r_cooltime)
-  return _internal_r_cooltime();
-}
-inline void SkillCooltime::_internal_set_r_cooltime(uint32_t value) {
-  
-  r_cooltime_ = value;
-}
-inline void SkillCooltime::set_r_cooltime(uint32_t value) {
-  _internal_set_r_cooltime(value);
-  // @@protoc_insertion_point(field_set:message.SkillCooltime.r_cooltime)
-}
-
-// uint32 ls_cooltime = 4;
-inline void SkillCooltime::clear_ls_cooltime() {
-  ls_cooltime_ = 0u;
-}
-inline uint32_t SkillCooltime::_internal_ls_cooltime() const {
-  return ls_cooltime_;
-}
-inline uint32_t SkillCooltime::ls_cooltime() const {
-  // @@protoc_insertion_point(field_get:message.SkillCooltime.ls_cooltime)
-  return _internal_ls_cooltime();
-}
-inline void SkillCooltime::_internal_set_ls_cooltime(uint32_t value) {
-  
-  ls_cooltime_ = value;
-}
-inline void SkillCooltime::set_ls_cooltime(uint32_t value) {
-  _internal_set_ls_cooltime(value);
-  // @@protoc_insertion_point(field_set:message.SkillCooltime.ls_cooltime)
+inline void MonsterInfo::set_monster_type(::message::MonsterType value) {
+  _internal_set_monster_type(value);
+  // @@protoc_insertion_point(field_set:message.MonsterInfo.monster_type)
 }
 
 // -------------------------------------------------------------------
@@ -2327,84 +3041,149 @@ inline void ItemInfo::set_item_type(::message::ItemType value) {
   // @@protoc_insertion_point(field_set:message.ItemInfo.item_type)
 }
 
-// repeated string description = 3;
-inline int ItemInfo::_internal_description_size() const {
-  return description_.size();
+// .message.ItemTable item_table = 3;
+inline void ItemInfo::clear_item_table() {
+  item_table_ = 0;
 }
-inline int ItemInfo::description_size() const {
-  return _internal_description_size();
+inline ::message::ItemTable ItemInfo::_internal_item_table() const {
+  return static_cast< ::message::ItemTable >(item_table_);
 }
-inline void ItemInfo::clear_description() {
-  description_.Clear();
+inline ::message::ItemTable ItemInfo::item_table() const {
+  // @@protoc_insertion_point(field_get:message.ItemInfo.item_table)
+  return _internal_item_table();
 }
-inline std::string* ItemInfo::add_description() {
-  std::string* _s = _internal_add_description();
-  // @@protoc_insertion_point(field_add_mutable:message.ItemInfo.description)
-  return _s;
+inline void ItemInfo::_internal_set_item_table(::message::ItemTable value) {
+  
+  item_table_ = value;
 }
-inline const std::string& ItemInfo::_internal_description(int index) const {
-  return description_.Get(index);
+inline void ItemInfo::set_item_table(::message::ItemTable value) {
+  _internal_set_item_table(value);
+  // @@protoc_insertion_point(field_set:message.ItemInfo.item_table)
 }
-inline const std::string& ItemInfo::description(int index) const {
-  // @@protoc_insertion_point(field_get:message.ItemInfo.description)
-  return _internal_description(index);
+
+// -------------------------------------------------------------------
+
+// InventorySlot
+
+// .message.ItemInfo itemInfo = 1;
+inline bool InventorySlot::_internal_has_iteminfo() const {
+  return this != internal_default_instance() && iteminfo_ != nullptr;
 }
-inline std::string* ItemInfo::mutable_description(int index) {
-  // @@protoc_insertion_point(field_mutable:message.ItemInfo.description)
-  return description_.Mutable(index);
+inline bool InventorySlot::has_iteminfo() const {
+  return _internal_has_iteminfo();
 }
-inline void ItemInfo::set_description(int index, const std::string& value) {
-  description_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set:message.ItemInfo.description)
+inline void InventorySlot::clear_iteminfo() {
+  if (GetArenaForAllocation() == nullptr && iteminfo_ != nullptr) {
+    delete iteminfo_;
+  }
+  iteminfo_ = nullptr;
 }
-inline void ItemInfo::set_description(int index, std::string&& value) {
-  description_.Mutable(index)->assign(std::move(value));
-  // @@protoc_insertion_point(field_set:message.ItemInfo.description)
+inline const ::message::ItemInfo& InventorySlot::_internal_iteminfo() const {
+  const ::message::ItemInfo* p = iteminfo_;
+  return p != nullptr ? *p : reinterpret_cast<const ::message::ItemInfo&>(
+      ::message::_ItemInfo_default_instance_);
 }
-inline void ItemInfo::set_description(int index, const char* value) {
-  GOOGLE_DCHECK(value != nullptr);
-  description_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:message.ItemInfo.description)
+inline const ::message::ItemInfo& InventorySlot::iteminfo() const {
+  // @@protoc_insertion_point(field_get:message.InventorySlot.itemInfo)
+  return _internal_iteminfo();
 }
-inline void ItemInfo::set_description(int index, const char* value, size_t size) {
-  description_.Mutable(index)->assign(
-    reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:message.ItemInfo.description)
+inline void InventorySlot::unsafe_arena_set_allocated_iteminfo(
+    ::message::ItemInfo* iteminfo) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(iteminfo_);
+  }
+  iteminfo_ = iteminfo;
+  if (iteminfo) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:message.InventorySlot.itemInfo)
 }
-inline std::string* ItemInfo::_internal_add_description() {
-  return description_.Add();
+inline ::message::ItemInfo* InventorySlot::release_iteminfo() {
+  
+  ::message::ItemInfo* temp = iteminfo_;
+  iteminfo_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
 }
-inline void ItemInfo::add_description(const std::string& value) {
-  description_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:message.ItemInfo.description)
+inline ::message::ItemInfo* InventorySlot::unsafe_arena_release_iteminfo() {
+  // @@protoc_insertion_point(field_release:message.InventorySlot.itemInfo)
+  
+  ::message::ItemInfo* temp = iteminfo_;
+  iteminfo_ = nullptr;
+  return temp;
 }
-inline void ItemInfo::add_description(std::string&& value) {
-  description_.Add(std::move(value));
-  // @@protoc_insertion_point(field_add:message.ItemInfo.description)
+inline ::message::ItemInfo* InventorySlot::_internal_mutable_iteminfo() {
+  
+  if (iteminfo_ == nullptr) {
+    auto* p = CreateMaybeMessage<::message::ItemInfo>(GetArenaForAllocation());
+    iteminfo_ = p;
+  }
+  return iteminfo_;
 }
-inline void ItemInfo::add_description(const char* value) {
-  GOOGLE_DCHECK(value != nullptr);
-  description_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:message.ItemInfo.description)
+inline ::message::ItemInfo* InventorySlot::mutable_iteminfo() {
+  ::message::ItemInfo* _msg = _internal_mutable_iteminfo();
+  // @@protoc_insertion_point(field_mutable:message.InventorySlot.itemInfo)
+  return _msg;
 }
-inline void ItemInfo::add_description(const char* value, size_t size) {
-  description_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:message.ItemInfo.description)
+inline void InventorySlot::set_allocated_iteminfo(::message::ItemInfo* iteminfo) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete iteminfo_;
+  }
+  if (iteminfo) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(iteminfo);
+    if (message_arena != submessage_arena) {
+      iteminfo = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, iteminfo, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  iteminfo_ = iteminfo;
+  // @@protoc_insertion_point(field_set_allocated:message.InventorySlot.itemInfo)
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
-ItemInfo::description() const {
-  // @@protoc_insertion_point(field_list:message.ItemInfo.description)
-  return description_;
+
+// int32 cnt = 2;
+inline void InventorySlot::clear_cnt() {
+  cnt_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
-ItemInfo::mutable_description() {
-  // @@protoc_insertion_point(field_mutable_list:message.ItemInfo.description)
-  return &description_;
+inline int32_t InventorySlot::_internal_cnt() const {
+  return cnt_;
+}
+inline int32_t InventorySlot::cnt() const {
+  // @@protoc_insertion_point(field_get:message.InventorySlot.cnt)
+  return _internal_cnt();
+}
+inline void InventorySlot::_internal_set_cnt(int32_t value) {
+  
+  cnt_ = value;
+}
+inline void InventorySlot::set_cnt(int32_t value) {
+  _internal_set_cnt(value);
+  // @@protoc_insertion_point(field_set:message.InventorySlot.cnt)
 }
 
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

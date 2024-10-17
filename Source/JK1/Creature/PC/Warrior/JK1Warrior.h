@@ -51,9 +51,12 @@ public:
 	// Warrior
 	virtual void WarriorQ();
 	virtual void WarriorE();
+	virtual void WarriorE_Success();
 	virtual void WarriorR();
-	virtual void WarriorLShift();
+	virtual void WarriorLShift(FVector ForwardDirection);
 
+	UFUNCTION()
+	virtual void CheckDamagedInParry();
 
 	//refactoring
 	UFUNCTION()
@@ -63,23 +66,24 @@ public:
 	virtual void StartROverTime();
 	TArray<FOverlapResult> CheckSkillRTrace();
 	void StopParticleSystem();
+
+	UFUNCTION(BlueprintCallable)
 	void ResetSkillCooldown();
-	//void ResetSkillLShift();
-	//void bCanUseSkillActive() { bCanUseSkill = true; };
-	//삭제해야하는 테스트용 함수.
-	void SetParryActiveTrue() { bParryActive = true; };
-	void SetParryActiveFalse() { bParryActive = false; };
 	
+	//SkillCooldownFunction
+	virtual void StartQTimer() override;
+	virtual void StartETimer() override;
+	virtual void StartRTimer() override;
+	virtual void StartLSTimer() override;
+
+	bool GetbParryCount() { return bParryCount; }
+	void SetbParryCount(bool _bParryCount) { bParryCount = _bParryCount; }
 	
-
-
+	void ChangeStatus();
 	/*
 	*  Member Variable
 	*/
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	TObjectPtr<class UAnimMontage> CurrentMontage;
-
 	//Montage, 클래스들은 각자 기본공격 몽타주 갯수가 다르다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> ComboActionMontage1;
@@ -89,6 +93,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> ComboActionMontage3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<class UAnimMontage> SkillQMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UAnimMontage> SkillRMontage;
@@ -105,6 +112,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TObjectPtr<class UParticleSystem> SkillREffect;
 
+	
 	UPROPERTY()
 	TObjectPtr<class UParticleSystemComponent> ParticleSystemComponent;
 
@@ -114,6 +122,8 @@ protected:
 	// Dash duration
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float DashDuration=1.f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+	TObjectPtr<class UBoxComponent> CollisionComponent;
 
 	// Timer handle for controlling dash duration
 	FTimerHandle DashTimerHandle;
@@ -121,10 +131,6 @@ protected:
 	// Current speed of the dash
 	FVector DashVelocity;
 	
-	float SkillCooldown;
-	FTimerHandle SkillCooldownTimerHandle;
-	uint32 ParryCount = 0;
-	UAnimInstance* AnimInstance = nullptr;
 	// 데미지 처리 주기
 	const float DamageInterval = 0.5f;
 	// 데미지 주기 지속 시간
@@ -141,4 +147,25 @@ protected:
 	// Forward movement strength when jumping
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float ForwardStrength = 1000.0f;
+
+protected:
+	 
+	//Warrior Skill Cool Time
+	const float WarriorQCT = 3.f;
+	const float WarriorECT = 30.f;
+	const float WarriorRCT = 15.f;
+	const float WarriorLSCT = 10.f;
+
+	//Warrior Buff Time
+	const float QBuffTime = 3.f;
+	const float RBuffTime = 5.f;
+	
+	// Check Success Parry Count
+	uint32 ParryCount = 0;
+	//Check IS SkillQ Activate
+	bool bQActive = false;
+	//Check Already add Check Parry Count
+	bool bParryCount = false;
+
+	
 };

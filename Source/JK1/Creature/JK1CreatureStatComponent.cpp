@@ -59,9 +59,7 @@ void UJK1CreatureStatComponent::LoadData()
 
 	if (BasicStatData != nullptr)
 	{
-		SetCurrentHP(BasicStatData->MaxHP);
-		SetStat(0, BasicStatData->ATK);
-		SetStat(1, BasicStatData->DEF);
+		StatRecovery();
 		UE_LOG(LogSystem, Log, TEXT("Set (%s)'s Default Stat"), *Name.ToString());
 	}
 	else
@@ -70,32 +68,35 @@ void UJK1CreatureStatComponent::LoadData()
 
 void UJK1CreatureStatComponent::SetCurrentHP(float NewHP)
 {
-	CurrentHP = NewHP;
-	UE_LOG(LogSystem, Log, TEXT("Remain HP : %f"), CurrentHP);
-	OnHPChanged.Broadcast();
+	AsyncTask(ENamedThreads::GameThread, [this, NewHP]() {
+		CurrentHP = NewHP;
+		UE_LOG(LogSystem, Log, TEXT("Remain HP : %f"), CurrentHP);
+		OnHPChanged.Broadcast();
 
-	//if (CurrentHP <= KINDA_SMALL_NUMBER)
-	//{
-	//	CurrentHP = 0.f;
-	//	OnHPIsZero.Broadcast();
+		if (CurrentHP <= 0.f)
+		{
+			CurrentHP = 0.f;
+			OnHPIsZero.Broadcast();
 
-	//	// TEMP CODE
-	//	if (!DamageInstigator.IsEmpty())
-	//	{
-	//		TArray<AActor*> temp;
-	//		DamageInstigator.GetKeys(temp);
+			//// TEMP CODE
+			//if (!DamageInstigator.IsEmpty())
+			//{
+			//	TArray<AActor*> temp;
+			//	DamageInstigator.GetKeys(temp);
 
-	//		for (AActor* instigator : temp)
-	//		{
-	//			if(auto player = Cast<AJK1PlayerController>(instigator))
-	//				if (auto Character = Cast<AJK1CreatureBase>(player->GetPawn()))
-	//				{
-	//					Character->CreatureStat->PlusExp(BasicStatData->Exp);
-	//					Cast<AJK1PlayerController>(Character->GetController())->DisengagedLockOn();
-	//				}
-	//		}
-	//	}
-	//}
+			//	for (AActor* instigator : temp)
+			//	{
+			//		if(auto player = Cast<AJK1PlayerController>(instigator))
+			//			if (auto Character = Cast<AJK1CreatureBase>(player->GetPawn()))
+			//			{
+			//				Character->CreatureStat->PlusExp(BasicStatData->Exp);
+			//				Cast<AJK1PlayerController>(Character->GetController())->DisengagedLockOn();
+			//			}
+			//	}
+			//}
+		}
+		});
+	
 }
 
 void UJK1CreatureStatComponent::SetStat(int index, float value)
@@ -146,15 +147,28 @@ void UJK1CreatureStatComponent::LevelUP(int level)
 	CurrentStat[1] += 10;
 }
 
+void UJK1CreatureStatComponent::StatRecovery()
+{
+	SetCurrentHP(BasicStatData->MaxHP);
+	SetStat(0, BasicStatData->ATK);
+	SetStat(1, BasicStatData->DEF);
+}
+
 bool UJK1CreatureStatComponent::HitDamage(float NewDamage, AActor* instigator)
 {
 	if (IsImmunity)
 		return false;
 
+	if (IsParry)
+	{
+		OnDamaged.Broadcast();
+		return false;
+	}
+
 	check(BasicStatData != nullptr);
 	DamageInstigator.Add(instigator, NewDamage);
-	
-	SetCurrentHP(FMath::Clamp<float>(CurrentHP - NewDamage/CurrentStat[1], 0.f, BasicStatData->MaxHP));
+
+	SetCurrentHP(FMath::Clamp<float>( CurrentHP - NewDamage / CurrentStat[1], 0.f, BasicStatData->MaxHP));
 	UE_LOG(LogSystem, Log, TEXT("Hit Damage: %f"), NewDamage);
 
 	return true;

@@ -85,21 +85,46 @@ void ANJK1Warrior::OnBasicAttackHit(TArray<FHitResult> HitResults)
 {
 	if (!HitResults.IsEmpty())
 	{
-		message::C_Attack pkt;
-		for (FHitResult& hit : HitResults)
+		if (bParryActive)
 		{
-			AActor* actor = hit.GetActor();
-			uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
-			pkt.set_object_id(my_id);
-			pkt.set_damage(10.f);
-
-			if (auto* Actor = Cast<AJK1CreatureBase>(actor))
+			// 패링했을 때
+			skill::C_Warrior_E_Success pkt;
+			for (FHitResult& hit : HitResults)
 			{
-				uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
-				pkt.add_target_ids(target_id);
-				SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+				AActor* actor = hit.GetActor();
+				uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+				pkt.set_object_id(my_id);
+
+				if (auto* Actor = Cast<AJK1CreatureBase>(actor))
+				{
+					uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
+					pkt.set_target_id(target_id);
+
+					SEND_PACKET(message::HEADER::WARRIOR_E_SUCCESS_REQ, pkt);
+					break;
+				}
 			}
 		}
+		else
+		{
+			// 기본 공격
+			message::C_Attack pkt;
+			for (FHitResult& hit : HitResults)
+			{
+				AActor* actor = hit.GetActor();
+				uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
+				pkt.set_object_id(my_id);
+				pkt.set_damage(10.f);
+
+				if (auto* Actor = Cast<AJK1CreatureBase>(actor))
+				{
+					uint32 target_id = Actor->CreatureStat->GetCreatureInfo()->object_info().object_id();
+					pkt.add_target_ids(target_id);
+					SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+				}
+			}
+		}
+		
 	}
 	/*if (!parryHits.IsEmpty())
 	{
@@ -140,6 +165,13 @@ void ANJK1Warrior::ComboActionEnd()
 void ANJK1Warrior::SkillQ(const FInputActionValue& Value)
 {
 	//Super::SkillQ(Value);
+	if (isMyPlayer)
+	{
+		skill::C_Warrior_Q skillPkt;
+		skillPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
+
+		SEND_PACKET(message::HEADER::WARRIOR_Q_REQ, skillPkt);
+	}
 }
 
 void ANJK1Warrior::SkillE(const FInputActionValue& Value)
@@ -169,34 +201,32 @@ void ANJK1Warrior::SkillR(const FInputActionValue& Value)
 void ANJK1Warrior::SkillLShift(const FInputActionValue& Value)
 {
 	//Super::SkillLShift(Value);
-}
-
-void ANJK1Warrior::WarriorQ()
-{
 	if (isMyPlayer)
 	{
-		Super::WarriorQ();
+		skill::C_Warrior_LS skillPkt;
+		skillPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
+		FVector ForwardDirection = GetActorForwardVector();
+		skillPkt.set_x(ForwardDirection.X);
+		skillPkt.set_y(ForwardDirection.Y);
+		skillPkt.set_z(ForwardDirection.Z);
+
+		SEND_PACKET(message::HEADER::WARRIOR_LS_REQ, skillPkt);
 	}
 }
 
-void ANJK1Warrior::WarriorE()
+void ANJK1Warrior::CheckDamagedInParry()
 {
-	if (isMyPlayer)
+	if (bParryActive)
 	{
-		Super::WarriorE();
-	}
-}
+		// TODO : 패링 성공 시 호출
+		skill::C_Warrior_E_Success skillPkt;
+		skillPkt.set_object_id(this->CreatureStat->GetCreatureInfo()->object_info().object_id());
 
-void ANJK1Warrior::WarriorR()
-{
-	Super::WarriorR();
-}
+		// 패링 성공 시, 상대 피격은 아직 구현되지 않았기에 Temp로 남겨둠
+		skillPkt.set_target_id(0);
+		SEND_PACKET(message::HEADER::WARRIOR_E_SUCCESS_REQ, skillPkt);
 
-void ANJK1Warrior::WarriorLShift()
-{
-	if (isMyPlayer)
-	{
-		Super::WarriorLShift();
+		WarriorE_Success();
 	}
 }
 

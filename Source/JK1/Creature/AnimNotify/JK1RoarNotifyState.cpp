@@ -12,7 +12,7 @@ void UJK1RoarNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 
 	if (AJK1MonsterBase* RP = Cast<AJK1MonsterBase>(MeshComp->GetOwner()))
 	{
-		RP->GiveStatusEffect(2);
+		RP->GiveStatusEffect(1);
 	}
 }
 
