@@ -8,6 +8,8 @@
 #include <stack>
 #include "JK1PlayerController.generated.h"
 
+class UJK1MatchingWidget;
+
 /**
  * 
  */
@@ -56,6 +58,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DisengagedLockOn();
 
+	// Matching
+	void UpdateMatching(bool IsAccept);
+	void ResultMatching(bool IsSuccess);
+
 	/*
 	*  Member Variable
 	*/
@@ -101,6 +107,9 @@ protected:
 	UUserWidget* ResurrectionWidget;
 	UPROPERTY()
 	UUserWidget* InventoryWidget;
+	UPROPERTY()
+	UJK1MatchingWidget* MatchingWidget;
+
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<UJK1PlayerHUD> HUDWidgetClass;
@@ -110,6 +119,8 @@ protected:
 	TSubclassOf<UUserWidget> ResurrectionWidgetClass;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<UUserWidget> InventoryWidgetClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<UUserWidget> MatchingWidgetClass;
 
 public:
 	TArray<UUserWidget*> OpenedWidget;

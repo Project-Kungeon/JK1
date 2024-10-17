@@ -29,9 +29,14 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetClose();
 
+	void MapChange();
+
 protected:
 	UPROPERTY(BlueprintReadWrite)
 	int32 index;
+
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
+	FName TransferLevelName;
 
 	bool IsOpen;
 

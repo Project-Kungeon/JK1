@@ -1,7 +1,8 @@
-#include "JK1LobbyWidget.h"
+#include "Widget/Lobby/JK1LobbyWidget.h"
 #include "JK1LogChannels.h"
 #include "Components/Button.h"
 #include "Components/HorizontalBox.h"
+#include "Kismet/GameplayStatics.h"
 
 void UJK1LobbyWidget::NativeConstruct()
 {
@@ -17,6 +18,7 @@ void UJK1LobbyWidget::NativeConstruct()
 	check(BtnBox != nullptr);
 
 	IsOpen = false;
+	TransferLevelName = FName(TEXT("L_Lobby"));
 }
 
 void UJK1LobbyWidget::CharacterChoice()
@@ -47,21 +49,32 @@ void UJK1LobbyWidget::GameStart()
 	{
 	case 0:
 		UE_LOG(LogSystem, Log, TEXT("Warrior"));
+		// 매칭 패킷 전달
+		MapChange();
 		IsOpen = false;
 		break;
 	case 1:
 		UE_LOG(LogSystem, Log, TEXT("Archor"));
+		MapChange();
 		IsOpen = false;
 		break;
 	case 2:
 		UE_LOG(LogSystem, Log, TEXT("Assassin"));
+		MapChange();
 		IsOpen = false;
 		break;
 	default:
 		UE_LOG(LogSystem, Log, TEXT("Game Start Error, Not Choice Character"));
 		break;
 	}
+	
 
 	if(IsOpen == false)
 		WidgetClose();
+}
+
+void UJK1LobbyWidget::MapChange()
+{
+	// demoraid로 넘어가는 함수
+	UGameplayStatics::OpenLevel(this, TransferLevelName);
 }
