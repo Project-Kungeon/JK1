@@ -1,9 +1,10 @@
-#include "JK1LobbyWidget.h"
+#include "Widget/Lobby/JK1LobbyWidget.h"
 #include "JK1LogChannels.h"
 #include "../System/NetworkJK1GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 #include "Components/HorizontalBox.h"
+#include "Kismet/GameplayStatics.h"
 
 void UJK1LobbyWidget::NativeConstruct()
 {
@@ -19,6 +20,7 @@ void UJK1LobbyWidget::NativeConstruct()
 	check(BtnBox != nullptr);
 
 	IsOpen = false;
+	TransferLevelName = FName(TEXT("L_Lobby"));
 }
 
 void UJK1LobbyWidget::CharacterChoice()
