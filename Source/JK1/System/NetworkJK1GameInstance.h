@@ -33,6 +33,7 @@ public:
 		void DisconnectFromGameServer();
 
 	void SendPacket(asio::mutable_buffer& buffer);
+	void UdpSendPacket(asio::mutable_buffer& buffer);
 
 	// 플레이어 소환(내 플레이어일 경우, Controller 부착)
 	void HandleSpawn(const message::ObjectInfo& info);

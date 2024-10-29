@@ -3,10 +3,13 @@
 #include "ClientPacketHandler.h"
 
 PacketSession::PacketSession(asio::io_context* io_context)
-	: _socket(*io_context), _io_context(io_context)
+	: _socket(*io_context)
+	, _io_context(io_context)
+	, _udp_socket(*io_context)
 {
 	ClientPacketHandler::Init();
 	memset(_recvBuffer, 0, RecvBufferSize);
+	memset(_udpRecvBuffer, 0, UdpRecvBufferSize);
 	GameInstance = GWorld->GetGameInstance();
 
 }
@@ -44,6 +47,10 @@ void PacketSession::Run(TSharedPtr<asio::io_context> io_context)
 void PacketSession::Connect(std::string host, int port)
 {
 	tcp::endpoint endpoint(asio::ip::make_address(host), port);
+
+	_udp_endpoint = udp::endpoint(asio::ip::make_address(host), port);
+	_udp_socket.open(udp::v4());
+	_udp_socket.bind(udp::endpoint(udp::v4(), 0));
 	_socket.async_connect(
 		endpoint,
 		boost::bind(
@@ -75,6 +82,7 @@ void PacketSession::OnConnect(const boost::system::error_code& err)
 		UE_LOG(LogTemp, Log, TEXT("Connect Success"));
 		//MakeLoginReq(1000);
 		AsyncRead();
+		AsyncUdpRead();
 
 	}
 	else
@@ -114,6 +122,24 @@ void PacketSession::AsyncRead()
 	);
 }
 
+void PacketSession::AsyncUdpRead()
+{
+	memset(_udpRecvBuffer, 0, UdpRecvBufferSize);
+	udp::endpoint sender_endpoint;
+	_udp_socket.async_receive(
+		asio::buffer(
+			_udpRecvBuffer,
+			UdpRecvBufferSize
+		),
+		boost::bind(
+			&PacketSession::OnUdpRead,
+			this,
+			asio::placeholders::error,
+			asio::placeholders::bytes_transferred
+		)
+	);
+}
+
 void PacketSession::OnRead(const boost::system::error_code& err, size_t size)
 {
 	if (!err)
@@ -131,34 +157,48 @@ void PacketSession::HandlePacket(char* ptr, size_t size)
 {
 	PacketSessionRef session = this->AsShared();
 	ClientPacketHandler::HandlePacket(session, ptr, size);
-	//asio::mutable_buffer buffer = asio::buffer(ptr, size);
-	//int offset = 0;
-	//PacketHeader header;
-	//PacketUtil::ParseHeader(buffer, &header, offset);
-
-	//// 헤더 코드 확인
-	//std::cout << "HandlePacket " << message::HEADER_Name(header.Code) << '\n';
-
-	//switch ( header.Code )
-	//{
-	//case message::HEADER::LOGIN_RES:
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Login Success!")));
-	//	break;
-	//}
 }
 
-//void PacketSession::MakeLoginReq(const int id)
-//{
-//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("LoginReq Go..")));
-//	message::LoginReq loginReq;
-//	loginReq.set_id(id);
-//	const size_t requiredSize = PacketUtil::RequiredSize(loginReq);
-//	char* rawBuffer = new char[requiredSize];
-//	auto buffer = asio::buffer(rawBuffer, requiredSize);
-//
-//	//if (!PacketUtil::Serialize(buffer, message::MessageCode::LOGIN_REQ, loginReq));
-//	//{
-//	//	// TODO : 패킷 잘못 적을 경우
-//	//}
-//	this->AsyncWrite(buffer);
-//}
+void PacketSession::AsyncUdpWrite(asio::mutable_buffer& buffer)
+{
+	//udp::endpoint remote_edpoint;
+	_udp_socket.async_send_to (
+		buffer,
+		_udp_endpoint,
+		boost::bind(
+			&PacketSession::OnUdpWrite,
+			this,
+			asio::placeholders::error,
+			asio::placeholders::bytes_transferred
+		)
+	);
+}
+
+void PacketSession::OnUdpWrite(const boost::system::error_code& err, size_t size)
+{
+	if (!err)
+	{
+		UE_LOG(LogTemp, Log, TEXT("OnWrite : %d"), size);
+	}
+	else
+	{
+		// TODO : Error Code
+		string line = err.message();
+		line.append("");
+	}
+}
+
+void PacketSession::OnUdpRead(const boost::system::error_code& err, size_t size)
+{
+	if (!err)
+	{
+		HandlePacket(_udpRecvBuffer, size);
+		AsyncUdpRead();
+	}
+	else
+	{
+		// TODO : Error
+		string line = err.message();
+		line.append("");
+	}
+}

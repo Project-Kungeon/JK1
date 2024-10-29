@@ -109,7 +109,7 @@ void AJK1PlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	ControlledCharacter = GetCharacter();
-	check(ControlledCharacter != nullptr);
+	//check(ControlledCharacter != nullptr);
 	SetInputMode(GameInputMode);
 	
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
@@ -138,6 +138,7 @@ void AJK1PlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::JumpAct);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AJK1PlayerController::StopJumpingAct);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::MoveAct);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AJK1PlayerController::OnMoveCompleted);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::LookAct);
 		EnhancedInputComponent->BindAction(LockOnAction, ETriggerEvent::Started, this, &AJK1PlayerController::ToggleLockOn);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::AttackAct);
@@ -181,6 +182,15 @@ void AJK1PlayerController::LookAct(const FInputActionValue& Value)
 }
 
 void AJK1PlayerController::MoveAct(const FInputActionValue& Value)
+{
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
+	{
+		ControlledPlayer->Move(Value);
+		UE_LOG(LogPlayerCharacter, Log, TEXT("%s"), *Value.ToString());
+	}
+}
+
+void AJK1PlayerController::OnMoveCompleted(const FInputActionValue& Value)
 {
 	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
 	{
@@ -270,9 +280,8 @@ void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 		SetShowMouseCursor(true);
 		int index = static_cast<int>(Value.Get<float>());
 
-		switch (index)
+		if (index == 1)
 		{
-		case 1:
 			if (!OpenedWidget.IsEmpty())
 				OpenedWidget.Pop()->RemoveFromParent();
 			else
@@ -282,8 +291,9 @@ void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 				OpenedWidget.AddUnique(MenuWidget);
 			}
 			UE_LOG(LogPlayerController, Log, TEXT("input ESC"));
-			break;
-		case 2:
+		}
+		else if (index == 2)
+		{
 			// 인벤토리 갱신
 			game::item::C_Item_OpenInventory pkt;
 			pkt.set_player_id(Cast<AJK1PlayerCharacter>(GetCharacter())->CreatureStat->GetCreatureInfo()->object_info().object_id());
@@ -292,15 +302,14 @@ void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 			InventoryWidget->AddToViewport();
 			OpenedWidget.AddUnique(InventoryWidget);
 			UE_LOG(LogPlayerController, Log, TEXT("input Inventory"));
-			break;
-		case 3:
-			// test matching success
+		}
+		else if (index == 3)
+		{
 			ResultMatching(true);
-			break;
-		case 4:
-			// test matching fail
+		}
+		else if (index == 4)
+		{
 			ResultMatching(false);
-			break;
 		}
 		
 
@@ -350,12 +359,15 @@ void AJK1PlayerController::InteractToObject()
 		{
 			if (Cast<IInteractiveObjectInterface>(Result.GetActor()))
 			{
-				auto temp = Cast<AJK1ItemInstance>(Result.GetActor());	
-				if (temp->CanInterAct())
+				if (auto temp = Cast<AJK1ItemInstance>(Result.GetActor()))
 				{
-					temp->SetInterAct(false);
-					temp->InterActive();
-					//temp->Destroy();
+					if (temp->CanInterAct())
+					{
+						temp->SetInterAct(false);
+						temp->InterActive();
+						//temp->Destroy();
+					}
+					
 				}
 				else if (auto board = Cast<ANoticeBoard>(Result.GetActor()))
 				{
@@ -364,6 +376,7 @@ void AJK1PlayerController::InteractToObject()
 					SetShowMouseCursor(true);
 					SetInputMode(UIInputMode);
 				}
+				
 
 			}
 			

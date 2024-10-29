@@ -193,12 +193,13 @@ void AJK1Warrior::WarriorR()
 				this->PlayAnimMontage(SkillRMontage);
 				this->PlayParticleSystem();
 				this->StartROverTime();
+				this->SetR(0.f);
+				this->StartRTimer();
 				}
 			);
 			//Cooltime
 
-			SetR(0.f);
-			StartRTimer();
+			
 		}
 	}
 }

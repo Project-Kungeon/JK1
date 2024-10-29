@@ -187,7 +187,14 @@ void ANJK1Archor::OnArchorE_Hit(TArray<FHitResult> hits)
 				pkt.add_target_ids(target_id);
 			}
 		}
-		SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
+		const size_t requiredSize = PacketUtil::RequiredSize(pkt);
+		char* rawBuffer = new char[requiredSize];
+		auto sendBuffer = asio::buffer(rawBuffer, requiredSize);
+		PacketUtil::Serialize(sendBuffer, message::HEADER::PLAYER_ATTACK_REQ, pkt);
+		UGameInstance* instance = GetWorld()->GetGameInstance();
+		Cast<UNetworkJK1GameInstance>(instance)->SendPacket(sendBuffer);
+
+		//SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
 	}
 }
 

@@ -33,6 +33,7 @@ protected:
 	void StopJumpingAct();
 	void LookAct(const FInputActionValue& Value);
 	void MoveAct(const FInputActionValue& Value);
+	void OnMoveCompleted(const FInputActionValue& Value);
 	void StopAct(const FInputActionValue& Value);
 	void AttackAct();
 	void SkillAct(const FInputActionValue& Value);

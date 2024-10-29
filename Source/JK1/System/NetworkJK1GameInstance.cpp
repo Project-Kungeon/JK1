@@ -66,7 +66,27 @@ void UNetworkJK1GameInstance::DisconnectFromGameServer()
 
 void UNetworkJK1GameInstance::SendPacket(asio::mutable_buffer& buffer)
 {
-	GameSession->SendPacket(buffer);
+
+	if (GameSession.IsValid())
+	{
+		GameSession->SendPacket(buffer);
+	}
+	else
+	{
+		UE_LOG(LogSystem, Error, TEXT("GameSession is not valid!!"));
+	}
+}
+
+void UNetworkJK1GameInstance::UdpSendPacket(asio::mutable_buffer& buffer)
+{
+	if (GameSession.IsValid())
+	{
+		GameSession->UdpSendPacket(buffer);
+	}
+	else
+	{
+		UE_LOG(LogSystem, Error, TEXT("GameSession is not valid!!"));
+	}
 }
 
 void UNetworkJK1GameInstance::HandleSpawn(const message::ObjectInfo& info)
@@ -293,11 +313,13 @@ void UNetworkJK1GameInstance::HandleMove(const message::S_Move& movePkt)
 		return;
 
 	AJK1PlayerCharacter* Player = (*FindActor);
+	// TEST를 위해 비활성화(2024.10.28)
 	if (Player->isMyPlayer)
 		return;
 
 	const message::PosInfo& info = movePkt.posinfo();
 	Player->SetDestInfo(info);
+	Player->SetMoveInfo(movePkt);
 
 }
 
