@@ -314,8 +314,8 @@ void UNetworkJK1GameInstance::HandleMove(const message::S_Move& movePkt)
 
 	AJK1PlayerCharacter* Player = (*FindActor);
 	// TEST를 위해 비활성화(2024.10.28)
-	if (Player->isMyPlayer)
-		return;
+	//if (Player->isMyPlayer)
+	//	return;
 
 	const message::PosInfo& info = movePkt.posinfo();
 	Player->SetDestInfo(info);

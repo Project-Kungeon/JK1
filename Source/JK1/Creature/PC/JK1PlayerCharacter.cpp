@@ -115,58 +115,58 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 		PlayerInfo->set_yaw(ActorRotation.Yaw);
 	}
 
-	if (isMyPlayer)
-	{
-		// Send Packet
-		bool ForceSendPacket = false;	// 상태검사 결과에 따라 패킷 전송할지 말지 판단합니다.
+	//if (isMyPlayer)
+	//{
+	//	// Send Packet
+	//	bool ForceSendPacket = false;	// 상태검사 결과에 따라 패킷 전송할지 말지 판단합니다.
 
-		if (LastDesiredInput != DesiredInput)
-		{
-			// 움직였다면, 패킷 전송을 합니다.
-			ForceSendPacket = true;
-			LastDesiredInput = DesiredInput;
-		}
+	//	if (LastDesiredInput != DesiredInput)
+	//	{
+	//		// 움직였다면, 패킷 전송을 합니다.
+	//		ForceSendPacket = true;
+	//		LastDesiredInput = DesiredInput;
+	//	}
 
-		if ((DesiredInput.X == 0 && DesiredInput.Y == 0) || GetVelocity().IsNearlyZero())
-		{
-			SetMoveState(message::MOVE_STATE_IDLE);
-		}
+	//	if ((DesiredInput.X == 0 && DesiredInput.Y == 0) || GetVelocity().IsNearlyZero())
+	//	{
+	//		SetMoveState(message::MOVE_STATE_IDLE);
+	//	}
 
-		else
-			SetMoveState(message::MOVE_STATE_RUN);
+	//	else
+	//		SetMoveState(message::MOVE_STATE_RUN);
 
-		// 패킷 전송 주기 계산
-		MovePacketSendTimer -= DeltaTime;
+	//	// 패킷 전송 주기 계산
+	//	MovePacketSendTimer -= DeltaTime;
 
-		if ((MovePacketSendTimer >= 0 || ForceSendPacket) && isConnected)
-		{
-			MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+	//	if ((MovePacketSendTimer >= 0 || ForceSendPacket) && isConnected)
+	//	{
+	//		MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
-			message::C_Move	MovePkt;
+	//		message::C_Move	MovePkt;
 
-			{
-				const FRotator Rotation = Controller->GetControlRotation();
-				const FRotator CameraRotation = FollowCamera->GetComponentRotation();
+	//		{
+	//			const FRotator Rotation = Controller->GetControlRotation();
+	//			const FRotator CameraRotation = FollowCamera->GetComponentRotation();
 
 
-				message::PosInfo* info = MovePkt.mutable_posinfo();
-				info->CopyFrom(*PlayerInfo);
-				//info->set_yaw(DesiredYaw);
-				info->set_state(GetMoveState());
-					
-				MovePkt.set_camera_yaw(CameraRotation.Yaw);
-				MovePkt.set_controller_yaw(Rotation.Yaw);
-				MovePkt.set_movement_x(0);
-				MovePkt.set_movement_y(0);
+	//			message::PosInfo* info = MovePkt.mutable_posinfo();
+	//			info->CopyFrom(*PlayerInfo);
+	//			//info->set_yaw(DesiredYaw);
+	//			info->set_state(GetMoveState());
+	//				
+	//			MovePkt.set_camera_yaw(CameraRotation.Yaw);
+	//			MovePkt.set_controller_yaw(Rotation.Yaw);
+	//			MovePkt.set_movement_x(0);
+	//			MovePkt.set_movement_y(0);
 
-			}
-			// TODO : Send Packet should be needed
-			// Will Test...
-			UDP_SEND_PACKET(message::HEADER::PLAYER_MOVE_REQ, MovePkt);
-		}
-	}
+	//		}
+	//		// TODO : Send Packet should be needed
+	//		// Will Test...
+	//		UDP_SEND_PACKET(message::HEADER::PLAYER_MOVE_REQ, MovePkt);
+	//	}
+	//}
 
-	else if(!isMyPlayer)
+	//else if(!isMyPlayer)
 	{
 		const message::MoveState State = GetMoveState();
 		const FRotator CameraYawRotation(0, sync_camera_yaw, 0);
@@ -179,18 +179,18 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 
 			const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
 			const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-			/*AddMovementInput(ForwardDirection, movement_x);
-			AddMovementInput(RightDirection, movement_y);*/
+			AddMovementInput(ForwardDirection, movement_x);
+			AddMovementInput(RightDirection, movement_y);
 
-			// TEST를 위해 잠깐 비활성화
-			// 현재 좌표와 서버로부터 받아오는 좌표를 받아와서, 방향 벡터 계산
-			FVector CurrentLocation = GetActorLocation();
-			FVector TargetLocation(DestInfo->x(), DestInfo->y(), DestInfo->z());
-			FVector DirectionVector = TargetLocation - CurrentLocation;
+			//// TEST를 위해 잠깐 비활성화
+			//// 현재 좌표와 서버로부터 받아오는 좌표를 받아와서, 방향 벡터 계산
+			//FVector CurrentLocation = GetActorLocation();
+			//FVector TargetLocation(DestInfo->x(), DestInfo->y(), DestInfo->z());
+			//FVector DirectionVector = TargetLocation - CurrentLocation;
 
-			// 정규화
-			DirectionVector.Normalize();
-			AddMovementInput(DirectionVector);
+			//// 정규화
+			//DirectionVector.Normalize();
+			//AddMovementInput(DirectionVector);
 
 		}
 		else if (State == message::MOVE_STATE_IDLE)
@@ -208,15 +208,15 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 			FVector CurrentLocation = GetActorLocation();
 			float distance = sqrt(pow(CurrentLocation.X - DestInfo->x(), 2) +
 				pow(CurrentLocation.Y - DestInfo->y(), 2) + pow(CurrentLocation.Z - DestInfo->z(), 2));
-			if (distance > 10)
-			{
-				FVector TargetLocation(DestInfo->x(), DestInfo->y(), DestInfo->z());
-				FVector DirectionVector = TargetLocation - CurrentLocation;
+			//if (distance > 10)
+			//{
+			//	FVector TargetLocation(DestInfo->x(), DestInfo->y(), DestInfo->z());
+			//	FVector DirectionVector = TargetLocation - CurrentLocation;
 
-				// 정규화
-				DirectionVector.Normalize();
-				AddMovementInput(DirectionVector);
-			}
+			//	// 정규화
+			//	DirectionVector.Normalize();
+			//	AddMovementInput(DirectionVector);
+			//}
 
 		}
 		else
@@ -244,8 +244,8 @@ void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 	const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-	AddMovementInput(ForwardDirection, MovementVector.X);
-	AddMovementInput(RightDirection, MovementVector.Y);
+	//AddMovementInput(ForwardDirection, MovementVector.X);
+	//AddMovementInput(RightDirection, MovementVector.Y);
 
 	//if (Value.GetMagnitude() == 0.0f)
 	//{
@@ -257,23 +257,6 @@ void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 	//{
 	//	SetMoveState(message::MOVE_STATE_RUN);
 	//}
-
-	if (isMyPlayer)
-	{
-		//SetMoveState(message::MOVE_STATE_RUN);
-		DesiredInput = MovementVector;
-
-		DesiredMoveDirection = FVector::ZeroVector;
-		DesiredMoveDirection += ForwardDirection * MovementVector.Y;
-		DesiredMoveDirection += RightDirection * MovementVector.X;
-		DesiredMoveDirection.Normalize();
-
-		const FVector Location = GetActorLocation();
-
-		FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
-		DesiredYaw = Rotator.Yaw;
-	}
-
 
 	//if (isMyPlayer)
 	//{
@@ -289,34 +272,51 @@ void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 
 	//	FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
 	//	DesiredYaw = Rotator.Yaw;
-
-	//	message::C_Move	MovePkt;
-
-	//	{
-	//		message::PosInfo* info = MovePkt.mutable_posinfo();
-	//		info->CopyFrom(*PlayerInfo);
-	//		//info->set_yaw(DesiredYaw);
-	//		if (Value.GetMagnitude() == 0.0f)
-	//		{
-	//			// 플레이어가 멈춰있는 상태
-	//			UE_LOG(LogTemp, Log, TEXT("플레이어 정지 상태"));
-	//			info->set_state(message::MOVE_STATE_IDLE);
-	//		}
-	//		else
-	//		{
-	//			info->set_state(message::MOVE_STATE_RUN);
-	//		}
-	//		
-	//		MovePkt.set_camera_yaw(CameraRotation.Yaw);
-	//		MovePkt.set_controller_yaw(Rotation.Yaw);
-	//		MovePkt.set_movement_x(MovementVector.X);
-	//		MovePkt.set_movement_y(MovementVector.Y);
-
-	//	}
-	//	// TODO : Send Packet should be needed
-	//	// Will Test...
-	//	UDP_SEND_PACKET(message::HEADER::PLAYER_MOVE_REQ, MovePkt);
 	//}
+
+
+	if (isMyPlayer)
+	{
+		//SetMoveState(message::MOVE_STATE_RUN);
+		DesiredInput = MovementVector;
+
+		DesiredMoveDirection = FVector::ZeroVector;
+		DesiredMoveDirection += ForwardDirection * MovementVector.Y;
+		DesiredMoveDirection += RightDirection * MovementVector.X;
+		DesiredMoveDirection.Normalize();
+
+		const FVector Location = GetActorLocation();
+
+		FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
+		DesiredYaw = Rotator.Yaw;
+
+		message::C_Move	MovePkt;
+
+		{
+			message::PosInfo* info = MovePkt.mutable_posinfo();
+			info->CopyFrom(*PlayerInfo);
+			//info->set_yaw(DesiredYaw);
+			if (Value.GetMagnitude() == 0.0f)
+			{
+				// 플레이어가 멈춰있는 상태
+				UE_LOG(LogTemp, Log, TEXT("플레이어 정지 상태"));
+				info->set_state(message::MOVE_STATE_IDLE);
+			}
+			else
+			{
+				info->set_state(message::MOVE_STATE_RUN);
+			}
+			
+			MovePkt.set_camera_yaw(CameraRotation.Yaw);
+			MovePkt.set_controller_yaw(Rotation.Yaw);
+			MovePkt.set_movement_x(MovementVector.X);
+			MovePkt.set_movement_y(MovementVector.Y);
+
+		}
+		// TODO : Send Packet should be needed
+		// Will Test...
+		UDP_SEND_PACKET(message::HEADER::PLAYER_MOVE_REQ, MovePkt);
+	}
 	
 }
 
