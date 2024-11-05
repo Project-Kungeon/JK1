@@ -13,6 +13,7 @@
 #include "GameRound.pb.h"
 #include "MonsterPattern.pb.h"
 #include "Packet.h"
+#include <random>
 
 class PacketSession;
 

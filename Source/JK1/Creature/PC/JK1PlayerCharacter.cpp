@@ -217,6 +217,11 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 			//	DirectionVector.Normalize();
 			//	AddMovementInput(DirectionVector);
 			//}
+			if (distance > 10 && !isMyPlayer)
+			{
+				FVector TargetLocation(DestInfo->x(), DestInfo->y(), DestInfo->z());
+				SetActorLocation(TargetLocation);
+			}
 
 		}
 		else
@@ -465,12 +470,27 @@ void AJK1PlayerCharacter::SetMoveInfo(const message::S_Move& info)
 void AJK1PlayerCharacter::Death()
 {
 	Super::Death();
+	
 
 	if (isMyPlayer)
 	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator CameraRotation = FollowCamera->GetComponentRotation();
+
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		const FRotator CameraYawRotation(0, CameraRotation.Yaw, 0);
+
+		const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		AddMovementInput(ForwardDirection, 0);
+		AddMovementInput(RightDirection, 0);
+
 		Cast<AJK1PlayerController>(GetController())->RemoveInputSystem();
 		UE_LOG(LogPlayerCharacter, Log, TEXT("Player is Down!!"));
 	}
+
+
 	
 
 	//if(DemoRaidState->GetDeathCount() > 0)
