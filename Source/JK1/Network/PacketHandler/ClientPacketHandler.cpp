@@ -47,6 +47,11 @@ void ClientPacketHandler::Init()
             UE_LOG(LogTemp, Log, TEXT("S_Heal Handle"));
             return HandlePacket<message::S_Heal>(BattlePacketHandler::Handle_S_Heal, session, buffer, header, offset);
         };
+    GPacketHandler[message::HEADER::SESSION_PONG_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
+        {
+            UE_LOG(LogTemp, Log, TEXT("S_Pong Handle"));
+            return HandlePacket<ping::S_Pong>(PingPongPacketHandler::Handle_S_Pong, session, buffer, header, offset);
+        };
 
     GPacketHandler[message::HEADER::WARRIOR_ATTACK_RES] = [](PacketSessionRef& session, asio::mutable_buffer& buffer, PacketHeader& header, int& offset)
     {

@@ -12,6 +12,7 @@
 #include "Item.pb.h"
 #include "GameRound.pb.h"
 #include "MonsterPattern.pb.h"
+#include "Ping.pb.h"
 #include "Packet.h"
 
 class PacketSession;
@@ -28,6 +29,7 @@ USING_SHARED_PTR(PacketSession);
 #include "Battle/BattlePacketHandler.h"
 #include "Battle/MonsterPatternPacketHandler.h"
 #include "Interactive/InteractivePacketHandler.h"
+#include "PingPong/PingPongPacketHandler.h"
 #include "ClientPacketHandler.h"
 
 #include "NetworkJK1GameInstance.h"
