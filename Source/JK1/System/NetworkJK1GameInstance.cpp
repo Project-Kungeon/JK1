@@ -316,6 +316,10 @@ void UNetworkJK1GameInstance::HandleMove(const message::S_Move& movePkt)
 	// TEST를 위해 비활성화(2024.10.28)
 	if (Player->isMyPlayer)
 		return;
+	if (objectId == 3)
+	{
+		cout << "dsadsa";
+	}
 
 	const message::PosInfo& info = movePkt.posinfo();
 	Player->SetDestInfo(info);

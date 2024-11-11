@@ -138,7 +138,7 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 		// 패킷 전송 주기 계산
 		MovePacketSendTimer -= DeltaTime;
 
-		if ((MovePacketSendTimer >= 0 || ForceSendPacket) && isConnected)
+		if ((MovePacketSendTimer <= 0 || ForceSendPacket) && isConnected)
 		{
 			MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
@@ -204,24 +204,26 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 			AddMovementInput(ForwardDirection, 0);
 			AddMovementInput(RightDirection, 0);
 
-			// 서버로부터 동기화 받은 값이 월드와 괴리가 발생할 경우
-			FVector CurrentLocation = GetActorLocation();
-			float distance = sqrt(pow(CurrentLocation.X - DestInfo->x(), 2) +
-				pow(CurrentLocation.Y - DestInfo->y(), 2) + pow(CurrentLocation.Z - DestInfo->z(), 2));
-			if (distance > 10)
-			{
-				FVector TargetLocation(DestInfo->x(), DestInfo->y(), DestInfo->z());
-				FVector DirectionVector = TargetLocation - CurrentLocation;
-
-				// 정규화
-				DirectionVector.Normalize();
-				AddMovementInput(DirectionVector);
-			}
+			
 
 		}
 		else
 		{
 
+		}
+
+		// 서버로부터 동기화 받은 값이 월드와 괴리가 발생할 경우
+		FVector CurrentLocation = GetActorLocation();
+		float distance = sqrt(pow(CurrentLocation.X - DestInfo->x(), 2) +
+			pow(CurrentLocation.Y - DestInfo->y(), 2) + pow(CurrentLocation.Z - DestInfo->z(), 2));
+		if (distance > 10)
+		{
+			FVector TargetLocation(DestInfo->x(), DestInfo->y(), DestInfo->z());
+			FVector DirectionVector = TargetLocation - CurrentLocation;
+
+			// 정규화
+			DirectionVector.Normalize();
+			AddMovementInput(DirectionVector);
 		}
 	}
 }
