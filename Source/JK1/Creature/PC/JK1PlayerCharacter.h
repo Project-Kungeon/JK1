@@ -170,6 +170,7 @@ public:
 public:
 	void SetPlayerInfo(const message::PosInfo& Info);
 	void SetDestInfo(const message::PosInfo& Info);
+	void SetMoveInfo(const message::S_Move& info);
 	message::PosInfo* GetPlayerInfo() { return PlayerInfo; }
 
 
@@ -178,6 +179,11 @@ protected:
 	// Relate Network...
 	class message::PosInfo* PlayerInfo;		// 플레이어 정보
 	class message::PosInfo* DestInfo;		// 목적지 정보 -> 이동 동기화
+	// 타 플레이어의 yaw값 동기화
+	float sync_camera_yaw;
+	float sync_controller_yaw;
+	double movement_x;
+	double movement_y;
 
 	// Only My Player
 	// 패킷 전송 주기(Pakcet Sending Delay)

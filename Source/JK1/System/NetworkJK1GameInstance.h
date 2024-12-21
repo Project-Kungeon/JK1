@@ -33,6 +33,7 @@ public:
 		void DisconnectFromGameServer();
 
 	void SendPacket(asio::mutable_buffer& buffer);
+	void UdpSendPacket(asio::mutable_buffer& buffer);
 
 	// 플레이어 소환(내 플레이어일 경우, Controller 부착)
 	void HandleSpawn(const message::ObjectInfo& info);
@@ -86,10 +87,18 @@ public:
 	void HandleItemConsumeableUsed(const game::item::S_Item_ConsumeableUsed& pkt);
 	void HandleItemAcquisition(const game::item::S_Item_Acquisition& pkt);
 	void HandleItemOpenInventory(const game::item::S_Item_OpenInventory& pkt);
-
+	void HandlePongPacket(const ping::S_Pong& pkt);
 
 private:
 	PacketSessionRef GameSession;
+	FTimerHandle PingPacketTimerHandle;
+	uint64 ping_sequence_number = 0;
+
+	void StartPingPacketTimer();
+	void StopPingPacketTimer();
+	void SendPingPacket();
+	
+	uint64 GetSystemTimestamoMillisec();
 
 public:
 	FString MyCharacterClass;

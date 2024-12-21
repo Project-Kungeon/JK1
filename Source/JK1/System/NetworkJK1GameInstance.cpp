@@ -29,7 +29,7 @@ void UNetworkJK1GameInstance::ConnectToGameServer()
 	asio::io_context* io_context = new asio::io_context;
 	GameSession = MakeShared<PacketSession>(io_context);
 
-	GameSession->Connect(std::string("127.0.0.1"), 4242);
+	GameSession->Connect(std::string("175.118.64.119"), 4242);
 	GameSession->Run();
 
 	//message::C_Login Pkt;
@@ -50,9 +50,9 @@ void UNetworkJK1GameInstance::ConnectToGameServer()
 		EnterRoomPkt.set_player_type(message::PLAYER_TYPE_ASSASSIN);
 	}
 
-	
+	FPlatformProcess::Sleep(1.0f);
 	SEND_PACKET(message::HEADER::ENTER_ROOM_REQ, EnterRoomPkt);
-
+	StartPingPacketTimer();
 	//GameSession->Run(io_contextRef);
 }
 
@@ -66,7 +66,27 @@ void UNetworkJK1GameInstance::DisconnectFromGameServer()
 
 void UNetworkJK1GameInstance::SendPacket(asio::mutable_buffer& buffer)
 {
-	GameSession->SendPacket(buffer);
+
+	if (GameSession.IsValid())
+	{
+		GameSession->SendPacket(buffer);
+	}
+	else
+	{
+		UE_LOG(LogSystem, Error, TEXT("GameSession is not valid!!"));
+	}
+}
+
+void UNetworkJK1GameInstance::UdpSendPacket(asio::mutable_buffer& buffer)
+{
+	if (GameSession.IsValid())
+	{
+		GameSession->UdpSendPacket(buffer);
+	}
+	else
+	{
+		UE_LOG(LogSystem, Error, TEXT("GameSession is not valid!!"));
+	}
 }
 
 void UNetworkJK1GameInstance::HandleSpawn(const message::ObjectInfo& info)
@@ -293,11 +313,17 @@ void UNetworkJK1GameInstance::HandleMove(const message::S_Move& movePkt)
 		return;
 
 	AJK1PlayerCharacter* Player = (*FindActor);
+	// TEST를 위해 비활성화(2024.10.28)
 	if (Player->isMyPlayer)
 		return;
+	if (objectId == 3)
+	{
+		cout << "dsadsa";
+	}
 
 	const message::PosInfo& info = movePkt.posinfo();
 	Player->SetDestInfo(info);
+	Player->SetMoveInfo(movePkt);
 
 }
 
@@ -805,4 +831,52 @@ void UNetworkJK1GameInstance::HandleItemOpenInventory(const game::item::S_Item_O
 		Inventory->UpdateInventory(MyPlayer, pkt);
 	}
 
+}
+
+void UNetworkJK1GameInstance::StartPingPacketTimer()
+{
+	// 1초마다 패킷 전송 (원하는 시간 간격으로 수정 가능)
+	GetWorld()->GetTimerManager().SetTimer(PingPacketTimerHandle,
+		this,
+		&UNetworkJK1GameInstance::SendPingPacket,
+		1.0f,
+		true);
+}
+
+void UNetworkJK1GameInstance::StopPingPacketTimer()
+{
+	GetWorld()->GetTimerManager().ClearTimer(PingPacketTimerHandle);
+}
+
+void UNetworkJK1GameInstance::SendPingPacket()
+{
+	ping::C_Ping pkt;
+	pkt.set_client_send_time(GetSystemTimestamoMillisec());
+	pkt.set_sequence_number(ping_sequence_number++);
+
+	SEND_PACKET(message::SESSION_PING_REQ, pkt);
+}
+
+void UNetworkJK1GameInstance::HandlePongPacket(const ping::S_Pong& pkt)
+{
+	ping::C_CompletePing CompletePingPkt;
+	CompletePingPkt.set_client_receive_time(GetSystemTimestamoMillisec());
+	CompletePingPkt.set_client_send_time(pkt.client_send_time());
+	CompletePingPkt.set_sequence_number(pkt.sequence_number());
+	CompletePingPkt.set_server_send_time(pkt.server_send_time());
+	CompletePingPkt.set_server_receive_time(pkt.server_receive_time());
+
+	const size_t requiredSize = PacketUtil::RequiredSize(CompletePingPkt);
+	char* rawBuffer = new char[requiredSize];
+	auto sendBuffer = asio::buffer(rawBuffer, requiredSize);
+	PacketUtil::Serialize(sendBuffer, message::HEADER::SESSION_COMPLETE_PING_RES, CompletePingPkt);
+	UGameInstance* instance = GetWorld()->GetGameInstance();
+	Cast<UNetworkJK1GameInstance>(instance)->SendPacket(sendBuffer);
+}
+
+uint64 UNetworkJK1GameInstance::GetSystemTimestamoMillisec()
+{
+	return std::chrono::duration_cast<std::chrono::milliseconds>(
+		std::chrono::system_clock::now().time_since_epoch()
+	).count();
 }

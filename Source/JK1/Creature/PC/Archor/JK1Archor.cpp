@@ -70,6 +70,7 @@ AJK1Archor::AJK1Archor()
 void AJK1Archor::BeginPlay()
 {
 	Super::BeginPlay();
+	ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *ArrowBP.ToString()));
 	AnimInstance = GetMesh()->GetAnimInstance();
 }
 
@@ -160,9 +161,7 @@ void AJK1Archor::ShootQ(FVector StartLoc, FVector EndLoc)
 {
 	PlayAnimMontage(SkillQMonatge_Recovery);
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-
-	ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *ArrowBP.ToString()));
-
+	
 	FHitResult HitResult;	// 히트 대상
 	FVector EndLocation;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
@@ -234,10 +233,16 @@ void AJK1Archor::SpawnArrow(FVector StartLoc, FVector EndLoc)
 	}
 	else //아니라면 CameraForward Vector방향으로 발사
 	{
+
 		ArrowSpawnRotation = (ImpactPoint - StartLoc).Rotation();
 
-		Arrow = GetWorld()->SpawnActor<AJK1Arrow>(ObjectToSpawn->GeneratedClass,
-			StartLoc, ArrowSpawnRotation, SpawnParams);
+		AsyncTask(ENamedThreads::GameThread, [this, &Arrow, StartLoc]()
+			{
+				Arrow = GetWorld()->SpawnActor<AJK1Arrow>(ObjectToSpawn->GeneratedClass,
+					StartLoc, ArrowSpawnRotation, SpawnParams);
+			});
+		
+
 	}
 	
 	//Arrow가 Channel 제외한 다른 액터와 판정 안되게 하는 구문
@@ -486,58 +491,60 @@ void AJK1Archor::StopDamage()
 
 void AJK1Archor::CheckSkillETrace()
 {
-	// 타격 위치 계산
-	FVector DamageLocation = SkillELocation;
+	AsyncTask(ENamedThreads::GameThread, [this]() {
+		// 타격 위치 계산
+		FVector DamageLocation = SkillELocation;
 
-	// 구체로 범위를 지정하고 그 안의 모든 액터를 가져옵니다.
-	TArray<FHitResult> OverlappingActors;
-	// 타격 위치 계산
+		// 구체로 범위를 지정하고 그 안의 모든 액터를 가져옵니다.
+		TArray<FHitResult> OverlappingActors;
+		// 타격 위치 계산
 
-	DrawDebugSphere(
-		GetWorld(),
-		DamageLocation,        
-		DamageRadius,           
-		12,                     
-		FColor::Red,           
-		false,                  
-		5.0f                    
-	);
+		DrawDebugSphere(
+			GetWorld(),
+			DamageLocation,
+			DamageRadius,
+			12,
+			FColor::Red,
+			false,
+			5.0f
+		);
 
-	// Sphere를 생성하여 일정 범위 안에 있는 액터를 찾습니다.
-	FCollisionShape DamageSphere = FCollisionShape::MakeSphere(DamageRadius);
+		// Sphere를 생성하여 일정 범위 안에 있는 액터를 찾습니다.
+		FCollisionShape DamageSphere = FCollisionShape::MakeSphere(DamageRadius);
 
-	bool bHasHit = GetWorld()->SweepMultiByChannel(
-		OverlappingActors,
-		DamageLocation,
-		DamageLocation,
-		FQuat::Identity,
-		CCHANNEL_JK1ACTION,
-		DamageSphere
-	);
+		bool bHasHit = GetWorld()->SweepMultiByChannel(
+			OverlappingActors,
+			DamageLocation,
+			DamageLocation,
+			FQuat::Identity,
+			CCHANNEL_JK1ACTION,
+			DamageSphere
+		);
 
-	if (bHasHit)
-	{
-		OnArchorE_Hit(OverlappingActors);
-		for (FHitResult& result : OverlappingActors)
+		if (bHasHit)
 		{
-			UE_LOG(LogArchor, Log, TEXT("%s"), *result.GetActor()->GetName());
-			AActor* SweepActor = result.GetActor();
-			FVector SweepLocation = SweepActor->GetActorLocation();
-			float SphereRadius = 50.f;
-			FColor SphereColor = FColor::Green;
-			float LifeTime = 5.0f;
+			OnArchorE_Hit(OverlappingActors);
+			for (FHitResult& result : OverlappingActors)
+			{
+				UE_LOG(LogArchor, Log, TEXT("%s"), *result.GetActor()->GetName());
+				AActor* SweepActor = result.GetActor();
+				FVector SweepLocation = SweepActor->GetActorLocation();
+				float SphereRadius = 50.f;
+				FColor SphereColor = FColor::Green;
+				float LifeTime = 5.0f;
 
-			DrawDebugSphere(
-				GetWorld(),
-				SweepLocation,
-				SphereRadius,
-				32,
-				SphereColor,
-				false,
-				LifeTime
-			);
+				DrawDebugSphere(
+					GetWorld(),
+					SweepLocation,
+					SphereRadius,
+					32,
+					SphereColor,
+					false,
+					LifeTime
+				);
+			}
 		}
-	}
+		});
 }
 
 void AJK1Archor::PlayParticleSystem()

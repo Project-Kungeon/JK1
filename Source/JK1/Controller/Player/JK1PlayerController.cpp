@@ -9,18 +9,22 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputMappingContext.h"
+#include "InterActiveObject/NoticeBoard.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Widget/JK1PlayerHUD.h"
 #include "Widget/JK1UserWidget.h"
+#include "Widget/Lobby/JK1MatchingWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Interface/InteractiveObjectInterface.h"
 #include "Creature/PC/JK1PlayerCharacter.h"
 #include "Creature/JK1CreatureStatComponent.h"
 #include "Item/JK1ItemInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+
 
 AJK1PlayerController::AJK1PlayerController()
 {
@@ -89,6 +93,11 @@ AJK1PlayerController::AJK1PlayerController()
 	{
 		InventoryWidgetClass = Inventory_UI.Class;
 	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> Matching_UI(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Blueprints/Widget/Lobby/WBP_MatchingWidget.WBP_MatchingWidget_C'"));
+	if (Matching_UI.Class)
+	{
+		MatchingWidgetClass = Matching_UI.Class;
+	}
 
 	InterActDistance = 500.f;
 	LockOnDistance = 750.f;
@@ -100,7 +109,7 @@ void AJK1PlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	ControlledCharacter = GetCharacter();
-	check(ControlledCharacter != nullptr);
+	//check(ControlledCharacter != nullptr);
 	SetInputMode(GameInputMode);
 	
 	Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
@@ -114,6 +123,7 @@ void AJK1PlayerController::BeginPlay()
 	MenuWidget = CreateWidget<UUserWidget>(this, MenuWidgetClass);
 	ResurrectionWidget = CreateWidget<UUserWidget>(this, ResurrectionWidgetClass);
 	InventoryWidget = CreateWidget<UUserWidget>(this, InventoryWidgetClass);
+	MatchingWidget = CreateWidget<UJK1MatchingWidget>(this, MatchingWidgetClass);
 	PlayerWidget = CreateWidget<UJK1PlayerHUD>(this, HUDWidgetClass);
 	PlayerWidget->AddToViewport();
 	UpdateWidget();
@@ -128,6 +138,7 @@ void AJK1PlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::JumpAct);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AJK1PlayerController::StopJumpingAct);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::MoveAct);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AJK1PlayerController::OnMoveCompleted);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::LookAct);
 		EnhancedInputComponent->BindAction(LockOnAction, ETriggerEvent::Started, this, &AJK1PlayerController::ToggleLockOn);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AJK1PlayerController::AttackAct);
@@ -171,6 +182,15 @@ void AJK1PlayerController::LookAct(const FInputActionValue& Value)
 }
 
 void AJK1PlayerController::MoveAct(const FInputActionValue& Value)
+{
+	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
+	{
+		ControlledPlayer->Move(Value);
+		UE_LOG(LogPlayerCharacter, Log, TEXT("%s"), *Value.ToString());
+	}
+}
+
+void AJK1PlayerController::OnMoveCompleted(const FInputActionValue& Value)
 {
 	if (AJK1PlayerCharacter* ControlledPlayer = Cast<AJK1PlayerCharacter>(GetCharacter()))
 	{
@@ -260,19 +280,20 @@ void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 		SetShowMouseCursor(true);
 		int index = static_cast<int>(Value.Get<float>());
 
-		switch (index)
+		if (index == 1)
 		{
-		case 1:
 			if (!OpenedWidget.IsEmpty())
 				OpenedWidget.Pop()->RemoveFromParent();
 			else
 			{
+
 				MenuWidget->AddToViewport();
 				OpenedWidget.AddUnique(MenuWidget);
 			}
 			UE_LOG(LogPlayerController, Log, TEXT("input ESC"));
-			break;
-		case 2:
+		}
+		else if (index == 2)
+		{
 			// 인벤토리 갱신
 			game::item::C_Item_OpenInventory pkt;
 			pkt.set_player_id(Cast<AJK1PlayerCharacter>(GetCharacter())->CreatureStat->GetCreatureInfo()->object_info().object_id());
@@ -281,8 +302,16 @@ void AJK1PlayerController::ShowUI(const FInputActionValue& Value)
 			InventoryWidget->AddToViewport();
 			OpenedWidget.AddUnique(InventoryWidget);
 			UE_LOG(LogPlayerController, Log, TEXT("input Inventory"));
-			break;
 		}
+		else if (index == 3)
+		{
+			ResultMatching(true);
+		}
+		else if (index == 4)
+		{
+			ResultMatching(false);
+		}
+		
 
 		if (OpenedWidget.IsEmpty())
 		{
@@ -330,13 +359,24 @@ void AJK1PlayerController::InteractToObject()
 		{
 			if (Cast<IInteractiveObjectInterface>(Result.GetActor()))
 			{
-				auto temp = Cast<AJK1ItemInstance>(Result.GetActor());	
-				if (temp->CanInterAct())
+				if (auto temp = Cast<AJK1ItemInstance>(Result.GetActor()))
 				{
-					temp->SetInterAct(false);
-					temp->InterActive();
-					//temp->Destroy();
+					if (temp->CanInterAct())
+					{
+						temp->SetInterAct(false);
+						temp->InterActive();
+						//temp->Destroy();
+					}
+					
 				}
+				else if (auto board = Cast<ANoticeBoard>(Result.GetActor()))
+				{
+					MatchingWidget->AddToViewport();
+					OpenedWidget.AddUnique(MatchingWidget);
+					SetShowMouseCursor(true);
+					SetInputMode(UIInputMode);
+				}
+				
 
 			}
 			
@@ -394,6 +434,10 @@ void AJK1PlayerController::RemoveInputSystem()
 void AJK1PlayerController::ToggleLockOn()
 {
 	UE_LOG(LogPlayerController, Log, TEXT("Try Lock On"));
+	// delegate test
+	UpdateMatching(true);
+	UpdateMatching(false);
+
 	if (bLockOnEngaged == false)
 		EngagedLockOn();
 	else
@@ -486,5 +530,26 @@ void AJK1PlayerController::DisengagedLockOn()
 
 	// Monster Info 위젯 설정
 	UpdateWidget();
+}
+
+void AJK1PlayerController::UpdateMatching(bool IsAccept)
+{
+	// 다른 클라이언트들의 매칭 수락 여부 패킷이 온 경우
+	MatchingWidget->OnMatchingUpdate.Execute(IsAccept);
+
+
+}
+
+void AJK1PlayerController::ResultMatching(bool IsSuccess)
+{
+	// 성공 했으면 ui 제거 및 맵 이동
+	if (IsSuccess)
+	{
+		MatchingWidget->RemoveFromParent();
+		UGameplayStatics::OpenLevel(this, FName(TEXT("L_DemoRaid")));
+
+	}
+	else   // 실패 하면 accept ui만 제거
+		MatchingWidget->MatchingFail();
 }
 

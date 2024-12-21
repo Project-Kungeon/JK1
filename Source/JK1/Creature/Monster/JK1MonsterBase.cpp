@@ -79,10 +79,10 @@ void AJK1MonsterBase::UnHighlightActor()
 void AJK1MonsterBase::Death()
 {
 	Super::Death();
-	Cast<AAIController>(GetController())->GetBrainComponent()->StopLogic(TEXT("DEAD"));
+	// Cast<AAIController>(GetController())->GetBrainComponent()->StopLogic(TEXT("DEAD"));
 
 	// RaidClear
-	auto DemoRaidMode = Cast<AJK1DemoRaidMode>(GetWorld()->GetAuthGameMode());
+	/*auto DemoRaidMode = Cast<AJK1DemoRaidMode>(GetWorld()->GetAuthGameMode());
 	check(nullptr != DemoRaidMode);
 	DemoRaidMode->RaidClear();
 
@@ -94,7 +94,7 @@ void AJK1MonsterBase::Death()
 			this->Destroy();
 			GetWorldTimerManager().ClearTimer(TimerHandle);
 		});
-	GetWorldTimerManager().SetTimer(TimerHandle, TimerCallback, 5.f, false);
+	GetWorldTimerManager().SetTimer(TimerHandle, TimerCallback, 5.f, false);*/
 }
 
 void AJK1MonsterBase::GiveStatusEffect(int type)

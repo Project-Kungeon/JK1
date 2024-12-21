@@ -138,16 +138,27 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 		// 패킷 전송 주기 계산
 		MovePacketSendTimer -= DeltaTime;
 
-		if ((MovePacketSendTimer >= 0 || ForceSendPacket) && isConnected)
+		if ((MovePacketSendTimer <= 0 || ForceSendPacket) && isConnected)
 		{
 			MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+
 			message::C_Move	MovePkt;
 
 			{
+				const FRotator Rotation = Controller->GetControlRotation();
+				const FRotator CameraRotation = FollowCamera->GetComponentRotation();
+
+
 				message::PosInfo* info = MovePkt.mutable_posinfo();
 				info->CopyFrom(*PlayerInfo);
 				//info->set_yaw(DesiredYaw);
 				info->set_state(GetMoveState());
+					
+				MovePkt.set_camera_yaw(CameraRotation.Yaw);
+				MovePkt.set_controller_yaw(Rotation.Yaw);
+				MovePkt.set_movement_x(0);
+				MovePkt.set_movement_y(0);
+
 			}
 			// TODO : Send Packet should be needed
 			// Will Test...
@@ -155,14 +166,23 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 		}
 	}
 
-	else
+	else if(!isMyPlayer)
 	{
 		const message::MoveState State = GetMoveState();
+		const FRotator CameraYawRotation(0, sync_camera_yaw, 0);
+		const FRotator YawRotation(0, sync_controller_yaw, 0);
 
 		if (State == message::MOVE_STATE_RUN)	// 뛰는 중이라면
 		{
 			SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
+			
 
+			const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
+			const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			/*AddMovementInput(ForwardDirection, movement_x);
+			AddMovementInput(RightDirection, movement_y);*/
+
+			// TEST를 위해 잠깐 비활성화
 			// 현재 좌표와 서버로부터 받아오는 좌표를 받아와서, 방향 벡터 계산
 			FVector CurrentLocation = GetActorLocation();
 			FVector TargetLocation(DestInfo->x(), DestInfo->y(), DestInfo->z());
@@ -170,27 +190,40 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 
 			// 정규화
 			DirectionVector.Normalize();
-
 			AddMovementInput(DirectionVector);
-
-			//FVector vec(DestInfo->x(), DestInfo->y(), DestInfo->z());
-			//SetActorLocation(vec);
 
 		}
 		else if (State == message::MOVE_STATE_IDLE)
 		{
 
-			const FRotator YawRotation(0, DestInfo->yaw(), 0);
+			//const FRotator YawRotation(0, DestInfo->yaw(), 0);
 
-			const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
 			const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 			AddMovementInput(ForwardDirection, 0);
 			AddMovementInput(RightDirection, 0);
+
+			
+
 		}
 		else
 		{
 
+		}
+
+		// 서버로부터 동기화 받은 값이 월드와 괴리가 발생할 경우
+		FVector CurrentLocation = GetActorLocation();
+		float distance = sqrt(pow(CurrentLocation.X - DestInfo->x(), 2) +
+			pow(CurrentLocation.Y - DestInfo->y(), 2) + pow(CurrentLocation.Z - DestInfo->z(), 2));
+		if (distance > 10)
+		{
+			FVector TargetLocation(DestInfo->x(), DestInfo->y(), DestInfo->z());
+			FVector DirectionVector = TargetLocation - CurrentLocation;
+
+			// 정규화
+			DirectionVector.Normalize();
+			AddMovementInput(DirectionVector);
 		}
 	}
 }
@@ -212,11 +245,24 @@ void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 
 	const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
 	AddMovementInput(ForwardDirection, MovementVector.X);
 	AddMovementInput(RightDirection, MovementVector.Y);
 
+	//if (Value.GetMagnitude() == 0.0f)
+	//{
+	//	// 플레이어가 멈춰있는 상태
+	//	UE_LOG(LogTemp, Log, TEXT("플레이어 정지 상태"));
+	//	SetMoveState(message::MOVE_STATE_IDLE);
+	//}
+	//else
+	//{
+	//	SetMoveState(message::MOVE_STATE_RUN);
+	//}
+
 	if (isMyPlayer)
 	{
+		//SetMoveState(message::MOVE_STATE_RUN);
 		DesiredInput = MovementVector;
 
 		DesiredMoveDirection = FVector::ZeroVector;
@@ -229,12 +275,51 @@ void AJK1PlayerCharacter::Move(const FInputActionValue& Value)
 		FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
 		DesiredYaw = Rotator.Yaw;
 	}
-	else
-	{
-		AddMovementInput(ForwardDirection, MovementVector.X);
-		AddMovementInput(RightDirection, MovementVector.Y);
-	}
 
+
+	//if (isMyPlayer)
+	//{
+	//	//SetMoveState(message::MOVE_STATE_RUN);
+	//	DesiredInput = MovementVector;
+
+	//	DesiredMoveDirection = FVector::ZeroVector;
+	//	DesiredMoveDirection += ForwardDirection * MovementVector.Y;
+	//	DesiredMoveDirection += RightDirection * MovementVector.X;
+	//	DesiredMoveDirection.Normalize();
+
+	//	const FVector Location = GetActorLocation();
+
+	//	FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
+	//	DesiredYaw = Rotator.Yaw;
+
+	//	message::C_Move	MovePkt;
+
+	//	{
+	//		message::PosInfo* info = MovePkt.mutable_posinfo();
+	//		info->CopyFrom(*PlayerInfo);
+	//		//info->set_yaw(DesiredYaw);
+	//		if (Value.GetMagnitude() == 0.0f)
+	//		{
+	//			// 플레이어가 멈춰있는 상태
+	//			UE_LOG(LogTemp, Log, TEXT("플레이어 정지 상태"));
+	//			info->set_state(message::MOVE_STATE_IDLE);
+	//		}
+	//		else
+	//		{
+	//			info->set_state(message::MOVE_STATE_RUN);
+	//		}
+	//		
+	//		MovePkt.set_camera_yaw(CameraRotation.Yaw);
+	//		MovePkt.set_controller_yaw(Rotation.Yaw);
+	//		MovePkt.set_movement_x(MovementVector.X);
+	//		MovePkt.set_movement_y(MovementVector.Y);
+
+	//	}
+	//	// TODO : Send Packet should be needed
+	//	// Will Test...
+	//	UDP_SEND_PACKET(message::HEADER::PLAYER_MOVE_REQ, MovePkt);
+	//}
+	
 }
 
 void AJK1PlayerCharacter::Look(const FInputActionValue& Value)
@@ -275,7 +360,7 @@ void AJK1PlayerCharacter::DoCombo()
 
 void AJK1PlayerCharacter::ComboActionEnd()
 {
-	ensure(CurrentCombo != 0);
+	//ensure(CurrentCombo != 0);
 	CurrentCombo = 0;
 	SaveAttacking = false;
 	IsAttacking = false;
@@ -342,12 +427,53 @@ void AJK1PlayerCharacter::SetDestInfo(const message::PosInfo& Info)
 	SetMoveState(Info.state());
 }
 
+void AJK1PlayerCharacter::SetMoveInfo(const message::S_Move& info)
+{
+	sync_camera_yaw = info.camera_yaw();
+	sync_controller_yaw = info.controller_yaw();
+	movement_x = info.movement_x();
+	movement_y = info.movement_y();
+
+	//const message::MoveState State = GetMoveState();
+
+	//AsyncTask(ENamedThreads::GameThread, [this, State]() {
+	//	if (State == message::MOVE_STATE_RUN)	// 뛰는 중이라면
+	//	{
+	//		SetActorRotation(FRotator(0, DestInfo->yaw(), 0));
+	//		const FRotator CameraYawRotation(0, sync_camera_yaw, 0);
+	//		const FRotator YawRotation(0, sync_controller_yaw, 0);
+
+	//		const FVector ForwardDirection = FRotationMatrix(CameraYawRotation).GetUnitAxis(EAxis::X);
+	//		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	//		AddMovementInput(ForwardDirection, movement_x);
+	//		AddMovementInput(RightDirection, movement_y);
+
+	//		// TEST를 위해 잠깐 비활성화
+	//		// 현재 좌표와 서버로부터 받아오는 좌표를 받아와서, 방향 벡터 계산
+	//		//FVector CurrentLocation = GetActorLocation();
+	//		//FVector TargetLocation(DestInfo->x(), DestInfo->y(), DestInfo->z());
+	//		//FVector DirectionVector = TargetLocation - CurrentLocation;
+
+	//		//// 정규화
+	//		//DirectionVector.Normalize();
+
+	//		//AddMovementInput(DirectionVector);
+
+	//	}
+	//	});;
+	
+}
+
 void AJK1PlayerCharacter::Death()
 {
 	Super::Death();
 
-	Cast<AJK1PlayerController>(GetController())->RemoveInputSystem();
-	UE_LOG(LogPlayerCharacter, Log, TEXT("Player is Down!!"));
+	if (isMyPlayer)
+	{
+		Cast<AJK1PlayerController>(GetController())->RemoveInputSystem();
+		UE_LOG(LogPlayerCharacter, Log, TEXT("Player is Down!!"));
+	}
+	
 
 	//if(DemoRaidState->GetDeathCount() > 0)
 	//	Cast<AJK1PlayerController>(GetController())->ShowResurrection(true);

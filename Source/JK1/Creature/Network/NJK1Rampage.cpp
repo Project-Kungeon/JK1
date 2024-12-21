@@ -103,7 +103,7 @@ void ANJK1Rampage::OnBasicAttackHit(TArray<FHitResult> HitResults)
 				message::C_Attack pkt;
 				uint32 my_id = this->CreatureStat->GetCreatureInfo()->object_info().object_id();
 				pkt.set_object_id(my_id);
-				pkt.set_damage(5);
+				pkt.set_damage(15);
 				uint32 target_id = player->CreatureStat->GetCreatureInfo()->object_info().object_id();
 				pkt.add_target_ids(target_id);
 				SEND_PACKET(message::HEADER::PLAYER_ATTACK_REQ, pkt);
