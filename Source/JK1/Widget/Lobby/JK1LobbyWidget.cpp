@@ -71,7 +71,7 @@ void UJK1LobbyWidget::GameStart()
 			return;
 		}
 
-		UGameplayStatics::OpenLevel(this, FName("NetworkDevMap"));
+		UGameplayStatics::OpenLevel(this, FName("L_DemoRaid"));
 		if (IsOpen == false)
 			WidgetClose();
 	}

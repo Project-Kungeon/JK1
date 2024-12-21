@@ -29,7 +29,7 @@ void UNetworkJK1GameInstance::ConnectToGameServer()
 	asio::io_context* io_context = new asio::io_context;
 	GameSession = MakeShared<PacketSession>(io_context);
 
-	GameSession->Connect(std::string("127.0.0.1"), 4242);
+	GameSession->Connect(std::string("175.118.64.119"), 4242);
 	GameSession->Run();
 
 	//message::C_Login Pkt;
@@ -50,7 +50,7 @@ void UNetworkJK1GameInstance::ConnectToGameServer()
 		EnterRoomPkt.set_player_type(message::PLAYER_TYPE_ASSASSIN);
 	}
 
-	
+	FPlatformProcess::Sleep(1.0f);
 	SEND_PACKET(message::HEADER::ENTER_ROOM_REQ, EnterRoomPkt);
 	StartPingPacketTimer();
 	//GameSession->Run(io_contextRef);

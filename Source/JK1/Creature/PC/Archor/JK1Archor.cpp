@@ -70,6 +70,7 @@ AJK1Archor::AJK1Archor()
 void AJK1Archor::BeginPlay()
 {
 	Super::BeginPlay();
+	ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *ArrowBP.ToString()));
 	AnimInstance = GetMesh()->GetAnimInstance();
 }
 
@@ -160,9 +161,7 @@ void AJK1Archor::ShootQ(FVector StartLoc, FVector EndLoc)
 {
 	PlayAnimMontage(SkillQMonatge_Recovery);
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-
-	ObjectToSpawn = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *ArrowBP.ToString()));
-
+	
 	FHitResult HitResult;	// 히트 대상
 	FVector EndLocation;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), false, this);
@@ -234,10 +233,16 @@ void AJK1Archor::SpawnArrow(FVector StartLoc, FVector EndLoc)
 	}
 	else //아니라면 CameraForward Vector방향으로 발사
 	{
+
 		ArrowSpawnRotation = (ImpactPoint - StartLoc).Rotation();
 
-		Arrow = GetWorld()->SpawnActor<AJK1Arrow>(ObjectToSpawn->GeneratedClass,
-			StartLoc, ArrowSpawnRotation, SpawnParams);
+		AsyncTask(ENamedThreads::GameThread, [this, &Arrow, StartLoc]()
+			{
+				Arrow = GetWorld()->SpawnActor<AJK1Arrow>(ObjectToSpawn->GeneratedClass,
+					StartLoc, ArrowSpawnRotation, SpawnParams);
+			});
+		
+
 	}
 	
 	//Arrow가 Channel 제외한 다른 액터와 판정 안되게 하는 구문

@@ -162,7 +162,7 @@ void AJK1PlayerCharacter::Tick(float DeltaTime)
 			}
 			// TODO : Send Packet should be needed
 			// Will Test...
-			UDP_SEND_PACKET(message::HEADER::PLAYER_MOVE_REQ, MovePkt);
+			SEND_PACKET(message::HEADER::PLAYER_MOVE_REQ, MovePkt);
 		}
 	}
 
